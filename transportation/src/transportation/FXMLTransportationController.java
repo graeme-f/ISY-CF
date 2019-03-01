@@ -59,6 +59,7 @@ public class FXMLTransportationController implements Initializable {
     
     private void vehicleChanged(ObservableValue<? extends String> observable,String oldValue,String newValue){
         VehicleDescription.setText(newValue);
+        // TODO selected vehicle details need to be obtained from the database
         gpVehicleForm.setVisible(true);
         if (newValue.equals("Blue Car")){
             fuelList.setValue(fuelList.getItems().get(0));
@@ -94,7 +95,8 @@ public class FXMLTransportationController implements Initializable {
             {
                 vehicleChanged(ov, oldvalue, newvalue);
         }});
-
+        
+        // TODO fuel types need to come from the database
         ObservableList<String> fuelType = FXCollections.<String>observableArrayList("Diesel", "Petrol");
         fuelList.setItems(fuelType);
     }
