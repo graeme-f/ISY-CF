@@ -29,14 +29,16 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 
 /**
  *
@@ -44,8 +46,13 @@ import javafx.scene.layout.GridPane;
  */
 public class FXMLTransportationController implements Initializable {
     
-    @FXML
-    private Label VehicleDescription;
+    @FXML private HBox ContainerBox;
+    @FXML private VBox VehicleBox;
+    @FXML private VBox DetailsBox;
+    @FXML private VBox TripBox;
+    @FXML private TextArea details;
+    
+    @FXML private Label VehicleDescription;
     
     @FXML private ListView vehicleLists;
     @FXML private ChoiceBox fuelList;
@@ -54,26 +61,45 @@ public class FXMLTransportationController implements Initializable {
     @FXML private TextField fuelTotal;
     
     
-    @FXML
-    private GridPane gpVehicleForm;
+    @FXML private GridPane gpVehicleForm;
     
-    private void vehicleChanged(ObservableValue<? extends String> observable,String oldValue,String newValue){
-        VehicleDescription.setText(newValue);
+    public void setVehicleSummary(String vehicleName){
+        // TODO the vehicle summary needs to come from the database
+        String vehicleSummary = "";
+        vehicleSummary += vehicleName + "\n\n";
+        vehicleSummary += "January" + "\t" + "63 litres" + "\n";
+        vehicleSummary += "February" + "\t" + "157 litres" + "\n";
+        vehicleSummary += "March" + "\t" + "83 litres" + "\n";
+        vehicleSummary += "\nTotal usage" + "\t" + "303 litres";
+        details.setText(vehicleSummary);
+    } // end of method setVehicleSummary()
+    
+    private void setVehicleDetails(String vehicleName){
+        VehicleDescription.setText(vehicleName);
         // TODO selected vehicle details need to be obtained from the database
-        gpVehicleForm.setVisible(true);
-        if (newValue.equals("Blue Car")){
+        if (vehicleName.equals("Blue Car")){
             fuelList.setValue(fuelList.getItems().get(0));
-            startDate.setText("1 January 2019");
-            endDate.setText("1 March 2019");
+            startDate.setText("1 January 2019"); // This should default to the last recorded end date
+            endDate.setText("1 March 2019"); // This should default to today's date
             fuelTotal.clear();
         } else {
             fuelList.setValue(fuelList.getItems().get(1));
             startDate.setText("1 February 2019");
             endDate.setText("1 March 2019");
             fuelTotal.clear();
-        }
-        fuelTotal.requestFocus();
-    }
+        }    
+    } // end of method setVehicleDetails()
+    
+    private void vehicleChanged(ObservableValue<? extends String> observable,String oldValue,String newValue){
+        gpVehicleForm.setVisible(true);
+        setVehicleDetails(newValue);
+        setVehicleSummary(newValue);
+        // Hide the trip box but show the details box
+        TripBox.setVisible(false);
+        DetailsBox.setVisible(true);
+
+        fuelTotal.requestFocus(); // Doesn't seem to work :(
+    } // end of method vehicleChanged
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -81,6 +107,14 @@ public class FXMLTransportationController implements Initializable {
     } // end of method initialize    
     
     private void initialiseVehicles(){
+        // The following code will bind the managed property to the visibility of the container
+        // If the container's visibility is turned off it will not be managed by the window
+        // Which means that is will not take up any space in the window.
+        VehicleBox.managedProperty().bind(VehicleBox.visibleProperty());
+        DetailsBox.managedProperty().bind(DetailsBox.visibleProperty());
+        TripBox.managedProperty().bind(TripBox.visibleProperty());
+        // Hide the DetailsBox
+        DetailsBox.setVisible(false);
         // TODO vehicle list needs to come from the database
         ObservableList<String> carList = FXCollections.<String>observableArrayList("Red Car, the fast one. With a dent on the side", "Blue Car", "Orange Car", "Yellow Car");
         vehicleLists.getItems().addAll(carList);
@@ -99,5 +133,9 @@ public class FXMLTransportationController implements Initializable {
         // TODO fuel types need to come from the database
         ObservableList<String> fuelType = FXCollections.<String>observableArrayList("Diesel", "Petrol");
         fuelList.setItems(fuelType);
-    }
-}
+        
+        details.setEditable(false);
+
+    } // end of method initialiseVehicles()
+    
+} // end of class FXMLTransportationController
