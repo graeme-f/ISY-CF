@@ -24,6 +24,7 @@
 package transportation;
 
 import java.net.URL;
+import java.time.LocalDate;
 import java.util.ResourceBundle;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -32,6 +33,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
@@ -56,8 +58,8 @@ public class FXMLTransportationController implements Initializable {
     
     @FXML private ListView vehicleLists;
     @FXML private ChoiceBox fuelList;
-    @FXML private TextField startDate;
-    @FXML private TextField endDate;
+    @FXML private DatePicker startDate;
+    @FXML private DatePicker endDate;
     @FXML private TextField fuelTotal;
     
     
@@ -79,13 +81,13 @@ public class FXMLTransportationController implements Initializable {
         // TODO selected vehicle details need to be obtained from the database
         if (vehicleName.equals("Blue Car")){
             fuelList.setValue(fuelList.getItems().get(0));
-            startDate.setText("1 January 2019"); // This should default to the last recorded end date
-            endDate.setText("1 March 2019"); // This should default to today's date
+            startDate.setValue(LocalDate.of(2019, 02, 28)); // This should default to the last recorded end date
+            endDate.setValue(LocalDate.now()); // This should default to today's date
             fuelTotal.clear();
         } else {
             fuelList.setValue(fuelList.getItems().get(1));
-            startDate.setText("1 February 2019");
-            endDate.setText("1 March 2019");
+            startDate.setValue(LocalDate.of(2019, 03, 14)); // This should default to the last recorded end date
+            endDate.setValue(LocalDate.now()); // This should default to today's date
             fuelTotal.clear();
         }    
     } // end of method setVehicleDetails()
