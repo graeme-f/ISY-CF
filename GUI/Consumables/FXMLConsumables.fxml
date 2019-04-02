@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+
+<HBox id="ContainerBox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="800.0" style="-fx-border-width: 2; -fx-border-color: black;"  xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Consumables.FXMLConsumablesController">
+    <children>
+      <VBox fx:id="Waste" prefHeight="200.0" prefWidth="300.0" style="-fx-border-width: 1; -fx-border-color: black;">
+         <children>
+            <Label alignment="CENTER" contentDisplay="CENTER" prefWidth="300.0" text="Waste">
+               <font>
+                  <Font name="Arial Black" size="14.0" />
+               </font>
+            </Label>
+         </children>
+      </VBox>
+      <VBox fx:id="Paper" prefHeight="200.0" prefWidth="300.0" style="-fx-border-color: black; -fx-border-width: 1;">
+         <children>
+            <Label alignment="CENTER" contentDisplay="CENTER" prefWidth="300.0" text="Paper">
+               <font>
+                  <Font name="Arial Black" size="14.0" />
+               </font>
+            </Label>
+         </children>
+      </VBox>
+      <VBox fx:id="YearBook" prefHeight="200.0" prefWidth="300.0" style="-fx-border-color: black; -fx-border-width: 1;">
+         <children>
+            <Label alignment="CENTER" contentDisplay="CENTER" prefWidth="300.0" text="Year Book">
+               <font>
+                  <Font name="Arial Black" size="14.0" />
+               </font>
+            </Label>
+         </children>
+      </VBox>
+      <VBox fx:id="Meat" prefHeight="200.0" prefWidth="300.0" style="-fx-border-color: black; -fx-border-width: 1;">
+         <children>
+            <Label alignment="CENTER" contentDisplay="CENTER" prefWidth="300.0" text="Meat">
+               <font>
+                  <Font name="Arial Black" size="14.0" />
+               </font>
+            </Label>
+         </children>
+      </VBox>
+   </children>
+</HBox>
