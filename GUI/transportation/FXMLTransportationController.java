@@ -25,6 +25,7 @@ package transportation;
 
 import java.net.URL;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -65,31 +66,18 @@ public class FXMLTransportationController implements Initializable {
     
     @FXML private GridPane gpVehicleForm;
     
+    private TransportationDataCollector dc;
+    
     public void setVehicleSummary(String vehicleName){
-        // TODO the vehicle summary needs to come from the database
-        String vehicleSummary = "";
-        vehicleSummary += vehicleName + "\n\n";
-        vehicleSummary += "January" + "\t" + "63 litres" + "\n";
-        vehicleSummary += "February" + "\t" + "157 litres" + "\n";
-        vehicleSummary += "March" + "\t" + "83 litres" + "\n";
-        vehicleSummary += "\nTotal usage" + "\t" + "303 litres";
-        details.setText(vehicleSummary);
+        details.setText(dc.vehicleSummary(vehicleName));
     } // end of method setVehicleSummary()
     
     private void setVehicleDetails(String vehicleName){
         VehicleDescription.setText(vehicleName);
-        // TODO selected vehicle details need to be obtained from the database
-        if (vehicleName.equals("Blue Car")){
-            fuelList.setValue(fuelList.getItems().get(0));
-            startDate.setValue(LocalDate.of(2019, 02, 28)); // This should default to the last recorded end date
-            endDate.setValue(LocalDate.now()); // This should default to today's date
-            fuelTotal.clear();
-        } else {
-            fuelList.setValue(fuelList.getItems().get(1));
-            startDate.setValue(LocalDate.of(2019, 03, 14)); // This should default to the last recorded end date
-            endDate.setValue(LocalDate.now()); // This should default to today's date
-            fuelTotal.clear();
-        }    
+        fuelList.setValue(dc.getFuel(vehicleName));
+        startDate.setValue(dc.getStartDate(vehicleName));
+        endDate.setValue(LocalDate.now());
+        fuelTotal.clear();
     } // end of method setVehicleDetails()
     
     private void vehicleChanged(ObservableValue<? extends String> observable,String oldValue,String newValue){
@@ -105,6 +93,7 @@ public class FXMLTransportationController implements Initializable {
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        dc = new TransportationDataCollector();
         initialiseVehicles();        
     } // end of method initialize    
     
@@ -117,8 +106,8 @@ public class FXMLTransportationController implements Initializable {
         TripBox.managedProperty().bind(TripBox.visibleProperty());
         // Hide the DetailsBox
         DetailsBox.setVisible(false);
-        // TODO vehicle list needs to come from the database
-        ObservableList<String> carList = FXCollections.<String>observableArrayList("Red Car, the fast one. With a dent on the side", "Blue Car", "Orange Car", "Yellow Car");
+        ArrayList<String> cars = dc.getCarList();
+        ObservableList<String> carList = FXCollections.<String>observableArrayList(cars);
         vehicleLists.getItems().addAll(carList);
         gpVehicleForm.setVisible(false);
         
@@ -132,8 +121,8 @@ public class FXMLTransportationController implements Initializable {
                 vehicleChanged(ov, oldvalue, newvalue);
         }});
         
-        // TODO fuel types need to come from the database
-        ObservableList<String> fuelType = FXCollections.<String>observableArrayList("Diesel", "Petrol");
+        ArrayList<String> fuels = dc.getFuelList();
+        ObservableList<String> fuelType = FXCollections.<String>observableArrayList(fuels);
         fuelList.setItems(fuelType);
         
         details.setEditable(false);
