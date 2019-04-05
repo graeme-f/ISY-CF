@@ -23,6 +23,7 @@
  */
 package transportation;
 
+import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -31,8 +32,12 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
@@ -42,6 +47,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 
 /**
  *
@@ -64,9 +70,35 @@ public class FXMLTransportationController implements Initializable {
     @FXML private TextField fuelTotal;
     
     
+    @FXML private Button btnAddVehicle;
+    @FXML private Button btnDeleteVehicle;
+    @FXML private Button btnUpdateFuel;
+    
     @FXML private GridPane gpVehicleForm;
     
     private TransportationDataCollector dc;
+    
+    @FXML private void AddVehicle(ActionEvent event) {
+        System.out.println("Add Vehicle");
+        event.consume();
+        
+        Scene newScene;
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("FXMLNewCar.fxml"));
+        try {
+            newScene = new Scene(loader.load());
+        } catch (IOException ex) {
+            System.out.println("Fail");
+            System.out.println(ex);
+            // TODO: handle error
+            return;
+        }
+
+        Stage inputStage = new Stage();
+        inputStage.initOwner(Transportation.primaryStage);
+        inputStage.setTitle("Create a new vehicle");
+        inputStage.setScene(newScene);
+        inputStage.showAndWait();
+    }
     
     public void setVehicleSummary(String vehicleName){
         details.setText(dc.vehicleSummary(vehicleName));
@@ -93,7 +125,7 @@ public class FXMLTransportationController implements Initializable {
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        dc = new TransportationDataCollector();
+        dc = TransportationDataCollector.getInstance();
         initialiseVehicles();        
     } // end of method initialize    
     

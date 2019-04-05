@@ -31,7 +31,6 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Properties;
 import java.util.Set;
 
@@ -41,13 +40,23 @@ public class TransportationDataCollector {
         int id;
         String name;
         String fuel;
-        LocalDate lastRecordedDate;
-        
-    }
+        LocalDate lastRecordedDate;    
+    } // end of inner class Car
+    
+    private static TransportationDataCollector singleInstance = null;
     Connection conn = null;
     HashMap<String, Car> carDetails;
     
-    public TransportationDataCollector(){
+    public static TransportationDataCollector getInstance() 
+    { 
+        if (singleInstance == null) 
+            singleInstance = new TransportationDataCollector(); 
+  
+        return singleInstance; 
+    } // end of getInstance method
+    
+    // Creator is private to make this a singleton class
+    private TransportationDataCollector(){
         connect();
         getAllCars();
     } // end of constructor
@@ -119,11 +128,11 @@ public class TransportationDataCollector {
     
     public String getFuel(String carName){
         return carDetails.get(carName).fuel;
-    }
+    } // end of method getFuel
 
     public LocalDate getStartDate(String carName){
         return carDetails.get(carName).lastRecordedDate;
-    }
+    } // end of method getStartDate
     
     public String vehicleSummary(String carName){
         // TODO the vehicle summary needs to come from the database
@@ -134,8 +143,15 @@ public class TransportationDataCollector {
         vehicleSummary += "March" + "\t" + "83 litres" + "\n";
         vehicleSummary += "\nTotal usage" + "\t" + "303 litres";
         return vehicleSummary;
-    }
+    } // end of method vehicleSummary
 
+    public String createNewVehicle(String [] values){
+        for (String line : values){
+            System.out.println(line);
+        }
+        return "Security controller not yet built, database not updated";
+    } // end of method createNewVehicle
+    
     private void connect() {
         try(FileInputStream f = new FileInputStream("db.properties")) {
             // load the properties file
