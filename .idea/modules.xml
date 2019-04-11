@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/ISY-CF.iml" filepath="$PROJECT_DIR$/ISY-CF.iml" />
+      <module fileurl="file://$PROJECT_DIR$/securityClient/securityClient.iml" filepath="$PROJECT_DIR$/securityClient/securityClient.iml" />
+      <module fileurl="file://$PROJECT_DIR$/securityServer/securityServer.iml" filepath="$PROJECT_DIR$/securityServer/securityServer.iml" />
+    </modules>
+  </component>
+</project>
