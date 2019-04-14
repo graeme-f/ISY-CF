@@ -25,7 +25,11 @@ package PowerUsage;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+
+import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 
 /**
  * FXML Controller class
@@ -33,6 +37,14 @@ import javafx.fxml.Initializable;
  * @author gfoster
  */
 public class FXMLPowerUsageController implements Initializable {
+
+    @FXML private HBox ContainerBox;
+    @FXML private VBox Electricity;
+    @FXML private VBox Generator;
+    @FXML private VBox AC;
+
+
+
 
     /**
      * Initializes the controller class.
