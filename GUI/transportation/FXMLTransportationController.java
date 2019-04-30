@@ -68,8 +68,7 @@ public class FXMLTransportationController implements Initializable {
     @FXML private DatePicker startDate;
     @FXML private DatePicker endDate;
     @FXML private TextField fuelTotal;
-    
-    
+
     @FXML private Button btnAddVehicle;
     @FXML private Button btnDeleteVehicle;
     @FXML private Button btnUpdateFuel;
