@@ -28,7 +28,6 @@ import java.net.*;
 import java.io.*; 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Scanner;
 
 /**
@@ -62,7 +61,7 @@ public class SecurityServer {
                 // start the thread
                 t.start();
             }
-            catch (Exception e){
+            catch (IOException e){
                 if (socket != null)
                     socket.close(); 
                 e.printStackTrace(); 
