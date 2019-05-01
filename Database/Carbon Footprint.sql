@@ -40,7 +40,7 @@ CREATE TABLE IF NOT EXISTS `ISY-CF`.`Vehicle` (
   `Registration` VARCHAR(12) NULL,
   `Description` VARCHAR(120) NULL,
   `Type` INT NOT NULL,
-  `Decommissioned` TINYINT(1) NOT NULL DEFAULT FASLE,
+  `Decommissioned` TINYINT(1) NOT NULL DEFAULT FALSE,
   PRIMARY KEY (`Vehicle_ID`),
   CONSTRAINT `fk_Vehicle_Vehicle_Type`
     FOREIGN KEY (`Type`)
@@ -49,7 +49,7 @@ CREATE TABLE IF NOT EXISTS `ISY-CF`.`Vehicle` (
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
-CREATE INDEX `fk_Vehicle_Vehicle_Type_idx` ON `ISY-CF`.`Vehicle` (`Type` ASC) VISIBLE;
+CREATE INDEX `fk_Vehicle_Vehicle_Type_idx` ON `ISY-CF`.`Vehicle` (`Type` ASC);
 
 
 -- -----------------------------------------------------
@@ -89,9 +89,9 @@ CREATE TABLE IF NOT EXISTS `ISY-CF`.`Fuel` (
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
-CREATE INDEX `fk_Fuel_Vehicle1_idx` ON `ISY-CF`.`Fuel` (`Vehicle_ID` ASC) VISIBLE;
+CREATE INDEX `fk_Fuel_Vehicle1_idx` ON `ISY-CF`.`Fuel` (`Vehicle_ID` ASC);
 
-CREATE INDEX `fk_Fuel_Fuel_Type1_idx` ON `ISY-CF`.`Fuel` (`Type` ASC) VISIBLE;
+CREATE INDEX `fk_Fuel_Fuel_Type1_idx` ON `ISY-CF`.`Fuel` (`Type` ASC);
 
 
 -- -----------------------------------------------------
@@ -136,7 +136,7 @@ CREATE TABLE IF NOT EXISTS `ISY-CF`.`Flight` (
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
-CREATE INDEX `fk_Flight_Flight_Type1_idx` ON `ISY-CF`.`Flight` (`Type` ASC) VISIBLE;
+CREATE INDEX `fk_Flight_Flight_Type1_idx` ON `ISY-CF`.`Flight` (`Type` ASC);
 
 
 -- -----------------------------------------------------
@@ -182,11 +182,11 @@ CREATE TABLE IF NOT EXISTS `ISY-CF`.`Trip` (
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
-CREATE INDEX `fk_Trip_Bus1_idx` ON `ISY-CF`.`Trip` (`Bus_Bus_ID` ASC) VISIBLE;
+CREATE INDEX `fk_Trip_Bus1_idx` ON `ISY-CF`.`Trip` (`Bus_Bus_ID` ASC);
 
-CREATE INDEX `fk_Trip_Flight1_idx` ON `ISY-CF`.`Trip` (`Flight_Flight_ID` ASC) VISIBLE;
+CREATE INDEX `fk_Trip_Flight1_idx` ON `ISY-CF`.`Trip` (`Flight_Flight_ID` ASC);
 
-CREATE INDEX `fk_Trip_Trip_Group1_idx` ON `ISY-CF`.`Trip` (`Group` ASC) VISIBLE;
+CREATE INDEX `fk_Trip_Trip_Group1_idx` ON `ISY-CF`.`Trip` (`Group` ASC);
 
 
 -- -----------------------------------------------------
@@ -265,7 +265,7 @@ CREATE TABLE IF NOT EXISTS `ISY-CF`.`AC_Consumables` (
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
-CREATE INDEX `fk_AC_Consumables_AC_coolant1_idx` ON `ISY-CF`.`AC_Consumables` (`AC_Coolant_ID` ASC) VISIBLE;
+CREATE INDEX `fk_AC_Consumables_AC_coolant1_idx` ON `ISY-CF`.`AC_Consumables` (`AC_Coolant_ID` ASC);
 
 
 -- -----------------------------------------------------
@@ -300,7 +300,7 @@ CREATE TABLE IF NOT EXISTS `ISY-CF`.`Waste` (
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
-CREATE INDEX `fk_Waste_Waste_Type1_idx` ON `ISY-CF`.`Waste` (`Type` ASC) VISIBLE;
+CREATE INDEX `fk_Waste_Waste_Type1_idx` ON `ISY-CF`.`Waste` (`Type` ASC);
 
 
 -- -----------------------------------------------------
@@ -348,7 +348,7 @@ CREATE TABLE IF NOT EXISTS `ISY-CF`.`Year_Book` (
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
-CREATE INDEX `fk_Year_Book_Paper1_idx` ON `ISY-CF`.`Year_Book` (`Paper_Paper_ID` ASC) VISIBLE;
+CREATE INDEX `fk_Year_Book_Paper1_idx` ON `ISY-CF`.`Year_Book` (`Paper_Paper_ID` ASC);
 
 
 SET SQL_MODE=@OLD_SQL_MODE;
