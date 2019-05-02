@@ -48,18 +48,37 @@ import javafx.scene.layout.VBox;
 public class FXMLPowerUsageController implements Initializable {
 
     @FXML private VBox Electricity;
-
+    @FXML private TextArea ElectricityDetails;
+    @FXML private Label ElectricityDescription;
+    @FXML private DatePicker ElectricityStartDate;
+    @FXML private DatePicker ElectricityEndDate;
+    @FXML private TextField meterUnits;
+    @FXML private Button btnUpdateElectricity;
 
     @FXML private VBox Generator;
-    @FXML private TextArea generatorDetails;
-    @FXML private Label generatorDescription;
-
-    @FXML private DatePicker startDate;
-    @FXML private DatePicker endDate;
-    @FXML private TextField totalAmount;
+    @FXML private TextArea GeneratorDetails;
+    @FXML private Label GeneratorDescription;
+    @FXML private DatePicker GeneratorStartDate;
+    @FXML private DatePicker GeneratorEndDate;
+    @FXML private ChoiceBox fuelBox;
+    @FXML private TextField fuelAmount;
+    @FXML private Button btnAddGenerator;
+    @FXML private Button btnDeleteGenerator;
+    @FXML private Button btnUpdateGenerator;
 
     @FXML private VBox AC;
+    @FXML private ListView ACList;
+    @FXML private ChoiceBox ACTypeList;
+    @FXML private ChoiceBox RefrigerantList;
+    @FXML private DatePicker ACStartDate;
+    @FXML private DatePicker ACEndDate;
+    @FXML private Button btnAddAC;
+    @FXML private Button btnDeleteAC;
+    @FXML private Button btnUpdateAC;
 
+
+
+    //private PowerUsageDataCollector dc;
 
     /**
      * Initializes the controller class.
