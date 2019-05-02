@@ -47,9 +47,17 @@ import javafx.scene.layout.VBox;
  */
 public class FXMLPowerUsageController implements Initializable {
 
-    @FXML private HBox ContainerBox;
     @FXML private VBox Electricity;
+
+
     @FXML private VBox Generator;
+    @FXML private TextArea generatorDetails;
+    @FXML private Label generatorDescription;
+
+    @FXML private DatePicker startDate;
+    @FXML private DatePicker endDate;
+    @FXML private TextField totalAmount;
+
     @FXML private VBox AC;
 
 
