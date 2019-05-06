@@ -22,13 +22,10 @@
  * THE SOFTWARE.
  */
 
-package securityserver;
-
 import java.net.*; 
 import java.io.*; 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Scanner;
 
 /**
@@ -62,7 +59,7 @@ public class SecurityServer {
                 // start the thread
                 t.start();
             }
-            catch (Exception e){
+            catch (IOException e){
                 if (socket != null)
                     socket.close(); 
                 e.printStackTrace(); 
@@ -73,7 +70,7 @@ public class SecurityServer {
       
     public static void main(String args[]) throws IOException 
     { 
-        SecurityServer server = new SecurityServer(5000); 
+        SecurityServer server = new SecurityServer(5050); 
     } 
 
 } // end of class SecurityServer
@@ -120,39 +117,40 @@ class SecurityHandler extends Thread {
     }
     
     private void authenticate(){
-        out.println("TOKEN");
+        KnownCommands cmd;
+        out.println(KnownCommands.TOKEN);
         String token = in.nextLine();
         System.out.println(token);
         if (tokenMatch(token)){
-            out.println("AUTHENTICATED");
+            out.println(KnownCommands.AUTHENTICATED);
             this.authenticated = true;
         } else {
-            out.println("PASSWORD");
+            out.println(KnownCommands.PASSWORD);
             String password = in.nextLine();
             System.out.println(password);
             if (passwordMatch(password)){
                 token = generateToken(password);
-                out.println("AUTHENTICATED");
+                out.println(KnownCommands.AUTHENTICATED);
                 out.println(token);
                 this.authenticated = true;
             } else {
-                out.println("FAILED");
+                out.println(KnownCommands.AUTHENTICATION_FAILED);
                 authenticateCount++;
             }
         }
     }
 
     private boolean getCommand(){
-        out.println("COMMAND");
-        String command = in.nextLine();
+        out.println(KnownCommands.COMMAND);
+        KnownCommands command = KnownCommands.getCommand(in.nextLine());
         switch (command) {
-            case "EXIT":
+            case EXIT:
                 return true;
             // INSERT data onto the table
-            case "INSERT":
+            case INSERT:
                 break;
             // UPDATE data already on the table
-            case "UPDATE":
+            case UPDATE:
                 break;
             default:
                 break;
@@ -167,7 +165,7 @@ class SecurityHandler extends Thread {
         {
             if (!authenticated){
                 if (authenticateCount>3){
-                    out.println("EXIT");
+                    out.println(KnownCommands.EXIT);
                     break;
                 }
                 authenticate();
