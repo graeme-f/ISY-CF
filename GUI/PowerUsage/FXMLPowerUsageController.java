@@ -47,6 +47,8 @@ import javafx.scene.layout.VBox;
  */
 public class FXMLPowerUsageController implements Initializable {
 
+    @FXML private HBox ContainerBox;
+
     @FXML private VBox Electricity;
     @FXML private TextArea ElectricityDetails;
     @FXML private Label ElectricityDescription;
@@ -75,8 +77,6 @@ public class FXMLPowerUsageController implements Initializable {
     @FXML private Button btnAddAC;
     @FXML private Button btnDeleteAC;
     @FXML private Button btnUpdateAC;
-
-
 
     //private PowerUsageDataCollector dc;
 
