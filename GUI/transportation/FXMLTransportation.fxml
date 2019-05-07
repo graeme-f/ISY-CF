@@ -1,87 +1,83 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.Accordion?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
-<?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TitledPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<HBox fx:id="ContainerBox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" style="-fx-border-width: 2; -fx-border-color: black;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="transportation.FXMLTransportationController">
+<HBox fx:id="ContainerBox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="475.0" prefWidth="568.0" style="-fx-border-width: 2; -fx-border-color: black;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="transportation.FXMLTransportationController">
    <children>
-      <VBox fx:id="VehicleBox" prefHeight="200.0" prefWidth="300.0" style="-fx-border-width: 1; -fx-border-color: black;">
+      <VBox fx:id="VehicleBox" prefHeight="471.0" prefWidth="256.0" style="-fx-border-width: 1; -fx-border-color: black;">
          <children>
-            <Label alignment="CENTER" prefWidth="300.0" text="Vehicle" textAlignment="CENTER">
-               <font>
-                  <Font name="Arial Black" size="14.0" />
-               </font>
-            </Label>
-            <ListView fx:id="vehicleLists" prefWidth="210.0" />
-            <HBox minHeight="-Infinity" prefHeight="30.0" prefWidth="210.0" VBox.vgrow="ALWAYS">
-               <children>
-                  <Button fx:id="btnAddVehicle" minWidth="100.0" mnemonicParsing="false" onAction="#AddVehicle" prefWidth="100.0" text="Add Vehicle" />
-                  <Separator prefWidth="200.0" />
-                  <Button fx:id="btnDeleteVehicle" alignment="CENTER_RIGHT" minWidth="100.0" mnemonicParsing="false" prefWidth="100.0" text="Delete Vehicle" />
-               </children>
-            </HBox>
-            <GridPane fx:id="gpVehicleForm" minHeight="-Infinity" prefHeight="208.0" prefWidth="210.0">
-              <columnConstraints>
-                <ColumnConstraints hgrow="SOMETIMES" maxWidth="143.0" minWidth="10.0" prefWidth="107.0" />
-                <ColumnConstraints hgrow="SOMETIMES" maxWidth="189.0" minWidth="10.0" prefWidth="189.0" />
-              </columnConstraints>
-              <rowConstraints>
-                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-              </rowConstraints>
-               <children>
-                  <Label text="Start Date" GridPane.rowIndex="1" />
-                  <Label text="End Date" GridPane.rowIndex="2" />
-                  <Label text="Fuel Type" GridPane.rowIndex="3" />
-                  <Label text="Fuel Amount (litres)" GridPane.rowIndex="4" />
-                  <TextField fx:id="fuelTotal" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-                  <Button fx:id="btnUpdateFuel" alignment="TOP_RIGHT" contentDisplay="RIGHT" mnemonicParsing="false" text="Update Fuel" GridPane.columnIndex="1" GridPane.rowIndex="6" />
-                  <DatePicker fx:id="startDate" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                  <DatePicker fx:id="endDate" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                  <ChoiceBox fx:id="fuelList" prefHeight="25.0" prefWidth="202.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-                  <Label fx:id="VehicleDescription" text="Name of Vehicle" GridPane.columnIndex="0" GridPane.columnSpan="2">
-                     <font>
-                        <Font name="System Bold" size="12.0" />
-                     </font>
-                  </Label>
-               </children>
-            </GridPane>
+            <Accordion>
+              <panes>
+                <TitledPane animated="false" prefHeight="538.0" prefWidth="254.0" text="Transport">
+                     <content>
+                        <VBox prefHeight="200.0" prefWidth="100.0">
+                           <children>
+                              <ListView prefHeight="200.0" prefWidth="200.0" />
+                              <HBox prefHeight="37.0" prefWidth="232.0">
+                                 <children>
+                                    <Button mnemonicParsing="false" onAction="#AddVehicle" text="Add Vehicle" />
+                                    <Pane prefHeight="37.0" prefWidth="60.0" />
+                                    <Button mnemonicParsing="false" text="Delete Vehicle" />
+                                 </children>
+                              </HBox>
+                              <GridPane>
+                                <columnConstraints>
+                                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                </columnConstraints>
+                                <rowConstraints>
+                                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                </rowConstraints>
+                                 <children>
+                                    <Label text="Start Date" />
+                                    <DatePicker fx:id="endDate" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                    <DatePicker fx:id="startDate" GridPane.columnIndex="1" />
+                                    <Label text="End Date" GridPane.rowIndex="1" />
+                                    <Label text="Fuel Type" GridPane.rowIndex="2" />
+                                    <ComboBox fx:id="fuelList" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                    <Label text="Fuel Total" GridPane.rowIndex="3" />
+                                    <TextField fx:id="fuelTotal" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                                 </children>
+                              </GridPane>
+                           </children>
+                        </VBox>
+                     </content>
+                  </TitledPane>
+                <TitledPane animated="false" text="Trips">
+                     <content>
+                        <VBox prefHeight="200.0" prefWidth="100.0" />
+                     </content>
+                  </TitledPane>
+              </panes>
+            </Accordion>
          </children>
       </VBox>
-      <VBox fx:id="DetailsBox" prefHeight="200.0" prefWidth="100.0">
+      <VBox fx:id="TripBox" prefHeight="152.0" prefWidth="309.0" style="-fx-border-color: black; -fx-border-width: 1;">
          <children>
-            <Label text="Details">
+            <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="25.0" prefWidth="307.0" text="Details">
                <font>
-                  <Font name="Arial Black" size="14.0" />
+                  <Font name="System Bold" size="16.0" />
                </font>
             </Label>
-            <TextArea fx:id="details" minWidth="-Infinity" prefHeight="407.0" prefWidth="300.0" />
-         </children>
-      </VBox>
-      <VBox fx:id="TripBox" prefHeight="200.0" prefWidth="300.0" style="-fx-border-color: black; -fx-border-width: 1;">
-         <children>
-            <Label alignment="CENTER" contentDisplay="CENTER" prefWidth="300.0" text="Trips">
-               <font>
-                  <Font name="Arial Black" size="14.0" />
-               </font>
-            </Label>
+            <TextArea prefHeight="444.0" prefWidth="307.0" text="Text goes here." />
          </children>
       </VBox>
    </children>
