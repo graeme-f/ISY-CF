@@ -21,7 +21,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package securityclient;
 
 import java.net.*; 
 import java.io.*; 
@@ -68,17 +67,10 @@ public class SecurityClient {
                 case "TOKEN":
                     System.out.println(response); 
                     giveToken();
-                    // get Token
                     break;
                 case "PASSWORD":
-                    System.out.println(response); 
-                    output.println("This is my password");
-                    response = input.nextLine();
                     System.out.println(response);
-                    if (response.equals("AUTHENTICATED")){
-                        response = input.nextLine();
-                        System.out.println(response);
-                    }
+                    givePassword();
                     break;
                 case "AUTHENTICATED":
                     System.out.println(response); 
@@ -90,17 +82,7 @@ public class SecurityClient {
         } while (!response.equals("EXIT"));
         System.out.println("Last response was: " + response); 
         
-//        // string to read message from input 
-//        do
-//        {
-//            System.out.print("Enter message: ");
-//            message =  userEntry.nextLine();
-//            output.println(message);        //Step 3.
-//            response = input.nextLine();    //Step 3.
-//            System.out.println("\nSERVER> " + response);
-//        }while (!message.equals("***CLOSE***")); 
-  
-        // close the connection 
+
         try
         { 
             input.close(); 
@@ -121,54 +103,25 @@ public class SecurityClient {
         } else {
             output.println("NO TOKEN AVAILABLE");
         } // end haveToken
-        // Expect the server to send the IP address
-        String IPAddr = input.nextLine();
-        output.println(MacAddress(IPAddr));
+              
     } // end of giveToken
     
-    String MacAddress(String IPAddr) {
-        String macAddr = "";
-        try {
-            // InetAddress address = InetAddress.getLocalHost();
-            System.out.println(IPAddr);
-            InetAddress address = InetAddress.getByName(IPAddr);
-
-            /*
-             * Get NetworkInterface for the current host and then read
-             * the hardware address.
-             */
-            NetworkInterface ni =  NetworkInterface.getByInetAddress(address);
-            if (ni != null) {
-                byte[] mac = ni.getHardwareAddress();
-                if (mac != null) {
-                    /*
-                     * Extract each array of mac address and convert it
-                     * to hexadecimal with the following format
-                     * 08-00-27-DC-4A-9E.
-                     */
-                    for (int i = 0; i < mac.length; i++) {
-                        macAddr += String.format("%02X%s",
-                            mac[i], (i < mac.length - 1) ? "-" : "");
-                    }
-                } else {
-                    System.out.println("Address doesn't exist or is not " +
-                        "accessible.");
-                }
-            } else {
-                System.out.println("Network Interface for the specified " +
-                    "address is not found.");
-            }
-        } catch (UnknownHostException | SocketException e) {
-            e.printStackTrace();
+    void givePassword(){
+        String response; 
+        output.println("This is my password");
+        response = input.nextLine();
+        System.out.println(response);
+        if (response.equals("AUTHENTICATED")){
+            response = input.nextLine();
+            System.out.println(response);
         }
-        return macAddr;
-    }
+    } //end of give password
 
     
     public static void main(String args[]) 
     { 
         // TODO IP address & port number needs to be stored in a config file
-        SecurityClient client = new SecurityClient("172.168.101.213", 5000); 
+        SecurityClient client = new SecurityClient("172.168.101.213", 5050); 
     } 
     
 }
