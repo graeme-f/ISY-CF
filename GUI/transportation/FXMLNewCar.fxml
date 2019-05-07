@@ -4,11 +4,11 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.RowConstraints?>
 
 <GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="150.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="transportation.FXMLNewCarController">
@@ -34,9 +34,9 @@
       <ComboBox fx:id="fuelTypes" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
       <HBox prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="4">
          <children>
-            <Button fx:id="btnCancel" mnemonicParsing="false" onAction="#closeWindow" text="Cancel" />
-            <Separator maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="335.0" />
-            <Button fx:id="btnCreate" mnemonicParsing="false" onAction="#saveAndCloseWindow" text="Create" />
+            <Button fx:id="btnCancel" mnemonicParsing="false" onAction="#closeWindow" prefHeight="34.0" prefWidth="153.0" text="Cancel" />
+            <Pane prefHeight="30.0" prefWidth="155.0" />
+            <Button fx:id="btnCreate" mnemonicParsing="false" onAction="#saveAndCloseWindow" prefHeight="36.0" prefWidth="132.0" text="Create" />
          </children>
       </HBox>
    </children>
