@@ -184,10 +184,10 @@ class SecurityHandler extends Thread {
         }
         
         while (scanner.hasNext()){
-            String line = scanner.next();
-            String[] parts = line.split("\t");
-            if (parts[0].equals(IPAddr))
-                return parts[1];
+            String IP = scanner.next();
+            String token = scanner.next();
+            if (IP.equals(IPAddr))
+                return token;
         }
         return null;
     } // end of method readToken()
