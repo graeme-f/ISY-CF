@@ -1,0 +1,4 @@
+'Type 1' , 'Mitsubishi' , '26'
+'Type 2' , 'Panasonic' , '88'
+'Type 3' , 'York (Multi-system)' , '90'
+'Type 4' , 'York (A/C Unit), '26'
