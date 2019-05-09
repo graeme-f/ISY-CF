@@ -23,16 +23,16 @@
          <children>
             <Accordion>
               <panes>
-                <TitledPane animated="false" prefHeight="538.0" prefWidth="254.0" text="Transport">
+                <TitledPane fx:id="transportPane" animated="false" prefHeight="538.0" prefWidth="254.0" text="Transport">
                      <content>
                         <VBox prefHeight="200.0" prefWidth="100.0">
                            <children>
                               <ListView fx:id="vehicleLists" prefHeight="200.0" prefWidth="200.0" />
                               <HBox prefHeight="37.0" prefWidth="232.0">
                                  <children>
-                                    <Button mnemonicParsing="false" onAction="#AddVehicle" text="Add Vehicle" />
+                                    <Button fx:id="btnAddVehicle" mnemonicParsing="false" onAction="#AddVehicle" text="Add Vehicle" />
                                     <Pane prefHeight="37.0" prefWidth="60.0" />
-                                    <Button mnemonicParsing="false" text="Delete Vehicle" />
+                                    <Button fx:id="btnDeleteVehicle" mnemonicParsing="false" onAction="#DeleteVehicle" text="Delete Vehicle" />
                                  </children>
                               </HBox>
                               <Label fx:id="VehicleDescription" prefHeight="17.0" prefWidth="232.0" text="Please select a car" />
@@ -58,7 +58,7 @@
                                     <Label text="Fuel Total" GridPane.rowIndex="4" />
                                     <TextField fx:id="fuelTotal" GridPane.columnIndex="1" GridPane.rowIndex="4" />
                                     <Label text="Start Date" GridPane.rowIndex="1" />
-                                    <Button fx:id="btnUpdateFuel" mnemonicParsing="false" text="Update Fuel" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                                    <Button fx:id="btnUpdateFuel" mnemonicParsing="false" onAction="#UpdateFuel" prefHeight="25.0" prefWidth="128.0" text="Update Fuel" GridPane.columnIndex="1" GridPane.rowIndex="5" />
                                  </children>
                               </GridPane>
                            </children>
