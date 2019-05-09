@@ -44,6 +44,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TitledPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -60,6 +61,7 @@ public class FXMLTransportationController implements Initializable {
     @FXML private VBox DetailsBox;
     @FXML private VBox TripBox;
     @FXML private TextArea details;
+    @FXML private TitledPane transportPane;
     
     @FXML private Label VehicleDescription;
     
@@ -75,9 +77,16 @@ public class FXMLTransportationController implements Initializable {
     @FXML private Button btnUpdateFuel;
     
     @FXML private GridPane gpVehicleForm;
+    private String vehicleName;
     
     private TransportationDataCollector dc;
+    @FXML private void UpdateFuel(ActionEvent event) {
+        
+    }
     
+    @FXML private void DeleteVehicle(ActionEvent event) {
+        //dc.deleteVehicle(vehicleName);
+    }
     @FXML private void AddVehicle(ActionEvent event) {
         System.out.println("Add Vehicle");
         event.consume();
@@ -89,7 +98,7 @@ public class FXMLTransportationController implements Initializable {
         } catch (IOException ex) {
             System.out.println("Fail");
             System.out.println(ex);
-            // TODO: handle error
+            //TODO: handle error
             return;
         }
 
@@ -113,12 +122,10 @@ public class FXMLTransportationController implements Initializable {
     } // end of method setVehicleDetails()
     
     private void vehicleChanged(ObservableValue<? extends String> observable,String oldValue,String newValue){
+        vehicleName = newValue;
         gpVehicleForm.setVisible(true);
         setVehicleDetails(newValue);
         setVehicleSummary(newValue);
-        // Hide the trip box but show the details box
-        TripBox.setVisible(false);
-        DetailsBox.setVisible(true);
 
         fuelTotal.requestFocus(); // Doesn't seem to work :(
     } // end of method vehicleChanged
@@ -133,15 +140,12 @@ public class FXMLTransportationController implements Initializable {
         // The following code will bind the managed property to the visibility of the container
         // If the container's visibility is turned off it will not be managed by the window
         // Which means that is will not take up any space in the window.
-        VehicleBox.managedProperty().bind(VehicleBox.visibleProperty());
-        DetailsBox.managedProperty().bind(DetailsBox.visibleProperty());
-        TripBox.managedProperty().bind(TripBox.visibleProperty());
-        // Hide the DetailsBox
-        DetailsBox.setVisible(false);
         ArrayList<String> cars = dc.getCarList();
         ObservableList<String> carList = FXCollections.<String>observableArrayList(cars);
         vehicleLists.getItems().addAll(carList);
         gpVehicleForm.setVisible(false);
+        btnUpdateFuel.setDisable(true);
+        //btnDeleteVehicle.setDisable(true);
         
         // Update and show the details when a vehicle is selected
         vehicleLists.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>()
@@ -156,8 +160,6 @@ public class FXMLTransportationController implements Initializable {
         ArrayList<String> fuels = dc.getFuelList();
         ObservableList<String> fuelType = FXCollections.<String>observableArrayList(fuels);
         fuelList.setItems(fuelType);
-        
-        details.setEditable(false);
 
     } // end of method initialiseVehicles()
     
