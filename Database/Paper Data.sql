@@ -1,7 +1,7 @@
 /* 
  * The MIT License
  *
- * Copyright 2019 SaiHtoo.
+ * Copyright 2019 Valylie.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,19 +22,9 @@
  * THE SOFTWARE.
  */
 /**
- * Author:  SaiHtoo
+ * Author:  Valylie
  * Created: May 2, 2019
  */
-
-INSERT into Electricity (Start_Date, End_Date, Meter_Units)
-VALUES('2018-01-01' , '2018-01-31' , 96882),
-('2018-02-01' , '2018-02-28' , 109164),
-('2018-03-01' , '2018-03-31' , 129800),
-('2018-05-01' , '2018-05-31' , 154352),
-('2018-06-01' , '2018-06-30' , 99968),	
-('2018-07-01' , '2018-07-31' , 75504),
-('2018-08-01' , '2018-08-31' , 122848),
-('2018-09-01' , '2018-09-30' , 154176),
-('2018-10-01' , '2018-10-31' , 46510),
-('2018-11-01' , '2018-11-30' , 138180),
-('2018-12-01' , '2018-12-31' , 109920);
+INSERT into Paper(Paper_ID, Start_Date, End_Date, Amount) 
+VALUES (1, "2018-01-01", "2018-01-31", 759), 
+(2, "2018-02-01", "2018-02-28", 750);

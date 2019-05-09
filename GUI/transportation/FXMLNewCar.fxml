@@ -34,9 +34,9 @@
       <ComboBox fx:id="fuelTypes" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
       <HBox prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="4">
          <children>
-            <Button fx:id="btnCancel" mnemonicParsing="false" onAction="#closeWindow" prefHeight="25.0" prefWidth="53.0" text="Cancel" />
-            <Pane prefHeight="200.0" prefWidth="200.0" />
-            <Button fx:id="btnCreate" mnemonicParsing="false" onAction="#saveAndCloseWindow" text="Create" />
+            <Button fx:id="btnCancel" mnemonicParsing="false" onAction="#closeWindow" prefHeight="34.0" prefWidth="153.0" text="Cancel" />
+            <Pane prefHeight="30.0" prefWidth="155.0" />
+            <Button fx:id="btnCreate" mnemonicParsing="false" onAction="#saveAndCloseWindow" prefHeight="36.0" prefWidth="132.0" text="Create" />
          </children>
       </HBox>
    </children>
