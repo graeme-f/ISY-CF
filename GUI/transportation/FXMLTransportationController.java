@@ -28,6 +28,7 @@ import java.net.URL;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
+import java.util.function.UnaryOperator;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -44,11 +45,14 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextFormatter;
+import javafx.scene.control.TextFormatter.Change;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.util.converter.IntegerStringConverter;
 
 /**
  *
@@ -160,7 +164,17 @@ public class FXMLTransportationController implements Initializable {
         ArrayList<String> fuels = dc.getFuelList();
         ObservableList<String> fuelType = FXCollections.<String>observableArrayList(fuels);
         fuelList.setItems(fuelType);
+        fuelTotal.setTextFormatter(new TextFormatter<Integer>(new IntegerStringConverter(), 0, integerFilter));
 
     } // end of method initialiseVehicles()
     
+    UnaryOperator<Change> integerFilter = change -> {
+    String newText = change.getControlNewText();
+    if (newText.matches("-?([1-9][0-9]*)?")) { 
+        return change;
+    }
+    return null;
+};
+
+
 } // end of class FXMLTransportationController
