@@ -25,7 +25,11 @@ package Consumables;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.DatePicker;
+import javafx.scene.control.TextField;
+// import Consumables.Consumables.DataCollector;
 
 /**
  * FXML Controller class
@@ -33,13 +37,20 @@ import javafx.fxml.Initializable;
  * @author gfoster
  */
 public class FXMLConsumablesController implements Initializable {
-
+    
+    @FXML private DatePicker startDate;
+    @FXML private DatePicker endDate;
+    @FXML private TextField A4;
+    @FXML private TextField A3;
+    
+// private ConsumablesDataCollector dc;
+    
     /**
      * Initializes the controller class.
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // TODO
+        // dc = ConsumablesDataCollector.getInstance();
     }    
     
 }
