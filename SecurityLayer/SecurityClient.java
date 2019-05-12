@@ -23,7 +23,8 @@
  */
 
 import java.net.*; 
-import java.io.*; 
+import java.io.*;
+import java.util.Properties;
 import java.util.Scanner;
 /**
  *
@@ -42,7 +43,7 @@ public class SecurityClient {
         try
         { 
             socket = new Socket(address, port); 
-            System.out.println("Connected"); 
+            System.out.println("CLIENT:>Connected"); 
   
             // takes input from terminal
             userEntry = new Scanner(System.in);
@@ -65,22 +66,22 @@ public class SecurityClient {
             response = input.nextLine();
             switch (response) {
                 case "TOKEN":
-                    System.out.println(response); 
+                    System.out.println("CLIENT:>" + response); 
                     giveToken();
                     break;
                 case "PASSWORD":
-                    System.out.println(response);
+                    System.out.println("CLIENT:>" + response);
                     givePassword();
                     break;
                 case "AUTHENTICATED":
-                    System.out.println(response); 
+                    System.out.println("CLIENT:>" + response); 
                     break;
                 default:
-                    System.out.println(response); 
+                    System.out.println("CLIENT:>" + response); 
                     break;
             }
         } while (!response.equals("EXIT"));
-        System.out.println("Last response was: " + response); 
+        System.out.println("CLIENT:>Last response was: " + response); 
         
 
         try
@@ -110,10 +111,10 @@ public class SecurityClient {
         String response; 
         output.println("This is my password");
         response = input.nextLine();
-        System.out.println(response);
+        System.out.println("CLIENT:>" + response);
         if (response.equals("AUTHENTICATED")){
             response = input.nextLine();
-            System.out.println(response);
+            System.out.println("CLIENT:>" + response);
         }
     } //end of give password
 
@@ -121,7 +122,18 @@ public class SecurityClient {
     public static void main(String args[]) 
     { 
         // TODO IP address & port number needs to be stored in a config file
-        SecurityClient client = new SecurityClient("172.168.101.213", 5050); 
+        try(FileInputStream f = new FileInputStream("db.properties")) {
+            // load the properties file
+            Properties prop = new Properties();
+            prop.load(f);
+
+            // assign db parameters
+            int port     = Integer.parseInt(prop.getProperty("port"));
+            String IPAddr  = prop.getProperty("IP");
+            SecurityClient client = new SecurityClient(IPAddr, port); 
+        } catch(IOException e) {
+           System.out.println(e.getMessage());
+        }
     } 
     
 }
