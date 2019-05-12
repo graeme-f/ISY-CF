@@ -1,4 +1,8 @@
 /nbproject/private/
 /nbproject/configs/
 /nbproject/
-db.properties
+/db.properties
+/bin/
+/manifest.mf
+/build.xml
+/ISY-CF/
