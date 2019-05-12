@@ -158,7 +158,7 @@ class SecurityHandler extends Thread {
     private boolean tokenMatch(String token){
         String hashToken = getMD5Hash(salt(token, this.salt));
         // Get token from file
-        String fileToken = readToken(this.remoteIP.toString());
+        String fileToken = tokenRead(this.remoteIP.toString());
 
         System.out.println(remoteIP);
         System.out.println(hashToken);
@@ -171,7 +171,7 @@ class SecurityHandler extends Thread {
         return false;
     } // end of method tokenMatch()
     
-    private String readToken(String IPAddr){
+    private String tokenRead(String IPAddr){
         // Read in the data from the text file
         File data = new File("data/knownTokens.txt");
         Scanner scanner;
@@ -189,6 +189,7 @@ class SecurityHandler extends Thread {
             if (IP.equals(IPAddr))
                 return token;
         }
+        scanner.close();
         return null;
     } // end of method readToken()
     
@@ -209,6 +210,7 @@ class SecurityHandler extends Thread {
         String passwordData = "";
         while (scanner.hasNext()){
             String line = scanner.next();
+            System.out.println(line + " - " + password);
             if (line.equals(password)){
                 match = true;
             } else {
@@ -223,6 +225,7 @@ class SecurityHandler extends Thread {
             try {
                 fw = new FileWriter(fileName);
                 fw.write(passwordData);
+                fw.close();
             } catch (IOException ex) {
                 String workingDir = "Current working directory: " + System.getProperty("user.dir");
                 Logger.getLogger(SecurityHandler.class.getName()).log(Level.SEVERE, workingDir, ex);
@@ -232,14 +235,27 @@ class SecurityHandler extends Thread {
         return match;
     } // end of method passwordMatch()
     
-    private String generateToken(String password){
+    private String tokenGenerate(String password){
         String hashToken = getMD5Hash(salt(password, this.remoteIP.toString()));
-        writeToken(hashToken, this.remoteIP.toString());
+        tokenWrite(hashToken, this.remoteIP.toString());
         return hashToken;
     } // end of method generateToken()
     
-    private void writeToken(String token, String IPAddr){
-        
+    private void tokenWrite(String token, String IPAddr){
+    	String hashToken = getMD5Hash(salt(token, this.salt));
+
+    	System.out.println(IPAddr + ": " + token + " - " + hashToken);
+    	String fileName = "data/knownTokens.txt";
+        // write the new token to the end of the knownTokens file
+        FileWriter fw;
+        try {
+            fw = new FileWriter(fileName,true);
+            fw.write(IPAddr + "\t"+ hashToken + "\n");
+            fw.close();
+        } catch (IOException ex) {
+            String workingDir = "Current working directory: " + System.getProperty("user.dir");
+            Logger.getLogger(SecurityHandler.class.getName()).log(Level.SEVERE, workingDir, ex);
+        }
     } // end of method writeToken()
     
     private void authenticate(){
@@ -254,7 +270,7 @@ class SecurityHandler extends Thread {
             String password = in.nextLine();
             System.out.println(password);
             if (passwordMatch(password)){
-                token = generateToken(password);
+                token = tokenGenerate(password);
                 out.println(KnownCommands.AUTHENTICATED);
                 out.println(token);
                 this.authenticated = true;
