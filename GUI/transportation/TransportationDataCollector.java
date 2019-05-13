@@ -152,6 +152,14 @@ public class TransportationDataCollector {
         return "Security controller not yet built, database not updated";
     } // end of method createNewVehicle
     
+    public String deleteVehicle(String carName){
+        return "Not yet implemented";
+    }
+    
+    public String updateFuel(String carName){
+        return "Not yet implemented";
+    }
+    
     private void connect() {
         try(FileInputStream f = new FileInputStream("db.properties")) {
             // load the properties file
