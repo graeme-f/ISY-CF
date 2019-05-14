@@ -20,7 +20,7 @@ public class SummaryReportDataCollector {
         return conn;
     } // end of method connect
 
-    public static void close(Connection conn){
+    private static void close(Connection conn){
         try {
             if (conn != null) {
                 conn.close();
@@ -31,7 +31,6 @@ public class SummaryReportDataCollector {
     } // end of method close
 
     public static double getElectricityCF(Connection conn) {
-        double total = 0;
         double kilowattHours = 0;
         double generatorCF = 0;
         double[] acUsage = new double[4]; //AC Types: 0:yorkMulti, 1:Mitsubishi, 2:Panasonic, 3:YorkUni
@@ -75,7 +74,7 @@ public class SummaryReportDataCollector {
         //equations to calculate carbon footprint in kg co2e
         kilowattHours =  (kilowattHours * 0.075716);
         generatorCF = (generatorCF *2.72);
-        total = kilowattHours+generatorCF+acUsage[0]+acUsage[1]+acUsage[2]+acUsage[3];
+        double total = kilowattHours + generatorCF + acUsage[0] + acUsage[1] + acUsage[2] + acUsage[3];
         return total;
     }
 }
