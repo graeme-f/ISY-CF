@@ -31,3 +31,9 @@ Values (1 , 'Mitsubishi' , 26),
     (2 , 'Panasonic' , 88),
     (3 , 'York (Multi-system)' , 90),
     (4 , 'York (A/C Unit)' , 26);
+
+INSERT INTO AC_CO2 (AC_Type_ID, Start_Date, Multiplier)
+Values (1 , '2018-01-01' , 91),
+    (2 , '2018-01-01' , 58),
+    (3 , '2018-01-01' , 174),
+    (4 , '2018-01-01' , 102);
