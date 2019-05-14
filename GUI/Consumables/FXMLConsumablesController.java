@@ -25,11 +25,13 @@ package Consumables;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.function.UnaryOperator;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextField;
-// import Consumables.Consumables.DataCollector;
+import javafx.scene.control.TextFormatter;
 
 /**
  * FXML Controller class
@@ -43,14 +45,27 @@ public class FXMLConsumablesController implements Initializable {
     @FXML private TextField A4;
     @FXML private TextField A3;
     
-// private ConsumablesDataCollector dc;
+    private ConsumablesDataCollector dc;
+    
+    @FXML private void UpdateFuel(ActionEvent event) {
+        
+    }
     
     /**
      * Initializes the controller class.
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // dc = ConsumablesDataCollector.getInstance();
-    }    
+        dc = ConsumablesDataCollector.getInstance();
+    }
     
+    
+    
+    UnaryOperator<TextFormatter.Change> integerFilter = change -> {
+        String newText = change.getControlNewText();
+        if (newText.matches("-?([1-9][0-9]*)?")) {
+            return change;
+        }
+        return null;
+    }; // end of intergerFilter
 }
