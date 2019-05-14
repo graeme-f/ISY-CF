@@ -14,19 +14,18 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-
-<HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Consumables.FXMLConsumablesController">
    <children>
       <Accordion prefHeight="400.0" prefWidth="295.0">
         <panes>
-          <TitledPane animated="false" text="Waste">
+          <TitledPane animated="false" style="-fx-background-color: #5D205D208B;" text="Waste">
             <content>
-              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" style="-fx-background-color: #00c384;" />
             </content>
           </TitledPane>
-          <TitledPane animated="false" text="Paper">
+          <TitledPane animated="false" style="-fx-background-color: #00FF7F#00FF7F;" text="Paper">
             <content>
-              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" style="-fx-background-color: #00a19c;">
                      <children>
                         <Button layoutX="122.0" layoutY="160.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="67.0" text="Add" />
                         <GridPane layoutX="47.0" layoutY="14.0">
@@ -57,12 +56,12 @@
           </TitledPane>
           <TitledPane animated="false" text="Yearbook ">
             <content>
-              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" style="-fx-background-color: #00526b;" />
             </content>
           </TitledPane>
-            <TitledPane animated="false" text="Meat ">
+            <TitledPane animated="false" style="-fx-background-color: #110037;" text="Meat ">
               <content>
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" style="-fx-background-color: #110037;" />
               </content>
             </TitledPane>
         </panes>
@@ -71,7 +70,7 @@
       <VBox prefHeight="400.0" prefWidth="304.0">
          <children>
             <Label prefHeight="28.0" prefWidth="304.0" text="Details" translateX="5.0" />
-            <TextArea prefHeight="372.0" prefWidth="304.0" text="&#10;&#10;" />
+            <TextArea prefHeight="372.0" prefWidth="304.0" style="-fx-background-color: #89e368;" text="&#10;&#10;" />
          </children>
       </VBox>
    </children>
