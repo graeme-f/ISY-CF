@@ -22,6 +22,8 @@
  * THE SOFTWARE.
  */
 
+package security;
+
 /**
  *
  * @author gfoster

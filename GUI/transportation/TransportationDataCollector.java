@@ -23,15 +23,10 @@
  */
 package transportation;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Properties;
 import java.util.Set;
 import utility.DataCollector;
 
@@ -149,8 +144,23 @@ public class TransportationDataCollector extends DataCollector {
         return "Not yet implemented";
     }
     
-    public String updateFuel(String carName){
-        return "Not yet implemented";
+    public String updateFuel(String carName, 
+                             String startDate,
+                             String endDate,
+                             String fuelType,
+                             String fuelAmount){
+        String fuelID = "1";
+        String vehicleID = "1";
+        String sql = "INSERT INTO "
+                + "Fuel (Start_Date, End_Date, Type, Amount, Vehicle_ID) "
+                + "VALUES("
+                + startDate + ", "
+                + endDate + ", "
+                + fuelID + ", "
+                + fuelAmount + ", "
+                + vehicleID + ", "
+                + ")";
+        return insertDatabase(sql);
     }
     
     

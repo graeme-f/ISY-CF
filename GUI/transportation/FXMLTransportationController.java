@@ -85,7 +85,15 @@ public class FXMLTransportationController implements Initializable {
     
     private TransportationDataCollector dc;
     @FXML private void UpdateFuel(ActionEvent event) {
-        
+        String start  = startDate.getValue().toString();
+        String end    = endDate.getValue().toString();
+        String fuel   = fuelList.getSelectionModel().getSelectedItem().toString();
+        String amount = fuelTotal.getText();
+        dc.updateFuel(vehicleName,
+                    start,
+                    end,
+                    fuel,
+                    amount);
     }
     
     @FXML private void DeleteVehicle(ActionEvent event) {
@@ -123,6 +131,7 @@ public class FXMLTransportationController implements Initializable {
         startDate.setValue(dc.getStartDate(vehicleName));
         endDate.setValue(LocalDate.now());
         fuelTotal.clear();
+        btnUpdateFuel.setDisable(false);
     } // end of method setVehicleDetails()
     
     private void vehicleChanged(ObservableValue<? extends String> observable,String oldValue,String newValue){
