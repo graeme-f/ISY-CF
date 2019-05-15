@@ -1,14 +1,3 @@
-package utility;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.Calendar;
-import java.util.Properties;
-
 /*
  * The MIT License
  *
@@ -33,6 +22,20 @@ import java.util.Properties;
  * THE SOFTWARE.
  */
 
+package utility;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Calendar;
+import java.util.Properties;
+
+import security.SecurityClient;
+
 /**
  *
  * @author gfoster
@@ -41,6 +44,7 @@ public abstract class DataCollector {
     
     private Connection conn = null;
     private Statement st = null;
+    private SecurityClient sc = null;
 
     private int schooYear; // the start of the school year
 
@@ -53,10 +57,7 @@ public abstract class DataCollector {
             schooYear --;
         }
     } // end of constructor DataCollector
-    public void finalize() throws Throwable{
-        close();
-        super.finalize();
-    }
+    
     protected String getStartDate(){
         return "\"" + schooYear + "-07-01%\"";
     } // end of method getStartDate()
@@ -69,6 +70,22 @@ public abstract class DataCollector {
         return "BETWEEN " + getStartDate() + " AND " + getEndDate();
     } // end of method getSchoolYear()
     
+    private void createSecurityConnection(){
+        try(FileInputStream f = new FileInputStream("db.properties")) {
+            // load the properties file
+            Properties prop = new Properties();
+            prop.load(f);
+
+            // assign db parameters
+            int port     = Integer.parseInt(prop.getProperty("port"));
+            String IPAddr  = prop.getProperty("IP");
+            sc = new SecurityClient(IPAddr, port);
+            sc.start();
+        } catch(IOException e) {
+           System.out.println(e.getMessage());
+        }
+    } // end of method createSecurityConnection()
+
     private void connect() {
         Properties prop;
         try{
@@ -112,13 +129,13 @@ public abstract class DataCollector {
         }
         return rec;
     } // end of method doQuery
-    public void close(){
-        try {
-            if (conn != null) {
-                conn.close();
-            }
-        } catch (SQLException ex) {
-            System.out.println(ex.getMessage());
-        }       
-    } // end of method close
+    
+    protected String insertDatabase(String sql){
+        createSecurityConnection();
+        do { } while (!sc.isAuthenticated());
+        String message = sc.insertDatabase(sql);
+        sc.exit();
+        return message;
+    } // end of method updateDatabase()
+    
 } // end of class DataCollector

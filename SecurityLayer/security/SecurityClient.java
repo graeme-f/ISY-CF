@@ -22,6 +22,8 @@
  * THE SOFTWARE.
  */
 
+package security;
+
 import java.net.*; 
 import java.io.*;
 import java.util.Properties;
@@ -30,15 +32,24 @@ import java.util.Scanner;
  *
  * @author gfoster
  */
-public class SecurityClient {
+public class SecurityClient extends Thread {
     // initialize socket and input output streams 
     private Socket       socket    = null; 
     private Scanner      input     = null; 
     private PrintWriter  output    = null;
     private Scanner      userEntry = null;
+    
+    private final String address;
+    private final int    port;
+    private boolean      authenticated = false;
 // constructor to put ip address and port 
     public SecurityClient(String address, int port) 
-    { 
+    {
+        this.address = address;
+        this.port = port;
+    } // end of constructor SecurityClient
+    
+    public void run(){
         // establish a connection 
         try
         { 
@@ -74,28 +85,31 @@ public class SecurityClient {
                     givePassword();
                     break;
                 case "AUTHENTICATED":
+                    authenticated = true;
                     System.out.println("CLIENT:>" + response); 
                     break;
                 default:
                     System.out.println("CLIENT:>" + response); 
                     break;
             }
-        } while (!response.equals("EXIT"));
+        } while (!response.equals("EXIT") && !response.equals("AUTHENTICATED"));
         System.out.println("CLIENT:>Last response was: " + response); 
         
 
-        try
-        { 
-            input.close(); 
-            output.close(); 
-            socket.close(); 
-        } 
-        catch(IOException i) 
-        { 
-            System.out.println(i); 
-        } 
+//        try
+//        { 
+//            input.close(); 
+//            output.close(); 
+//            socket.close(); 
+//        } 
+//        catch(IOException i) 
+//        { 
+//            System.out.println(i); 
+//        } 
     } 
   
+    public boolean isAuthenticated() {return authenticated;}
+    
     void  giveToken(){
         // TODO Get token file and send to server 
         boolean haveToken = false;
@@ -118,6 +132,22 @@ public class SecurityClient {
         }
     } //end of give password
 
+    public void exit(){
+        output.println(KnownCommands.EXIT);
+    } // end of method exit()
+    
+    public String insertDatabase(String sql){
+        String response;
+        response = input.next();
+        System.out.println("CLIENT:> " + response);
+        output.println(KnownCommands.INSERT);
+        System.out.println("CLIENT:> " + KnownCommands.INSERT);
+        output.println(sql);
+        System.out.println("CLIENT:>" + sql);
+        response = input.nextLine();
+        System.out.println("CLIENT:>" + response);
+        return response;
+    } // end of method updateDatabase()
     
     public static void main(String args[]) 
     { 
@@ -130,7 +160,8 @@ public class SecurityClient {
             // assign db parameters
             int port     = Integer.parseInt(prop.getProperty("port"));
             String IPAddr  = prop.getProperty("IP");
-            SecurityClient client = new SecurityClient(IPAddr, port); 
+            Thread client = new SecurityClient(IPAddr, port);
+            client.start();
         } catch(IOException e) {
            System.out.println(e.getMessage());
         }
