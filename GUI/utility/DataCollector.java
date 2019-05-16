@@ -50,7 +50,7 @@ public abstract class DataCollector {
 
         // This runs when the instance is created.
     protected DataCollector() {
-        connect();
+        connect();  // establish a read only connection to the database
         schooYear = Calendar.getInstance().get(Calendar.YEAR);
         // If it is between January and June subtract a year 
         if (Calendar.getInstance().get(Calendar.MONTH) < 7){
@@ -77,8 +77,8 @@ public abstract class DataCollector {
             prop.load(f);
 
             // assign db parameters
-            int port     = Integer.parseInt(prop.getProperty("port"));
-            String IPAddr  = prop.getProperty("IP");
+            int port = Integer.parseInt(prop.getProperty("port"));
+            String IPAddr = prop.getProperty("IP");
             sc = new SecurityClient(IPAddr, port);
             sc.start();
         } catch(IOException e) {
@@ -94,7 +94,13 @@ public abstract class DataCollector {
             prop = new Properties();
             prop.load(f);
         } catch(IOException e) {
-            System.out.println(e.getMessage());
+            String error = "Unable to open the file called db.properties."
+                    + "This file should be stored in the following directory:\n"
+                    + System.getProperty("user.dir")
+                    + "\n\n"
+                    + e.getMessage();
+            ErrorMessage.display("An error occurred while trying to connect to the database.", error);
+            System.out.println(error);
             return;
         }
 
@@ -107,12 +113,24 @@ public abstract class DataCollector {
             conn = DriverManager.getConnection(url, user, password);
             System.out.println("Connection to the database has been established.");
         } catch(SQLException e) {
+            String error = "Unable to make a connection with the database. "
+                    + "The connection details are stored in the file:\n"
+                    + System.getProperty("user.dir")+"\\db.properties"
+                    + "\n\n"
+                    + e.getMessage();
+            ErrorMessage.display("An error occurred while trying to connect to the database.", error);
             System.out.println(e.getMessage());
+            return;
         }
         try {
             st = conn.createStatement();
         } catch(SQLException e) {
-            System.out.println(e.getMessage());
+            String error = "Connection with the database established but "
+                    + "the database doesn't appear to be configured correctly."
+                    + "\n\n"
+                    + e.getMessage();
+            ErrorMessage.display("An error occurred while communicating with the database.", error);
+            System.out.println(error);
         }
     } // end connect method
     
@@ -121,18 +139,27 @@ public abstract class DataCollector {
         try {
             rec = st.executeQuery(sql);
         } catch (SQLException s) {
-            System.out.println("SQL error: "
-                    + s.toString() + " "
-                    + s.getErrorCode() + " "
-                    + s.getSQLState());
+            String error = "SQL error: "
+                    + s.toString() + "\n\n"
+                    + s.getErrorCode() + "\n\n"
+                    + s.getSQLState();
+            ErrorMessage.display("An error occurred while reading data from the database.", error);
+            System.out.println(error);
             return null;
         }
         return rec;
     } // end of method doQuery
     
     protected String insertDatabase(String sql){
-        createSecurityConnection();
-        do { } while (!sc.isAuthenticated());
+        createSecurityConnection(); // establish a secure write connection to the database
+        do { } while (!sc.isAuthenticated() && !sc.isRejected());
+        
+        if (sc.isRejected()){
+            String text = "A secure connection with the database could not be established.";
+            String error = "You may need to request a new password.";
+            ErrorMessage.display(text, error);
+            return null;
+        }
         String message = sc.insertDatabase(sql);
         sc.exit();
         return message;
