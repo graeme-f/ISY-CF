@@ -23,22 +23,21 @@
  */
 package PowerUsage;
 
+import java.awt.event.ActionEvent;
 import java.net.URL;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
+import java.util.function.UnaryOperator;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
-import javafx.scene.layout.GridPane;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.util.converter.IntegerStringConverter;
 
 /**
  * FXML Controller class
@@ -49,15 +48,17 @@ public class FXMLPowerUsageController implements Initializable {
 
     @FXML private HBox ContainerBox;
 
-    @FXML private VBox Electricity;
+    @FXML private VBox ElectricityBox;
+    @FXML private ListView<Integer> ElectricityLists;
     @FXML private TextArea ElectricityDetails;
+    @FXML private TextField ElectricityId;
     @FXML private Label ElectricityDescription;
     @FXML private DatePicker ElectricityStartDate;
     @FXML private DatePicker ElectricityEndDate;
     @FXML private TextField meterUnits;
     @FXML private Button btnUpdateElectricity;
 
-    @FXML private VBox Generator;
+    @FXML private VBox GeneratorBox;
     @FXML private TextArea GeneratorDetails;
     @FXML private Label GeneratorDescription;
     @FXML private DatePicker GeneratorStartDate;
@@ -68,7 +69,7 @@ public class FXMLPowerUsageController implements Initializable {
     @FXML private Button btnDeleteGenerator;
     @FXML private Button btnUpdateGenerator;
 
-    @FXML private VBox AC;
+    @FXML private VBox ACBox;
     @FXML private ListView ACList;
     @FXML private ChoiceBox ACTypeList;
     @FXML private ChoiceBox RefrigerantList;
@@ -78,14 +79,48 @@ public class FXMLPowerUsageController implements Initializable {
     @FXML private Button btnDeleteAC;
     @FXML private Button btnUpdateAC;
 
-    //private PowerUsageDataCollector dc;
+    private PowerUsageDataCollector dc;
+
+    UnaryOperator<TextFormatter.Change> integerFilter = change -> {
+        String newText = change.getControlNewText();
+        if (newText.matches("-?([1-9][0-9]*)?")) {
+            return change;
+        }
+        return null;
+    };
+
+
+    @FXML private void UpdateElectricity(ActionEvent event) {
+
+    } // end of UpdateElectricity
+
 
     /**
      * Initializes the controller class.
      */
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
-    }    
+        dc = PowerUsageDataCollector.getInstance();
+    }
+
+    private void initializeElectricity() {
+        btnUpdateElectricity.setDisable(true);
+        meterUnits.setTextFormatter(new TextFormatter<Integer>(new IntegerStringConverter(), 0, integerFilter));
+
+    }
+
+    private void setElectricityDetails(int id) {
+        ArrayList<Integer> electricity = dc.getElectricityList();
+        ObservableList<Integer> electricityList = FXCollections.observableArrayList(electricity);
+        ElectricityLists.getItems().addAll(electricityList);
+        btnUpdateElectricity.setDisable(true);
+
+        ElectricityDescription.setText("ID: " + id);
+        ElectricityEndDate.setValue(LocalDate.now());
+        meterUnits.clear();
+    }
+
     
 }
