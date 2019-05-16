@@ -1,6 +1,7 @@
 package PowerUsage;
 
 import utility.DataCollector;
+import utility.DateUtil;
 import utility.ErrorMessage;
 
 import java.sql.Connection;
@@ -20,7 +21,7 @@ public class PowerUsageDataCollector extends DataCollector {
         int meterUnits;
     } // end of inner class Electricity
 
-
+    private Date lastDate;
 
     class Generator {
         int id;
@@ -44,6 +45,7 @@ public class PowerUsageDataCollector extends DataCollector {
     // This runs when the instance is created.
     private PowerUsageDataCollector() {
         super();
+        lastDate = null;
     } // end of method PowerUsageDataCollector
 
     private void getAllElecrity(Connection conn) {
@@ -58,6 +60,11 @@ public class PowerUsageDataCollector extends DataCollector {
                 electricity.endDate = rec.getDate("End_Date");
                 electricity.meterUnits = rec.getInt("Meter_Units");
                 electricityDetails.put(electricity.id, electricity);
+                if (lastDate == null) {
+                    lastDate = electricity.endDate;
+                } else if (electricity.endDate.compareTo(lastDate) > 0){
+                    lastDate = electricity.endDate;
+                }
             }
         } catch(SQLException error){
                 ErrorMessage.display(error.getMessage());
@@ -74,4 +81,13 @@ public class PowerUsageDataCollector extends DataCollector {
         }
         return electricity;
     } // end method getElectricityList()
+
+    public Date getLastDate() {
+        return DateUtil.addDays(lastDate, 1);
+    } // end method getStartDate()
+
+    public String insertElectricityData(Date startDate, Date endDate, int meterUnits) {
+        return insertDatabase("INSERT into electricity (Start_Date, End_Date, Meter_Units) VALUES(\'" + startDate + "\', " +
+                "\'" + endDate + "\', \'" + meterUnits + ")");
+    }
 }
