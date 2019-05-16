@@ -1,12 +1,17 @@
 package PowerUsage;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.sql.*;
-import java.util.Date;
-import java.util.*;
+import utility.DataCollector;
+import utility.ErrorMessage;
 
-public class PowerUsageDataCollector {
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Set;
+
+public class PowerUsageDataCollector extends DataCollector {
 
     class Electricity {
         int id;
@@ -25,10 +30,7 @@ public class PowerUsageDataCollector {
     } // end of inner class Generator
 
     private static PowerUsageDataCollector singleInstance = null;
-    private Connection conn = null;
     private HashMap<Integer, Electricity> electricityDetails;
-    private int currentYear;
-    private int previousYear;
 
     // Singleton
     public static PowerUsageDataCollector getInstance()
@@ -41,41 +43,26 @@ public class PowerUsageDataCollector {
 
     // This runs when the instance is created.
     private PowerUsageDataCollector() {
-        initialize();
+        super();
     } // end of method PowerUsageDataCollector
-
-    // Initialize
-    private void initialize() {
-        connect();
-        currentYear = Calendar.getInstance().get(Calendar.YEAR);
-        previousYear = currentYear-1;
-    } // end of method initialize
 
     private void getAllElecrity(Connection conn) {
         electricityDetails = new HashMap<>();
+        String query = "SELECT Start_Date, End_Date FROM Electricity WHERE StartDate " + getBetweenSchoolYear() + "FROM electricity";
+        ResultSet rec = doQuery(query);
+        Electricity electricity = new Electricity();
         try {
-            Statement st = conn.createStatement();
-            String query = "SELECT Start_Date, End_Date FROM Electricity WHERE StartDate BETWEEN \"" + previousYear + "-07-01%\" AND \"" + currentYear + "-06-30%\"";
-            ResultSet rec = st.executeQuery(query);
-            Electricity electricity = new Electricity();
-            while(rec.next()) {
+            while (rec.next()) {
                 electricity.id = rec.getInt("Electricity_ID");
                 electricity.startDate = rec.getDate("Start_Date");
                 electricity.endDate = rec.getDate("End_Date");
                 electricity.meterUnits = rec.getInt("Meter_Units");
                 electricityDetails.put(electricity.id, electricity);
             }
-
-        } catch (SQLException s) {
-            System.out.println("SQL error: "
-                    + s.toString() + " "
-                    + s.getErrorCode() + " "
-                    + s.getSQLState());
-
-        } catch (Exception e) {
-            System.out.println("Error: " + e.toString() + e.getMessage());
-        } //hello
-    } // end of method getAllElectricity
+        } catch(SQLException error){
+                ErrorMessage.display(error.getMessage());
+        }
+    }
 
     public ArrayList<Integer> getElectricityList(){
         ArrayList<Integer> electricity = new ArrayList<>();
@@ -87,22 +74,4 @@ public class PowerUsageDataCollector {
         }
         return electricity;
     } // end method getElectricityList()
-
-    private void connect() {
-        try(FileInputStream f = new FileInputStream("db.properties")) {
-            // load the properties file
-            Properties prop = new Properties();
-            prop.load(f);
-
-            // assign db parameters
-            String url       = prop.getProperty("url");
-            String user      = prop.getProperty("user");
-            String password  = prop.getProperty("password");
-            // create a connection to the database
-            conn = DriverManager.getConnection(url, user, password);
-            System.out.println("Connection to the database has been established.");
-        } catch(SQLException | IOException e) {
-            System.out.println(e.getMessage());
-        }
-    } // end connect method
 }
