@@ -23,19 +23,14 @@
  */
 package transportation;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Properties;
 import java.util.Set;
+import utility.DataCollector;
 
-
-public class TransportationDataCollector {
+public class TransportationDataCollector extends DataCollector {
     class Car {
         int id;
         String name;
@@ -44,7 +39,6 @@ public class TransportationDataCollector {
     } // end of inner class Car
     
     private static TransportationDataCollector singleInstance = null;
-    Connection conn = null;
     HashMap<String, Car> carDetails;
     
     public static TransportationDataCollector getInstance() 
@@ -57,15 +51,9 @@ public class TransportationDataCollector {
     
     // Creator is private to make this a singleton class
     private TransportationDataCollector(){
-        connect();
+        super();
         getAllCars();
     } // end of constructor
-    
-    @Override
-    public void finalize() throws Throwable{
-        close();
-        super.finalize();
-    }
     
     private void getAllCars(){
         carDetails = new HashMap(); 
@@ -156,35 +144,25 @@ public class TransportationDataCollector {
         return "Not yet implemented";
     }
     
-    public String updateFuel(String carName){
-        return "Not yet implemented";
+    public String updateFuel(String carName, 
+                             String startDate,
+                             String endDate,
+                             String fuelType,
+                             String fuelAmount){
+        String fuelID = "1";
+        String vehicleID = "1";
+        String sql = "INSERT INTO "
+                + "Fuel (Start_Date, End_Date, Type, Amount, Vehicle_ID) "
+                + "VALUES("
+                + startDate + ", "
+                + endDate + ", "
+                + fuelID + ", "
+                + fuelAmount + ", "
+                + vehicleID + ", "
+                + ")";
+        return insertDatabase(sql);
     }
     
-    private void connect() {
-        try(FileInputStream f = new FileInputStream("db.properties")) {
-            // load the properties file
-            Properties prop = new Properties();
-            prop.load(f);
-
-            // assign db parameters
-            String url       = prop.getProperty("url");
-            String user      = prop.getProperty("user");
-            String password  = prop.getProperty("password");
-            // create a connection to the database
-            conn = DriverManager.getConnection(url, user, password);
-            System.out.println("Connection to the database has been established.");
-        } catch(SQLException | IOException e) {
-           System.out.println(e.getMessage());
-        }
-    } // end connect method
     
-    public void close(){
-        try {
-            if (conn != null) {
-                conn.close();
-            }
-        } catch (SQLException ex) {
-            System.out.println(ex.getMessage());
-        }       
-    } // end of method close
+    
 } // end class TransportationDataCollector

@@ -22,6 +22,8 @@
  * THE SOFTWARE.
  */
 
+package security;
+
 import java.net.*; 
 import java.io.*; 
 import java.security.MessageDigest;
@@ -92,6 +94,8 @@ public class SecurityServer {
             server.run();
         } catch(IOException e) {
            System.out.println(e.getMessage());
+           String workingDir = "Current working directory: " + System.getProperty("user.dir");
+           Logger.getLogger("Security Server").log(Level.SEVERE, workingDir, e);
         }
     } // end of method main()
 
@@ -179,7 +183,7 @@ class SecurityHandler extends Thread {
             scanner = new Scanner(data);
         } catch (FileNotFoundException ex) {
             String workingDir = "Current working directory: " + System.getProperty("user.dir");
-            Logger.getLogger("JavaApp01Average").log(Level.SEVERE, workingDir, ex);
+            Logger.getLogger("Security Server").log(Level.SEVERE, workingDir, ex);
             return "";
         }
         
@@ -283,19 +287,27 @@ class SecurityHandler extends Thread {
 
     private boolean getCommand(){
         out.println(KnownCommands.COMMAND);
-        KnownCommands command = KnownCommands.getCommand(in.nextLine());
-        switch (command) {
-            case EXIT:
-                return true;
-            // INSERT data onto the table
-            case INSERT:
-                break;
-            // UPDATE data already on the table
-            case UPDATE:
-                break;
-            default:
-                break;
-        }
+        String cmd;
+//        while(in.hasNextLine()){
+            cmd = in.nextLine();
+            System.out.println(cmd);
+            KnownCommands command = KnownCommands.getCommand(cmd);
+            switch (command) {
+                case EXIT:
+                    return true;
+                // INSERT data onto the table
+                case INSERT:
+                    String sql = in.nextLine();
+                    System.out.println(sql);
+                    out.println("Not yet implemented, but coming soon!!!");
+                    break;
+                // UPDATE data already on the table
+                case UPDATE:
+                    break;
+                default:
+                    break;
+            }
+//        }
         return false;
     } // end of method getCommand()
 
