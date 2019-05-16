@@ -42,6 +42,7 @@ public class SecurityClient extends Thread {
     private final String address;
     private final int    port;
     private boolean      authenticated = false;
+    private boolean      rejected = false;
 // constructor to put ip address and port 
     public SecurityClient(String address, int port) 
     {
@@ -88,6 +89,10 @@ public class SecurityClient extends Thread {
                     authenticated = true;
                     System.out.println("CLIENT:>" + response); 
                     break;
+                case "EXIT":
+                    rejected = true;
+                    System.out.println("CLIENT:>" + response); 
+                    break;
                 default:
                     System.out.println("CLIENT:>" + response); 
                     break;
@@ -109,6 +114,7 @@ public class SecurityClient extends Thread {
     } 
   
     public boolean isAuthenticated() {return authenticated;}
+    public boolean isRejected() {return rejected;}
     
     void  giveToken(){
         // TODO Get token file and send to server 

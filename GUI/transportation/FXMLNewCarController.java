@@ -37,6 +37,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import utility.ErrorMessage;
 
 /**
  *
@@ -89,11 +90,7 @@ public class FXMLNewCarController  implements Initializable {
                            , fuelTypes.getValue().toString()};
         String error = dc.createNewVehicle(values);
         if (error != null){
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error Dialog");
-            alert.setHeaderText("An error occurred while trying to save the new vehicle data.");
-            alert.setContentText(error);
-            alert.showAndWait();
+            ErrorMessage.display("An error occurred while trying to save the new vehicle data.", error);
             return;
         }
         closeWindow(event);
