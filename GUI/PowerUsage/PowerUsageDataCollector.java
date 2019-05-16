@@ -48,7 +48,7 @@ public class PowerUsageDataCollector extends DataCollector {
 
     private void getAllElecrity(Connection conn) {
         electricityDetails = new HashMap<>();
-        String query = "SELECT Start_Date, End_Date FROM Electricity WHERE StartDate " + getBetweenSchoolYear();
+        String query = "SELECT Start_Date, End_Date FROM Electricity WHERE StartDate " + getBetweenSchoolYear() + "FROM electricity";
         ResultSet rec = doQuery(query);
         Electricity electricity = new Electricity();
         try {
