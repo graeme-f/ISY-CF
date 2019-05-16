@@ -27,8 +27,11 @@ package Consumables;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Properties;
@@ -38,24 +41,28 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+//Unsure whether the data type should be localdate or date, will require testing
+import java.time.LocalDate;
+import utility.DataCollector;
+
 /**
  *
  * @author mayankpandey
  */
 
 
-public class ConsumablesDataCollector {
+public class ConsumablesDataCollector extends DataCollector {
+    
+    //Made this class static to be usable in the SQL
     class Paper {
         int id;
         int reams;
         LocalDate Start_Date;
-        LocalDate End_Date;
-          
+        LocalDate End_Date;  
     }//end of paper class
     
-     private static ConsumablesDataCollector singleInstance = null;
-    Connection conn = null;
-    HashMap<LocalDate, ConsumablesDataCollector.Paper> paperDetails;
+    private static ConsumablesDataCollector singleInstance = null;
+    HashMap <Integer, ConsumablesDataCollector.Paper> paperDetails;
     
     public static ConsumablesDataCollector getInstance() 
     { 
@@ -68,56 +75,48 @@ public class ConsumablesDataCollector {
        
     // Creator is private to make this a singleton class
     private ConsumablesDataCollector(){
-        connect();
+        super();
         getAllPaper();
     } // end of constructor
-    
-    @Override
-    public void finalize() throws Throwable{
-        close();
-        super.finalize();
-    }
-    
-    private void connect() {
-        try(FileInputStream f = new FileInputStream("db.properties")) {
-            // load the properties file
-            Properties prop = new Properties();
-            prop.load(f);
-
-            // assign db parameters
-            String url       = prop.getProperty("url");
-            String user      = prop.getProperty("user");
-            String password  = prop.getProperty("password");
-            // create a connection to the database
-            conn = DriverManager.getConnection(url, user, password);
-            System.out.println("Connection to the database has been established.");
-        } catch(SQLException | IOException e) {
-           System.out.println(e.getMessage());
-        }
-    } // end connect method
-    
-    public void close(){
-        try {
-            if (conn != null) {
-                conn.close();
-            }
-        } catch (SQLException ex) {
-            System.out.println(ex.getMessage());
-        }       
-    } // end of close method
     
     private void getAllPaper(){
         paperDetails = new HashMap(); 
         // TODO vehicle list needs to come from the database
-        Paper paperOrder = new Paper();
-        paperOrder.id = 1;
-        paperOrder.reams = 2021;
-        paperOrder.Start_Date = LocalDate.of(2019, 02, 28);;
-        paperOrder.End_Date =/*equals equals*/ LocalDate.of(2019, 03, 28);;
+         // our SQL SELECT query. 
+      String query = "SELECT * FROM Paper";
+
+       ResultSet rs = doQuery(query);
+
+      
+      try {
+      // iterate through the java resultset
+      while (rs.next())
+      {
+
+          //Creates an instance of the paper class, to be usable in this static method.
+          Paper paper = new Paper();
         
-       
+         //Find the tables with the same name located in the literal string and add them to paper's properties
+        paper.id = rs.getInt("Paper_ID");
+        Date startDate  = rs.getDate("Start_Date");
+        Date endDate = rs.getDate("date_created");
+        int reams = rs.getInt("Amount");
         
-        paperDetails.put(paperOrder.Start_Date, paperOrder);
+        // Add that information into the hashmap
+        paperDetails.put(paper.id, paper);
+      }//end of while loop
+      
+      
+      
+      } //end of try statement
+   
+       catch (Exception e)
+    {
+      System.err.println("Returned SQL exception e");
+      System.err.println(e.getMessage());
+    }//end of catch statement
+    
+        
     }//end of getAllPaper method
     
     //gets the amount of reams for a given order
@@ -129,7 +128,6 @@ public class ConsumablesDataCollector {
     public LocalDate getEndDate(LocalDate startDate){
         return paperDetails.get(startDate).End_Date;
     } // end of method getEndDate
-    
     
     
 }//end of ConsumablesDataCollector class
