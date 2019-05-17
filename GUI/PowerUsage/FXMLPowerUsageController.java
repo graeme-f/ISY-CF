@@ -23,7 +23,6 @@
  */
 package PowerUsage;
 
-import java.awt.event.ActionEvent;
 import java.net.URL;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -32,6 +31,7 @@ import java.util.function.UnaryOperator;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -60,7 +60,7 @@ public class FXMLPowerUsageController implements Initializable {
 
     @FXML private VBox GeneratorBox;
     @FXML private TextArea GeneratorDetails;
-    @FXML private Label GeneratorDescription;
+    @FXML private TextField GeneratorDescription;
     @FXML private DatePicker GeneratorStartDate;
     @FXML private DatePicker GeneratorEndDate;
     @FXML private ChoiceBox fuelBox;
@@ -79,6 +79,13 @@ public class FXMLPowerUsageController implements Initializable {
     @FXML private Button btnDeleteAC;
     @FXML private Button btnUpdateAC;
 
+    @FXML private void updateElectricity(ActionEvent event) {
+        String start  = ElectricityStartDate.getValue().toString();
+        String end    = ElectricityEndDate.getValue().toString();
+        String amount = meterUnits.getText();
+        dc.insertElectricityData(start, end, amount);
+    } // end of UpdateElectricity
+
     private PowerUsageDataCollector dc;
 
     UnaryOperator<TextFormatter.Change> integerFilter = change -> {
@@ -88,12 +95,6 @@ public class FXMLPowerUsageController implements Initializable {
         }
         return null;
     };
-
-
-    @FXML private void UpdateElectricity(ActionEvent event) {
-
-    } // end of UpdateElectricity
-
 
     /**
      * Initializes the controller class.

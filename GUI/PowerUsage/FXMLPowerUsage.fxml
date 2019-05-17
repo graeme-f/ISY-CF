@@ -59,7 +59,7 @@
                               </GridPane>
                               <HBox prefHeight="63.0" prefWidth="301.0">
                                  <children>
-                                    <Button mnemonicParsing="false" onAction="#UpdateElectricity" prefHeight="27.0" prefWidth="74.0" text="Update" />
+                                    <Button fx:id="btnUpdateElectricity" mnemonicParsing="false" prefHeight="27.0" prefWidth="74.0" text="Update" />
                                  </children></HBox>
                            </children>
                         </VBox>

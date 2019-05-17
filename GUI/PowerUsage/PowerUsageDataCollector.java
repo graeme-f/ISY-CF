@@ -86,7 +86,7 @@ public class PowerUsageDataCollector extends DataCollector {
         return DateUtil.addDays(lastDate, 1);
     } // end method getStartDate()
 
-    public String insertElectricityData(Date startDate, Date endDate, int meterUnits) {
+    public String insertElectricityData(String startDate, String endDate, String meterUnits) {
         return insertDatabase("INSERT into electricity (Start_Date, End_Date, Meter_Units) VALUES(\'" + startDate + "\', " +
                 "\'" + endDate + "\', \'" + meterUnits + ")");
     }

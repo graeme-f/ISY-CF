@@ -44,7 +44,6 @@ public class SecurityClient extends Thread {
     private final String address;
     private final int    port;
     private boolean      authenticated = false;
-    private boolean      givenpassword = false;
     private boolean      rejected = false;
 // constructor to put ip address and port 
     public SecurityClient(String address, int port) 
@@ -75,37 +74,33 @@ public class SecurityClient extends Thread {
             System.out.println(i); 
         } 
   
-        String response;
+        KnownCommands command;
         do {
             // Wait for authentication request
-            response = input.nextLine();
-            switch (response) {
-                case "TOKEN":
-                    System.out.println("CLIENT:>" + response); 
+            command = KnownCommands.getCommand(input.nextLine());
+            switch (command) {
+                case TOKEN:
+                    System.out.println("CLIENT:>" + command); 
                     giveToken();
                     break;
-                case "PASSWORD":
-                    System.out.println("CLIENT:>" + response);
+                case PASSWORD:
+                    System.out.println("CLIENT:>" + command);
                     givePassword();
                     break;
-                case "AUTHENTICATED":
+                case AUTHENTICATED:
                     authenticated = true;
-                    System.out.println("CLIENT:>" + response);
-                    if(givenpassword){
-                       String token = input.nextLine();
-                       tokenWrite(token);
-                    }
+                    System.out.println("CLIENT:>" + command);
                     break;
-                case "EXIT":
+                case EXIT:
                     rejected = true;
-                    System.out.println("CLIENT:>" + response); 
+                    System.out.println("CLIENT:>" + command); 
                     break;
                 default:
-                    System.out.println("CLIENT:>" + response); 
+                    System.out.println("CLIENT:>" + command); 
                     break;
             }
-        } while (!response.equals("EXIT") && !response.equals("AUTHENTICATED"));
-        System.out.println("CLIENT:>Last response was: " + response); 
+        } while (command != KnownCommands.EXIT && command != KnownCommands.AUTHENTICATED);
+        System.out.println("CLIENT:>Last response was: " + command); 
         
 
 //        try
@@ -135,19 +130,19 @@ public class SecurityClient extends Thread {
     } // end of giveToken
     
     void givePassword(){
-        givenpassword = true;
-        String response; 
+        KnownCommands command; 
         output.println(passwordRead());
-        response = input.nextLine();
-        System.out.println("CLIENT:>" + response);
-        if (response.equals("AUTHENTICATED")){
-            response = input.nextLine();
-            System.out.println("CLIENT:>" + response);
+        command = KnownCommands.getCommand(input.nextLine());
+        System.out.println("CLIENT:>" + command);
+        if (command == KnownCommands.AUTHENTICATED){
+            String token = input.nextLine();
+            tokenWrite(token);
+            System.out.println("CLIENT:>" + token);
         }
     } //end of give password
     
      private String passwordRead(){
-        File data = new File("data/OneUsePassword.txt");
+        File data = new File("OneUsePassword.txt");
         Scanner scanner;
         try {
             scanner = new Scanner(data);
@@ -183,7 +178,7 @@ public class SecurityClient extends Thread {
     } // end of method updateDatabase()
     
      private void tokenWrite(String token){
-    	System.out.println( ": " + " - " + token);
+    	System.out.println( "Token received: " + token);
     	String fileName = "data/MyToken.txt";
         // write the new token to the end of the knownTokens file
         FileWriter fw;

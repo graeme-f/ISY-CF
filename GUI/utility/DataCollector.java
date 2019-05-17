@@ -134,8 +134,38 @@ public abstract class DataCollector {
         }
     } // end connect method
     
+    public void close(){
+        try {
+            if (conn != null) {
+                conn.close();
+            }
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+        }       
+    } // end of close method
+    
+    @Override
+    public void finalize() throws Throwable{
+        close();
+        super.finalize();
+    }
+    
     protected ResultSet doQuery(String sql){
         ResultSet rec;
+        try {
+            rec = st.executeQuery(sql);
+        } catch (SQLException s) {
+            String error = "Connection lost, retrying";
+            ErrorMessage.display("An error occurred while reading data from the database.", error);
+            System.out.println(error);
+            return emergencyQuery(sql);
+        }
+        return rec;
+    } // end of method doQuery
+    
+    private ResultSet emergencyQuery(String sql){
+        connect();
+                ResultSet rec;
         try {
             rec = st.executeQuery(sql);
         } catch (SQLException s) {
@@ -147,8 +177,11 @@ public abstract class DataCollector {
             System.out.println(error);
             return null;
         }
+        String msg = "Connection re-established";
+            ErrorMessage.display("Information Message", "Connection to the database.", msg);
+            System.out.println(msg);
         return rec;
-    } // end of method doQuery
+    } // end of method emergencyQuery()
     
     protected String insertDatabase(String sql){
         createSecurityConnection(); // establish a secure write connection to the database
