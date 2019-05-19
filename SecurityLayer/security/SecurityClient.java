@@ -57,8 +57,7 @@ public class SecurityClient extends Thread {
         try
         { 
             socket = new Socket(address, port); 
-            System.out.println("CLIENT:>Connected"); 
-  
+            System.out.println("CLIENT:>Connected");
             // takes input from terminal
             userEntry = new Scanner(System.in);
             // sends output to the socket 
@@ -72,8 +71,7 @@ public class SecurityClient extends Thread {
         catch(IOException i) 
         { 
             System.out.println(i); 
-        } 
-  
+        }   
         KnownCommands command;
         do {
             // Wait for authentication request
@@ -175,7 +173,7 @@ public class SecurityClient extends Thread {
         response = input.nextLine();
         System.out.println("CLIENT:>" + response);
         return response;
-    } // end of method updateDatabase()
+    } // end of method insertDatabase()
     
      private void tokenWrite(String token){
     	System.out.println( "Token received: " + token);
