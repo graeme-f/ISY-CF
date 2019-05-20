@@ -28,20 +28,25 @@ import java.net.*;
 import java.io.*; 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Properties;
 import java.util.Scanner;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.xml.bind.DatatypeConverter;
+import utility.DatabaseConnector;
+import utility.LogFile;
 
 /**
  *
  * @author gfoster
  */
+
 public class SecurityServer {
 
+    static final LogFile logger = new LogFile(SecurityServer.class.getName());
     private ServerSocket server;
     private String salt;
     
@@ -87,15 +92,17 @@ public class SecurityServer {
             Properties prop = new Properties();
             prop.load(f);
 
+
+        
             // assign db parameters
             int port     = Integer.parseInt(prop.getProperty("port"));
             String salt  = prop.getProperty("salt");
             SecurityServer server = new SecurityServer(port, salt);
             server.run();
         } catch(IOException e) {
-           System.out.println(e.getMessage());
            String workingDir = "Current working directory: " + System.getProperty("user.dir");
-           Logger.getLogger("Security Server").log(Level.SEVERE, workingDir, e);
+           logger.log(Level.SEVERE, workingDir);
+           logger.log(Level.SEVERE, e.getMessage());
         }
     } // end of method main()
 
@@ -104,6 +111,7 @@ public class SecurityServer {
 // SecurityHandler class 
 class SecurityHandler extends Thread {
     
+    static final LogFile logger = SecurityServer.logger;
     DateFormat fordate = new SimpleDateFormat("yyyy/MM/dd"); 
     DateFormat fortime = new SimpleDateFormat("hh:mm:ss");
     
@@ -116,12 +124,14 @@ class SecurityHandler extends Thread {
     int authenticateCount;
     InetAddress remoteIP;
     
+    private DatabaseConnector dc;
+    
     // Constructor 
     public SecurityHandler(Socket s,
                            Scanner input,
                            PrintWriter output,
                            String salt)  
-    { 
+    {
         this.s = s; 
         this.in = input; 
         this.out = output;
@@ -129,6 +139,7 @@ class SecurityHandler extends Thread {
         this.remoteIP = s.getInetAddress();
         this.authenticateCount = 0;
         this.salt = salt;
+        dc = DatabaseConnector.getInstance();
     } // end of SecurityHandler constructor()
 
     
@@ -181,9 +192,10 @@ class SecurityHandler extends Thread {
         Scanner scanner;
         try {
             scanner = new Scanner(data);
-        } catch (FileNotFoundException ex) {
+        } catch (FileNotFoundException e) {
             String workingDir = "Current working directory: " + System.getProperty("user.dir");
-            Logger.getLogger("Security Server").log(Level.SEVERE, workingDir, ex);
+            logger.log(Level.SEVERE, workingDir);
+            logger.log(Level.SEVERE, e.getMessage());
             return "";
         }
         
@@ -205,9 +217,10 @@ class SecurityHandler extends Thread {
         boolean match = false;
         try {
             scanner = new Scanner(data);
-        } catch (FileNotFoundException ex) {
+        } catch (FileNotFoundException e) {
             String workingDir = "Current working directory: " + System.getProperty("user.dir");
-            Logger.getLogger(SecurityHandler.class.getName()).log(Level.SEVERE, workingDir, ex);
+            logger.log(Level.SEVERE, workingDir);
+            logger.log(Level.SEVERE, e.getMessage());
             return false;
         }
         
@@ -230,9 +243,10 @@ class SecurityHandler extends Thread {
                 fw = new FileWriter(fileName);
                 fw.write(passwordData);
                 fw.close();
-            } catch (IOException ex) {
+            } catch (IOException e) {
                 String workingDir = "Current working directory: " + System.getProperty("user.dir");
-                Logger.getLogger(SecurityHandler.class.getName()).log(Level.SEVERE, workingDir, ex);
+                logger.log(Level.SEVERE, workingDir);
+                logger.log(Level.SEVERE, e.getMessage());
             }
         } // end match was found so remove it from the file
         
@@ -256,9 +270,10 @@ class SecurityHandler extends Thread {
             fw = new FileWriter(fileName,true);
             fw.write(IPAddr + "\t"+ hashToken + "\n");
             fw.close();
-        } catch (IOException ex) {
+        } catch (IOException e) {
             String workingDir = "Current working directory: " + System.getProperty("user.dir");
-            Logger.getLogger(SecurityHandler.class.getName()).log(Level.SEVERE, workingDir, ex);
+            logger.log(Level.SEVERE, workingDir);
+            logger.log(Level.SEVERE, e.getMessage());
         }
     } // end of method writeToken()
     
@@ -295,12 +310,35 @@ class SecurityHandler extends Thread {
             switch (command) {
                 case EXIT:
                     return true;
-                // INSERT data onto the table
+                // INSERT data into the table
                 case INSERT:
                     String sql = in.nextLine();
                     System.out.println(sql);
-                    out.println("Not yet implemented, but coming soon!!!");
-                    break;
+                    String error = dc.connect();
+                    if (error.isEmpty()){
+                        logger.log(Level.INFO, "Connection to the database has been established.");
+                    }else {
+                        logger.log(Level.SEVERE, error);
+                    }
+                    // Check that the sql is an insert statement
+                    // Log the statement to the file logger
+                    logger.log(Level.INFO, "{0}:{1}", new Object[]{remoteIP, sql});
+                    // Perform the statement
+                    Statement st = dc.getStatement();
+                    int rec;
+                    try {
+                        rec = st.executeUpdate(sql);
+                    }catch (SQLException e) {
+                       logger.log(Level.INFO,e.getMessage());
+                       return false;
+                    }
+                    if (rec == 1){
+                        logger.log(Level.INFO, "One record inserted.");                        
+                    } else {
+                        logger.log(Level.INFO, "{0} records inserted.", rec);
+                    }
+                    dc.close();
+                    return true;
                 // UPDATE data already on the table
                 case UPDATE:
                     break;
@@ -331,5 +369,4 @@ class SecurityHandler extends Thread {
         this.in.close(); 
         this.out.close(); 
     } // end of method run 
-    
 } // end of class SecurityHandler

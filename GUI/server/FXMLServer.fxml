@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="server.FXMLServerController">
+   <children>
+      <HBox prefHeight="400.0" prefWidth="600.0">
+         <children>
+            <VBox prefHeight="200.0" prefWidth="120.0">
+               <children>
+                  <Button maxWidth="120.0" minWidth="120.0" mnemonicParsing="false" onAction="#onCheckDatabase" prefWidth="120.0" text="Check Database" />
+                  <Button maxWidth="120.0" minWidth="120.0" mnemonicParsing="false" onAction="#onGeneratePassword" prefWidth="120.0" text="Generate Password" />
+                  <Button maxWidth="120.0" minWidth="120.0" mnemonicParsing="false" onAction="#onClearPassword" prefWidth="120.0" text="Clear Password File" />
+                  <Button maxWidth="120.0" minWidth="120.0" mnemonicParsing="false" onAction="#onCheckTokenFile" prefWidth="120.0" text="Check Token File" />
+                  <Button maxWidth="120.0" minWidth="120.0" mnemonicParsing="false" onAction="#onCheckLogFile" prefWidth="120.0" text="Check Log File" />
+                  <Button mnemonicParsing="false" onAction="#onCheckConnections" prefHeight="25.0" prefWidth="120.0" text="Check Connections" />
+                  <Button mnemonicParsing="false" onAction="#onSummaryReport" prefHeight="25.0" prefWidth="120.0" text="Summary Report" />
+               </children>
+            </VBox>
+            <TextArea fx:id="details" prefHeight="400.0" prefWidth="491.0" />
+         </children>
+      </HBox>
+   </children>
+</AnchorPane>
