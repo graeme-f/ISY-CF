@@ -1,14 +1,13 @@
 package PowerUsage;
 
 import utility.DataCollector;
-import utility.DateUtil;
 import utility.ErrorMessage;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Set;
 
@@ -16,17 +15,17 @@ public class PowerUsageDataCollector extends DataCollector {
 
     class Electricity {
         int id;
-        Date startDate;
-        Date endDate;
+        LocalDate startDate;
+        LocalDate endDate;
         int meterUnits;
     } // end of inner class Electricity
 
-    private Date lastDate;
+    private LocalDate lastDate;
 
     class Generator {
         int id;
-        Date startDate;
-        Date endDate;
+        LocalDate startDate;
+        LocalDate endDate;
         int amount;
     } // end of inner class Generator
 
@@ -56,8 +55,8 @@ public class PowerUsageDataCollector extends DataCollector {
         try {
             while (rec.next()) {
                 electricity.id = rec.getInt("Electricity_ID");
-                electricity.startDate = rec.getDate("Start_Date");
-                electricity.endDate = rec.getDate("End_Date");
+                electricity.startDate = rec.getDate("Start_Date").toLocalDate();
+                electricity.endDate = rec.getDate("End_Date").toLocalDate();
                 electricity.meterUnits = rec.getInt("Meter_Units");
                 electricityDetails.put(electricity.id, electricity);
                 if (lastDate == null) {
@@ -82,8 +81,8 @@ public class PowerUsageDataCollector extends DataCollector {
         return electricity;
     } // end method getElectricityList()
 
-    public Date getLastDate() {
-        return DateUtil.addDays(lastDate, 1);
+    public LocalDate getLastDate() {
+        return lastDate.plusDays(1);
     } // end method getStartDate()
 
     public String insertElectricityData(String startDate, String endDate, String meterUnits) {
