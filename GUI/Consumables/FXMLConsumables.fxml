@@ -110,10 +110,10 @@
                               <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                           </rowConstraints>
                            <children>
-                              <DatePicker GridPane.columnIndex="1" />
-                              <DatePicker GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                              <TextField GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                              <TextField GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                              <DatePicker fx:id="startDate" GridPane.columnIndex="1" />
+                              <DatePicker fx:id="endDate" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                              <TextField fx:id="A4" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                              <TextField fx:id="A3" GridPane.columnIndex="1" GridPane.rowIndex="3" />
                               <Label text="Start Date" textFill="WHITE" translateX="20.0" wrapText="true">
                                  <font>
                                     <Font name="Bodoni 72 Smallcaps Book" size="15.0" />
