@@ -1,0 +1,32 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1561
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww10800\viewh8400\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 To connect to the database first locate the \'91ISY-CF\'92 folder. Then, make a duplicate of the file \'91EDIT-db.properties\'92 and rename the duplicate to \'92db.properties\'92. Open the \'91db.properties\'92 file and the following lines should appear: \
+\
+# MySQL DB parameters\
+# Rename to db.properties\
+user=# ADD user name\
+password=# ADD Password\
+url=jdbc:mysql://172.168.101.213:3306/ISY-CF\
+\
+# Security Server\
+port=5050\
+IP=172.168.101.213\
+\
+Next, edit out the third line to \'91user=CFRead\'92 and the fourth line to \'91password=ISY\'92. Now, your \'91db.properties\'92 file should look like this:\
+\
+# MySQL DB parameters\
+# Rename to db.properties\
+user=CFRead\
+password=ISY\
+url=jdbc:mysql://172.168.101.213:3306/ISY-CF\
+\
+# Security Server\
+port=5050\
+IP=172.168.101.213\
+\
+Save the file and you should now be able to connect to the database.}

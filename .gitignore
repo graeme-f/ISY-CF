@@ -6,3 +6,5 @@
 /manifest.mf
 /build.xml
 /ISY-CF/
+/build/
+/dist/
