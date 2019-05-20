@@ -64,8 +64,7 @@ public class ConsumablesDataCollector extends DataCollector {
     private static ConsumablesDataCollector singleInstance = null;
     HashMap <Integer, ConsumablesDataCollector.Paper> paperDetails;
     
-    public static ConsumablesDataCollector getInstance() 
-    { 
+    public static ConsumablesDataCollector getInstance() { 
         if (singleInstance == null) 
             singleInstance = new ConsumablesDataCollector(); 
   
@@ -74,12 +73,12 @@ public class ConsumablesDataCollector extends DataCollector {
     
        
     // Creator is private to make this a singleton class
-    private ConsumablesDataCollector(){
+    private ConsumablesDataCollector() {
         super();
         getAllPaper();
     } // end of constructor
     
-    private void getAllPaper(){
+    private void getAllPaper() {
         paperDetails = new HashMap(); 
         // TODO vehicle list needs to come from the database
          // our SQL SELECT query. 
@@ -90,8 +89,7 @@ public class ConsumablesDataCollector extends DataCollector {
       
       try {
       // iterate through the java resultset
-      while (rs.next())
-      {
+      while (rs.next()) {
 
           //Creates an instance of the paper class, to be usable in this static method.
           Paper paper = new Paper();
@@ -110,8 +108,7 @@ public class ConsumablesDataCollector extends DataCollector {
       
       } //end of try statement
    
-       catch (Exception e)
-    {
+       catch (Exception e) {
       System.err.println("Returned SQL exception e");
       System.err.println(e.getMessage());
     }//end of catch statement
@@ -120,12 +117,12 @@ public class ConsumablesDataCollector extends DataCollector {
     }//end of getAllPaper method
     
     //gets the amount of reams for a given order
-    public int getReams(LocalDate startDate){
+    public int getReams(LocalDate startDate) {
         return paperDetails.get(startDate).reams;
     } // end of method getReams
 
     //gets the end date of a given order
-    public LocalDate getEndDate(LocalDate startDate){
+    public LocalDate getEndDate(LocalDate startDate) {
         return paperDetails.get(startDate).End_Date;
     } // end of method getEndDate
     
