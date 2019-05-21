@@ -39,8 +39,9 @@ import java.util.Properties;
 public class DatabaseConnector {
     static DatabaseConnector instance = null;
     
-    protected Connection conn = null;
-    protected Statement st = null;
+    protected final LogFile logger = ErrorMessage.logger;
+    protected Connection conn;
+    protected Statement st;
 
     public static DatabaseConnector getInstance(){
         if (instance == null){
@@ -50,10 +51,20 @@ public class DatabaseConnector {
     }
     
     protected DatabaseConnector() {
-        connect();
+       conn = null;
+       st = null;
     } // end of constructor
     
+    public final String forceConnect(){
+        conn = null;
+        return connect();
+    }
+    
     public final String connect() {
+        if (conn != null){
+            logger.log("Connection to the database has already been established.");
+            return "";
+        }
         Properties prop;
         try{
             FileInputStream f = new FileInputStream("db.properties");
@@ -66,6 +77,7 @@ public class DatabaseConnector {
                     + System.getProperty("user.dir")
                     + "\n\n"
                     + e.getMessage();
+            logger.logError(error);
             return error;
         }
 
@@ -75,14 +87,17 @@ public class DatabaseConnector {
         String password  = prop.getProperty("password");
         // create a connection to the database
         try {
+            logger.log("Connection attempt to {0} with user {1} using password {2}.",
+                       new Object[]{url, user, password});
             conn = DriverManager.getConnection(url, user, password);
-            System.out.println("Connection to the database has been established.");
+            logger.log("Connection to the database has been established.");
         } catch(SQLException e) {
             String error = "Unable to make a connection with the database. "
                     + "The connection details are stored in the file:\n"
                     + System.getProperty("user.dir")+"\\db.properties"
                     + "\n\n"
                     + e.getMessage();
+            logger.logError(error);
             return error;
         }
         try {
@@ -92,6 +107,7 @@ public class DatabaseConnector {
                     + "the database doesn't appear to be configured correctly."
                     + "\n\n"
                     + e.getMessage();
+            logger.logError(error);
             return error;
         }
         return "";
@@ -105,8 +121,8 @@ public class DatabaseConnector {
             if (conn != null) {
                 conn.close();
             }
-        } catch (SQLException ex) {
-            System.out.println(ex.getMessage());
+        } catch (SQLException e) {
+            logger.logError(e.getMessage());
         }       
     } // end of close method
 

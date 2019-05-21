@@ -37,6 +37,7 @@ import java.util.Scanner;
 import java.util.logging.Level;
 import javax.xml.bind.DatatypeConverter;
 import utility.DatabaseConnector;
+import utility.Encrypt;
 import utility.LogFile;
 
 /**
@@ -143,35 +144,10 @@ class SecurityHandler extends Thread {
     } // end of SecurityHandler constructor()
 
     
-    /**
-     * Returns a hexadecimal encoded MD5 hash for the input String.
-     * @param data
-     * @return a MD5 hash
-     */
-    private String getMD5Hash(String data) {
-        String result = null;
-        String algorithm = "MD5";
-        String encoding = "UTF-8";
-        try {
-            MessageDigest digest = MessageDigest.getInstance(algorithm);
-            byte[] hash = digest.digest(data.getBytes(encoding));
-            return DatatypeConverter.printHexBinary(hash); // make it printable
-        }catch(NoSuchAlgorithmException  ex) {
-            System.out.println("Unknown algorithm " + algorithm);
-            if (DEBUG) ex.printStackTrace();
-        }catch (UnsupportedEncodingException ex) {
-            System.out.println("Unknown Encoding " + encoding);
-            if (DEBUG) ex.printStackTrace();
-        }
-        return result;
-    } // end of method getMD5Hash()
-    
-    private String salt(String token, String salt){
-        return salt + token + salt;
-    } // end of method salt()
+
     
     private boolean tokenMatch(String token){
-        String hashToken = getMD5Hash(salt(token, this.salt));
+        String hashToken = Encrypt.getMD5Hash(Encrypt.salt(token, this.salt), DEBUG);
         // Get token from file
         String fileToken = tokenRead(this.remoteIP.toString());
 
@@ -254,13 +230,13 @@ class SecurityHandler extends Thread {
     } // end of method passwordMatch()
     
     private String tokenGenerate(String password){
-        String hashToken = getMD5Hash(salt(password, this.remoteIP.toString()));
+        String hashToken = Encrypt.getMD5Hash(Encrypt.salt(password, this.remoteIP.toString()),DEBUG);
         tokenWrite(hashToken, this.remoteIP.toString());
         return hashToken;
     } // end of method generateToken()
     
     private void tokenWrite(String token, String IPAddr){
-    	String hashToken = getMD5Hash(salt(token, this.salt));
+    	String hashToken = Encrypt.getMD5Hash(Encrypt.salt(token, this.salt), DEBUG);
 
     	System.out.println(IPAddr + ": " + token + " - " + hashToken);
     	String fileName = "data/knownTokens.txt";

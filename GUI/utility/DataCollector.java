@@ -38,7 +38,7 @@ import security.SecurityClient;
  * @author gfoster
  */
 public abstract class DataCollector extends DatabaseConnector{
-    
+
     private SecurityClient sc = null;
 
     private int schooYear; // the start of the school year
@@ -46,10 +46,7 @@ public abstract class DataCollector extends DatabaseConnector{
         // This runs when the instance is created.
     protected DataCollector() {
         String error = connect();
-        if (error.isEmpty()){
-            System.out.println("Connection to the database has been established.");
-        }else {
-            System.out.println(error);
+        if (!error.isEmpty()){
             ErrorMessage.display("An error occurred while trying to connect to the database.", error);
         }
         schooYear = Calendar.getInstance().get(Calendar.YEAR);
@@ -108,7 +105,7 @@ public abstract class DataCollector extends DatabaseConnector{
     } // end of method doQuery
     
     private ResultSet emergencyQuery(String sql){
-        String error = connect();
+        String error = forceConnect();
             if (error.isEmpty()){
                 System.out.println("Connection to the database has been established.");
             }else {

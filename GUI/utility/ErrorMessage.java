@@ -31,7 +31,7 @@ import javafx.scene.control.Alert;
  * @author gfoster
  */
 public class ErrorMessage {
-
+    public static LogFile logger = new LogFile(DatabaseConnector.class.getName());
     public static void display(String text){
         display("Error Dialog", text, "");
     }
@@ -44,6 +44,7 @@ public class ErrorMessage {
     public static void display(String title,
                         String text,
                         String details){
+        logger.logError("\t{0}\n\t{1}\n\t{2}", new Object[]{title, text, details});
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(title);
         alert.setHeaderText(text);
