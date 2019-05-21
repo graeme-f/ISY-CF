@@ -54,16 +54,29 @@ import utility.DataCollector;
 public class ConsumablesDataCollector extends DataCollector {
     
     //Made this class static to be usable in the SQL
-    class Paper {
+      class Paper {
         int id;
         int reams;
         LocalDate Start_Date;
         LocalDate End_Date;  
+    }
+    class Waste {
+        int id;
+        int kg;
+        LocalDate Start_Date;
+        LocalDate End_Date;  
+        
     }//end of paper class
-    
+    class WasteType {
+        int id;
+        String description;
+        int capacity;
+        
+    }
     private static ConsumablesDataCollector singleInstance = null;
     HashMap <Integer, ConsumablesDataCollector.Paper> paperDetails;
-    
+    HashMap <Integer, ConsumablesDataCollector.Waste> wasteDetails;
+    HashMap <Integer, ConsumablesDataCollector.WasteType> wasteTypeDetails;
     public static ConsumablesDataCollector getInstance() 
     { 
         if (singleInstance == null) 
@@ -97,13 +110,13 @@ public class ConsumablesDataCollector extends DataCollector {
           Paper paper = new Paper();
         
          //Find the tables with the same name located in the literal string and add them to paper's properties
-        paper.id = rs.getInt("Paper_ID");
+        paper.id = rs.getInt("Paper_ID"); 
         Date startDate  = rs.getDate("Start_Date");
         Date endDate = rs.getDate("date_created");
         int reams = rs.getInt("Amount");
         
         // Add that information into the hashmap
-        paperDetails.put(paper.id, paper);
+        paperDetails.put(paper.id, paper); //paper.id is the key to HashMap
       }//end of while loop
       
       
@@ -128,6 +141,85 @@ public class ConsumablesDataCollector extends DataCollector {
     public LocalDate getEndDate(LocalDate startDate){
         return paperDetails.get(startDate).End_Date;
     } // end of method getEndDate
+    
+
+    private void getWaste(){
+        paperDetails = new HashMap(); 
+        // TODO vehicle list needs to come from the database
+         // our SQL SELECT query. 
+      String query = "SELECT * FROM Waste";
+
+       ResultSet rs = doQuery(query);
+
+      
+      try {
+      // iterate through the java resultset
+      while (rs.next())
+      {
+
+          //Creates an instance of the paper class, to be usable in this static method.
+          Waste waste = new Waste();
+        
+         //Find the tables with the same name located in the literal string and add them to paper's properties
+        waste.id = rs.getInt("Waste_ID"); 
+        Date startDate  = rs.getDate("Start_Date");
+        Date endDate = rs.getDate("date_created");
+        int kg = rs.getInt("Amount");
+        
+        // Add that information into the hashmap
+        wasteDetails.put(waste.id, waste); //paper.id is the key to HashMap
+      }//end of while loop
+     
+      } 
+   
+       catch (Exception e)
+    {
+      System.err.println("Returned SQL exception e");
+      System.err.println(e.getMessage());
+    }//end of catch statement
+    }
+    
+    private void getWasteType(){
+        wasteTypeDetails = new HashMap(); 
+        // TODO vehicle list needs to come from the database
+         // our SQL SELECT query. 
+      String query = "SELECT * FROM Waste";
+
+       ResultSet rs = doQuery(query);
+
+      
+      try {
+      // iterate through the java resultset
+      while (rs.next())
+      {
+
+          //Creates an instance of the paper class, to be usable in this static method.
+          WasteType wasteType = new WasteType();
+        
+         //Find the tables with the same name located in the literal string and add them to paper's properties
+        wasteType.id = rs.getInt("WasteType_ID"); 
+        String description = rs.getString("Description");
+        int capacity = rs.getInt("capacity");
+
+        
+        // Add that information into the hashmap
+        wasteTypeDetails.put(wasteType.id, wasteType); 
+      }//end of while loop
+     
+      } 
+   
+       catch (Exception e)
+    {
+      System.err.println("Returned SQL exception e");
+      System.err.println(e.getMessage());
+    }//end of catch statement
+    }
+
+    
+        
+    
+    
+        
     
     
 }//end of ConsumablesDataCollector class
