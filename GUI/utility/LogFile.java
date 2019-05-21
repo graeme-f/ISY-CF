@@ -27,44 +27,23 @@ package utility;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Date;
-import java.util.logging.ConsoleHandler;
+import java.util.logging.FileHandler;
 import java.util.logging.Formatter;
+import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
-import java.util.logging.StreamHandler;
-
-class MyHandler extends StreamHandler {
-
-    @Override
-    public void publish(LogRecord record) {
-        //add own logic to publish
-        super.publish(record);
-    }
-
-
-    @Override
-    public void flush() {
-        super.flush();
-    }
-
-
-    @Override
-    public void close() throws SecurityException {
-        super.close();
-    }
-
-}
 
 class MyFormatter extends Formatter {
 
     @Override
     public String format(LogRecord record) {
-        return record.getThreadID()+"::"+record.getSourceClassName()+"::"
+        return   record.getSourceClassName()+"::"
                 +record.getSourceMethodName()+"::"
-                +new Date(record.getMillis())+"::"
-                +record.getMessage()+"\n";
+                +new Date(record.getMillis())+"\n\t"
+                +record.getLevel().getName()+":"
+                +formatMessage(record)+"\n";
     }
 
 }
@@ -83,18 +62,44 @@ public class LogFile{
             e.printStackTrace();
         }
         theLog.setLevel(Level.FINE);
-        theLog.addHandler(new ConsoleHandler());
-        theLog.addHandler(new MyHandler());
+        //theLog.addHandler(new ConsoleHandler());
+        //theLog.addHandler(new MyHandler());
+        Handler fileHandler;
+        try {
+            fileHandler = new FileHandler("ISY-CF-%g.log", 8*1024*1024, 5, true);
+            fileHandler.setFormatter(new MyFormatter());
+            theLog.addHandler(fileHandler);
+        } catch (IOException | SecurityException e) {
+            e.printStackTrace();
+        }
     } // end of constructor
     
+    public void log(String msg){
+        theLog.log(Level.INFO, msg);
+    }
+    public void log(String msg, Object param){
+        theLog.log(Level.INFO, msg, param);
+    }
+    public void log(String msg, Object [] params){
+        theLog.log(Level.INFO, msg, params);
+    }
+    
+    public void logError(String msg){
+        theLog.log(Level.SEVERE, msg);
+    }
+    public void logError(String msg, Object param){
+        theLog.log(Level.SEVERE, msg, param);
+    }
+    public void logError(String msg, Object[] params){
+        theLog.log(Level.SEVERE, msg, params);
+    }
+
     public void log(Level lvl, String msg){
         theLog.log(lvl,msg);
     }
-    
     public void log(Level lvl, String msg, Object param){
                 theLog.log(lvl,msg, param);
     }
-    
     public void log(Level lvl, String msg, Object[] params){
                 theLog.log(lvl,msg, params);
     }
