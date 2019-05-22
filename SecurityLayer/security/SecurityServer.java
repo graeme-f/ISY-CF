@@ -28,68 +28,26 @@ import java.net.*;
 import java.io.*; 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Properties;
 import java.util.Scanner;
-import java.util.logging.ConsoleHandler;
-import java.util.logging.Formatter;
 import java.util.logging.Level;
-import java.util.logging.LogManager;
-import java.util.logging.LogRecord;
-import java.util.logging.Logger;
-import java.util.logging.StreamHandler;
 import javax.xml.bind.DatatypeConverter;
-import utility.ErrorMessage;
+import utility.DatabaseConnector;
+import utility.Encrypt;
+import utility.LogFile;
 
 /**
  *
  * @author gfoster
  */
 
-class MyHandler extends StreamHandler {
-
-    @Override
-    public void publish(LogRecord record) {
-        //add own logic to publish
-        super.publish(record);
-    }
-
-
-    @Override
-    public void flush() {
-        super.flush();
-    }
-
-
-    @Override
-    public void close() throws SecurityException {
-        super.close();
-    }
-
-}
-
-class MyFormatter extends Formatter {
-
-    @Override
-    public String format(LogRecord record) {
-        return record.getThreadID()+"::"+record.getSourceClassName()+"::"
-                +record.getSourceMethodName()+"::"
-                +new Date(record.getMillis())+"::"
-                +record.getMessage()+"\n";
-    }
-
-}
-
 public class SecurityServer {
 
-    static Logger logger = Logger.getLogger(SecurityServer.class.getName());
+    static final LogFile logger = new LogFile(SecurityServer.class.getName());
     private ServerSocket server;
     private String salt;
     
@@ -135,15 +93,7 @@ public class SecurityServer {
             Properties prop = new Properties();
             prop.load(f);
 
-            try {
-                LogManager.getLogManager().readConfiguration(new FileInputStream("logging.properties"));
-            } catch (SecurityException | IOException e1) {
-                e1.printStackTrace();
-            }
-            logger.setLevel(Level.FINE);
-            logger.addHandler(new ConsoleHandler());
-            //adding custom handler
-            logger.addHandler(new MyHandler());
+
         
             // assign db parameters
             int port     = Integer.parseInt(prop.getProperty("port"));
@@ -151,9 +101,9 @@ public class SecurityServer {
             SecurityServer server = new SecurityServer(port, salt);
             server.run();
         } catch(IOException e) {
-           System.out.println(e.getMessage());
            String workingDir = "Current working directory: " + System.getProperty("user.dir");
-           logger.log(Level.SEVERE, workingDir, e);
+           logger.log(Level.SEVERE, workingDir);
+           logger.log(Level.SEVERE, e.getMessage());
         }
     } // end of method main()
 
@@ -162,6 +112,7 @@ public class SecurityServer {
 // SecurityHandler class 
 class SecurityHandler extends Thread {
     
+    static final LogFile logger = SecurityServer.logger;
     DateFormat fordate = new SimpleDateFormat("yyyy/MM/dd"); 
     DateFormat fortime = new SimpleDateFormat("hh:mm:ss");
     
@@ -174,15 +125,14 @@ class SecurityHandler extends Thread {
     int authenticateCount;
     InetAddress remoteIP;
     
-    private Connection conn = null;
-    private Statement st = null;
+    private DatabaseConnector dc;
     
     // Constructor 
     public SecurityHandler(Socket s,
                            Scanner input,
                            PrintWriter output,
                            String salt)  
-    { 
+    {
         this.s = s; 
         this.in = input; 
         this.out = output;
@@ -190,38 +140,14 @@ class SecurityHandler extends Thread {
         this.remoteIP = s.getInetAddress();
         this.authenticateCount = 0;
         this.salt = salt;
+        dc = DatabaseConnector.getInstance();
     } // end of SecurityHandler constructor()
 
     
-    /**
-     * Returns a hexadecimal encoded MD5 hash for the input String.
-     * @param data
-     * @return a MD5 hash
-     */
-    private String getMD5Hash(String data) {
-        String result = null;
-        String algorithm = "MD5";
-        String encoding = "UTF-8";
-        try {
-            MessageDigest digest = MessageDigest.getInstance(algorithm);
-            byte[] hash = digest.digest(data.getBytes(encoding));
-            return DatatypeConverter.printHexBinary(hash); // make it printable
-        }catch(NoSuchAlgorithmException  ex) {
-            System.out.println("Unknown algorithm " + algorithm);
-            if (DEBUG) ex.printStackTrace();
-        }catch (UnsupportedEncodingException ex) {
-            System.out.println("Unknown Encoding " + encoding);
-            if (DEBUG) ex.printStackTrace();
-        }
-        return result;
-    } // end of method getMD5Hash()
-    
-    private String salt(String token, String salt){
-        return salt + token + salt;
-    } // end of method salt()
+
     
     private boolean tokenMatch(String token){
-        String hashToken = getMD5Hash(salt(token, this.salt));
+        String hashToken = Encrypt.getMD5Hash(Encrypt.salt(token, this.salt), DEBUG);
         // Get token from file
         String fileToken = tokenRead(this.remoteIP.toString());
 
@@ -242,9 +168,10 @@ class SecurityHandler extends Thread {
         Scanner scanner;
         try {
             scanner = new Scanner(data);
-        } catch (FileNotFoundException ex) {
+        } catch (FileNotFoundException e) {
             String workingDir = "Current working directory: " + System.getProperty("user.dir");
-            SecurityServer.logger.log(Level.SEVERE, workingDir, ex);
+            logger.log(Level.SEVERE, workingDir);
+            logger.log(Level.SEVERE, e.getMessage());
             return "";
         }
         
@@ -266,9 +193,10 @@ class SecurityHandler extends Thread {
         boolean match = false;
         try {
             scanner = new Scanner(data);
-        } catch (FileNotFoundException ex) {
+        } catch (FileNotFoundException e) {
             String workingDir = "Current working directory: " + System.getProperty("user.dir");
-            SecurityServer.logger.log(Level.SEVERE, workingDir, ex);
+            logger.log(Level.SEVERE, workingDir);
+            logger.log(Level.SEVERE, e.getMessage());
             return false;
         }
         
@@ -291,9 +219,10 @@ class SecurityHandler extends Thread {
                 fw = new FileWriter(fileName);
                 fw.write(passwordData);
                 fw.close();
-            } catch (IOException ex) {
+            } catch (IOException e) {
                 String workingDir = "Current working directory: " + System.getProperty("user.dir");
-                SecurityServer.logger.log(Level.SEVERE, workingDir, ex);
+                logger.log(Level.SEVERE, workingDir);
+                logger.log(Level.SEVERE, e.getMessage());
             }
         } // end match was found so remove it from the file
         
@@ -301,13 +230,13 @@ class SecurityHandler extends Thread {
     } // end of method passwordMatch()
     
     private String tokenGenerate(String password){
-        String hashToken = getMD5Hash(salt(password, this.remoteIP.toString()));
+        String hashToken = Encrypt.getMD5Hash(Encrypt.salt(password, this.remoteIP.toString()),DEBUG);
         tokenWrite(hashToken, this.remoteIP.toString());
         return hashToken;
     } // end of method generateToken()
     
     private void tokenWrite(String token, String IPAddr){
-    	String hashToken = getMD5Hash(salt(token, this.salt));
+    	String hashToken = Encrypt.getMD5Hash(Encrypt.salt(token, this.salt), DEBUG);
 
     	System.out.println(IPAddr + ": " + token + " - " + hashToken);
     	String fileName = "data/knownTokens.txt";
@@ -317,9 +246,10 @@ class SecurityHandler extends Thread {
             fw = new FileWriter(fileName,true);
             fw.write(IPAddr + "\t"+ hashToken + "\n");
             fw.close();
-        } catch (IOException ex) {
+        } catch (IOException e) {
             String workingDir = "Current working directory: " + System.getProperty("user.dir");
-            SecurityServer.logger.log(Level.SEVERE, workingDir, ex);
+            logger.log(Level.SEVERE, workingDir);
+            logger.log(Level.SEVERE, e.getMessage());
         }
     } // end of method writeToken()
     
@@ -360,24 +290,30 @@ class SecurityHandler extends Thread {
                 case INSERT:
                     String sql = in.nextLine();
                     System.out.println(sql);
-                    connect();
+                    String error = dc.connect();
+                    if (error.isEmpty()){
+                        logger.log(Level.INFO, "Connection to the database has been established.");
+                    }else {
+                        logger.log(Level.SEVERE, error);
+                    }
                     // Check that the sql is an insert statement
                     // Log the statement to the file logger
-                    SecurityServer.logger.log(Level.INFO, "{0}:{1}", new Object[]{remoteIP, sql});
+                    logger.log(Level.INFO, "{0}:{1}", new Object[]{remoteIP, sql});
                     // Perform the statement
+                    Statement st = dc.getStatement();
                     int rec;
                     try {
                         rec = st.executeUpdate(sql);
-                    }catch (SQLException s) {
-                       SecurityServer.logger.log(Level.INFO,s.getMessage());
+                    }catch (SQLException e) {
+                       logger.log(Level.INFO,e.getMessage());
                        return false;
                     }
                     if (rec == 1){
-                        SecurityServer.logger.log(Level.INFO, "One record inserted.");                        
+                        logger.log(Level.INFO, "One record inserted.");                        
                     } else {
-                        SecurityServer.logger.log(Level.INFO, "{0} records inserted.", rec);
+                        logger.log(Level.INFO, "{0} records inserted.", rec);
                     }
-                    close();
+                    dc.close();
                     return true;
                 // UPDATE data already on the table
                 case UPDATE:
@@ -409,50 +345,4 @@ class SecurityHandler extends Thread {
         this.in.close(); 
         this.out.close(); 
     } // end of method run 
-    
-        private void connect() {
-        Properties prop;
-        try{
-            FileInputStream f = new FileInputStream("db.properties");
-            // load the properties file
-            prop = new Properties();
-            prop.load(f);
-        } catch(IOException e) {
-            String error = "Unable to open the file called db.properties."
-                    + "This file should be stored in the following directory:\n"
-                    + System.getProperty("user.dir")
-                    + "\n\n"
-                    + e.getMessage();
-            System.out.println(error);
-            return;
-        }
-
-        // assign db parameters
-        String user      = prop.getProperty("user");
-        String password  = prop.getProperty("password");
-        // create a connection to the database
-        try {
-            conn = DriverManager.getConnection("localhost", user, password);
-            System.out.println("Connection to the database has been established.");
-        } catch(SQLException e) {
-            System.out.println(e.getMessage());
-            return;
-        }
-        try {
-            st = conn.createStatement();
-        } catch(SQLException e) {
-            System.out.println(e.getMessage());
-        }
-    } // end connect method
-
-    public void close(){
-        try {
-            if (conn != null) {
-                conn.close();
-            }
-        } catch (SQLException ex) {
-            System.out.println(ex.getMessage());
-        }       
-    } // end of close method
-
 } // end of class SecurityHandler

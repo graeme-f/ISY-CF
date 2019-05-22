@@ -23,12 +23,19 @@
  */
 package transportation;
 
-
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Properties;
 import java.util.Set;
 import utility.DataCollector;
+import utility.ErrorMessage;
 
 public class TransportationDataCollector extends DataCollector {
     class Car {
@@ -108,12 +115,25 @@ public class TransportationDataCollector extends DataCollector {
     public ArrayList<String> getFuelList(){
         // TODO fuel types need to come from the database
         ArrayList<String> fuels = new ArrayList();
-        fuels.add("Petrol");
-        fuels.add("Diesel");
-        fuels.add("LPG");
+        String sql = "SELECT * FROM Fuel_Type";
+        ResultSet result = doQuery(sql);
+        try {
+            while (result.next()) {
+                fuels.add (result.getString("description"));}
+        } catch (SQLException error) {
+                ErrorMessage.display(error.getMessage());
+        }
         return fuels;
     } // end method getFuelList()
-    
+
+    public ArrayList<String> getCarTypeList(){
+        // TODO fuel types need to come from the database
+        ArrayList<String> fuels = new ArrayList();
+        fuels.add("Bus");
+        fuels.add("Car/Truck");
+        return fuels;
+    } // end method getCarTypeList() 
+
     public String getFuel(String carName){
         return carDetails.get(carName).fuel;
     } // end of method getFuel
@@ -149,8 +169,8 @@ public class TransportationDataCollector extends DataCollector {
                              String endDate,
                              String fuelType,
                              String fuelAmount){
-        String fuelID = "1";
-        String vehicleID = "1";
+        String fuelID = "1"; // TODO get the number from the fuelType
+        String vehicleID = "1"; // TODO get the number from the carName
         String sql = "INSERT INTO "
                 + "Fuel (Start_Date, End_Date, Type, Amount, Vehicle_ID) "
                 + "VALUES("
@@ -162,7 +182,5 @@ public class TransportationDataCollector extends DataCollector {
                 + ")";
         return insertDatabase(sql);
     }
-    
-    
     
 } // end class TransportationDataCollector

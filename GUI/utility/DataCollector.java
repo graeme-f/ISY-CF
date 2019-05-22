@@ -26,11 +26,8 @@ package utility;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.Calendar;
 import java.util.Properties;
 
@@ -40,17 +37,18 @@ import security.SecurityClient;
  *
  * @author gfoster
  */
-public abstract class DataCollector {
-    
-    private Connection conn = null;
-    private Statement st = null;
+public abstract class DataCollector extends DatabaseConnector{
+
     private SecurityClient sc = null;
 
     private int schooYear; // the start of the school year
 
         // This runs when the instance is created.
     protected DataCollector() {
-        connect();  // establish a read only connection to the database
+        String error = connect();
+        if (!error.isEmpty()){
+            ErrorMessage.display("An error occurred while trying to connect to the database.", error);
+        }
         schooYear = Calendar.getInstance().get(Calendar.YEAR);
         // If it is between January and June subtract a year 
         if (Calendar.getInstance().get(Calendar.MONTH) < 7){
@@ -86,63 +84,6 @@ public abstract class DataCollector {
         }
     } // end of method createSecurityConnection()
 
-    private void connect() {
-        Properties prop;
-        try{
-            FileInputStream f = new FileInputStream("db.properties");
-            // load the properties file
-            prop = new Properties();
-            prop.load(f);
-        } catch(IOException e) {
-            String error = "Unable to open the file called db.properties."
-                    + "This file should be stored in the following directory:\n"
-                    + System.getProperty("user.dir")
-                    + "\n\n"
-                    + e.getMessage();
-            ErrorMessage.display("An error occurred while trying to connect to the database.", error);
-            System.out.println(error);
-            return;
-        }
-
-        // assign db parameters
-        String url       = prop.getProperty("url");
-        String user      = prop.getProperty("user");
-        String password  = prop.getProperty("password");
-        // create a connection to the database
-        try {
-            conn = DriverManager.getConnection(url, user, password);
-            System.out.println("Connection to the database has been established.");
-        } catch(SQLException e) {
-            String error = "Unable to make a connection with the database. "
-                    + "The connection details are stored in the file:\n"
-                    + System.getProperty("user.dir")+"\\db.properties"
-                    + "\n\n"
-                    + e.getMessage();
-            ErrorMessage.display("An error occurred while trying to connect to the database.", error);
-            System.out.println(e.getMessage());
-            return;
-        }
-        try {
-            st = conn.createStatement();
-        } catch(SQLException e) {
-            String error = "Connection with the database established but "
-                    + "the database doesn't appear to be configured correctly."
-                    + "\n\n"
-                    + e.getMessage();
-            ErrorMessage.display("An error occurred while communicating with the database.", error);
-            System.out.println(error);
-        }
-    } // end connect method
-    
-    public void close(){
-        try {
-            if (conn != null) {
-                conn.close();
-            }
-        } catch (SQLException ex) {
-            System.out.println(ex.getMessage());
-        }       
-    } // end of close method
     
     @Override
     public void finalize() throws Throwable{
@@ -154,7 +95,7 @@ public abstract class DataCollector {
         ResultSet rec;
         try {
             rec = st.executeQuery(sql);
-        } catch (SQLException s) {
+        } catch (SQLException e) {
             String error = "Connection lost, retrying";
             ErrorMessage.display("An error occurred while reading data from the database.", error);
             System.out.println(error);
@@ -164,12 +105,19 @@ public abstract class DataCollector {
     } // end of method doQuery
     
     private ResultSet emergencyQuery(String sql){
-        connect();
-                ResultSet rec;
+        String error = forceConnect();
+            if (error.isEmpty()){
+                System.out.println("Connection to the database has been established.");
+            }else {
+            System.out.println(error);
+            ErrorMessage.display("An error occurred while trying to connect to the database.", error);
+        }
+
+        ResultSet rec;
         try {
             rec = st.executeQuery(sql);
         } catch (SQLException s) {
-            String error = "SQL error: "
+            error = "SQL error: "
                     + s.toString() + "\n\n"
                     + s.getErrorCode() + "\n\n"
                     + s.getSQLState();
