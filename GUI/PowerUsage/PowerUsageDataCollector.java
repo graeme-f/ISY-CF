@@ -49,7 +49,7 @@ public class PowerUsageDataCollector extends DataCollector {
 
     private void getAllElectricity() {
         electricityDetails = new HashMap<>();
-        String query = "SELECT * FROM Electricity WHERE StartDate " + getBetweenSchoolYear();
+        String query = "SELECT * FROM Electricity WHERE Start_Date " + getBetweenSchoolYear();
         ResultSet rec = doQuery(query);
         Electricity electricity = new Electricity();
         try {
@@ -72,7 +72,7 @@ public class PowerUsageDataCollector extends DataCollector {
 
     private void getAllGenerator() {
         generatorDetails = new HashMap<>();
-        String query = "SELECT * FROM Generator WHERE StartDate " + getBetweenSchoolYear();
+        String query = "SELECT * FROM Generator WHERE Start_Date " + getBetweenSchoolYear();
         ResultSet rec = doQuery(query);
         Generator generator = new Generator();
         try {
