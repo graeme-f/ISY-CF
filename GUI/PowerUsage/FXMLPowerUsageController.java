@@ -104,21 +104,18 @@ public class FXMLPowerUsageController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
         dc = PowerUsageDataCollector.getInstance();
+        initializeElectricity();
+        setElectricityDetails();
     }
 
     private void initializeElectricity() {
-        btnUpdateElectricity.setDisable(true);
+        btnUpdateElectricity.setDisable(false);
         meterUnits.setTextFormatter(new TextFormatter<Integer>(new IntegerStringConverter(), 0, integerFilter));
-
     }
 
-    private void setElectricityDetails(int id) {
+    private void setElectricityDetails() {
         ArrayList<Integer> electricity = dc.getElectricityList();
-        ObservableList<Integer> electricityList = FXCollections.observableArrayList(electricity);
-        ElectricityLists.getItems().addAll(electricityList);
-        btnUpdateElectricity.setDisable(true);
-
-        ElectricityDescription.setText("ID: " + id);
+        ElectricityStartDate.setValue(dc.getLastDate());
         ElectricityEndDate.setValue(LocalDate.now());
         meterUnits.clear();
     }
