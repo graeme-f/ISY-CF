@@ -68,7 +68,7 @@ public class PowerUsageDataCollector extends DataCollector {
         } catch(SQLException error){
                 ErrorMessage.display(error.getMessage());
         }
-    }
+    } // end of method getAllElectricity
 
     private void getAllGenerator() {
         generatorDetails = new HashMap<>();
@@ -91,7 +91,7 @@ public class PowerUsageDataCollector extends DataCollector {
         } catch (SQLException error) {
             ErrorMessage.display(error.getMessage());
         }
-    }
+    } // end of method getAllGenerator
 
     public ArrayList<Integer> getElectricityList(){
         ArrayList<Integer> electricity = new ArrayList<>();
@@ -102,7 +102,7 @@ public class PowerUsageDataCollector extends DataCollector {
             electricity.add(me.getKey());
         }
         return electricity;
-    } // end method getElectricityList()
+    } // end of method getElectricityList
 
     public ArrayList<Integer> getGeneratorList(){
         ArrayList<Integer> generator = new ArrayList<>();
@@ -113,10 +113,10 @@ public class PowerUsageDataCollector extends DataCollector {
             generator.add(me.getKey());
         }
         return generator;
-    } // end method getGeneratorList()
+    } // end of method getGeneratorList
 
 
-    public HashMap electricityGetMonthMeterUnits()  {
+    public HashMap<String, Integer> getElectricityMonthMeterUnits()  {
         HashMap<String, Integer> monthMeterUnits = new HashMap<>();
         for (Electricity e : electricityDetails.values()) {
             String month = getMonth(e.startDate);
@@ -128,9 +128,9 @@ public class PowerUsageDataCollector extends DataCollector {
             }
         }
         return monthMeterUnits;
-    } // end method getMonthMeterUnits
+    } // end of method getMonthMeterUnits
 
-    public HashMap generatorGetMonthAmount()  {
+    public HashMap<String, Integer> getGeneratorMonthAmount()  {
         HashMap<String, Integer> monthAmount = new HashMap<>();
         for (Generator g : generatorDetails.values()) {
             String month = getMonth(g.startDate);
@@ -142,24 +142,24 @@ public class PowerUsageDataCollector extends DataCollector {
             }
         }
         return monthAmount;
-    } // end method getMonthMeterUnits
+    } // end of method getMonthMeterUnits
 
     public String getMonth(LocalDate date) {
         return date.getMonth().toString();
-    }
+    } // end of method getMonth
 
     public LocalDate getLastDate() {
         return lastDate.plusDays(1);
-    } // end method getStartDate()
+    } // end of method getLastDate
 
 
     public String insertElectricityData(String startDate, String endDate, String meterUnits) {
         return insertDatabase("INSERT into electricity (Start_Date, End_Date, Meter_Units) VALUES(\'" + startDate + "\', " +
                 "\'" + endDate + "\', \'" + meterUnits + ")");
-    }
+    } // end of method insertElectricityData
 
     public String insertGeneratorData(String startDate, String endDate, String amount) {
         return insertDatabase("INSERT into electricity (Start_Date, End_Date, Amount) VALUES(\'" + startDate + "\', " +
                 "\'" + endDate + "\', \'" + amount + ")");
-    }
+    } // end of method insertGeneratorData
 }
