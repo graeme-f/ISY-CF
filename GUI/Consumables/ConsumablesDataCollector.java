@@ -44,7 +44,6 @@ import javafx.stage.Stage;
 //Unsure whether the data type should be localdate or date, will require testing
 import java.time.LocalDate;
 import utility.DataCollector;
-import utility.DateUtil;
 import utility.ErrorMessage;
 
 /**
@@ -79,10 +78,7 @@ public class ConsumablesDataCollector extends DataCollector {
     HashMap <Integer, ConsumablesDataCollector.Paper> paperDetails;
     HashMap <Integer, ConsumablesDataCollector.Waste> wasteDetails;
     HashMap <Integer, ConsumablesDataCollector.WasteType> wasteTypeDetails;
-    public static ConsumablesDataCollector getInstance() 
-    { 
-    
-    private Date lastDate;
+    LocalDate lastDate = null;
     public static ConsumablesDataCollector getInstance() { 
 
         if (singleInstance == null) 
@@ -125,6 +121,9 @@ public class ConsumablesDataCollector extends DataCollector {
         // Add that information into the hashmap
 
         paperDetails.put(paper.id, paper); //paper.id is the key to HashMap
+        if (paper.End_Date == null || paper.End_Date.compareTo(lastDate) > 0){
+            lastDate = paper.End_Date;
+        }
       }//end of while loop
       
       
@@ -136,31 +135,19 @@ public class ConsumablesDataCollector extends DataCollector {
       System.err.println("Returned SQL exception e");
       System.err.println(e.getMessage());
     }//end of catch statement
-
         
-        if (paper.End_Date == null || paper.End_Date.compareTo(lastDate) > 0){
-            lastDate = paper.End_Date;
-        }
-        
-      }//end of while loop 
-      } //end of try statement
+    }//end of getAllPaper method  
 
-     catch(SQLException error){
-            ErrorMessage.display(error.getMessage());
-     }
-     catch (Exception e) {
+    //gets the amount of A3 reams for a given order
+    public int getA3Reams(LocalDate startDate) {
+        return paperDetails.get(startDate).A3reams;
+    } // end of method getA3Reams
 
-            System.err.println("Returned SQL exception e");
-            System.err.println(e.getMessage());
-     }//end of try-catch codeblock    
-    }//end of getAllPaper method
+    //gets the amount of A4 reams for a given order
+    public int getA4Reams(LocalDate startDate) {
+        return paperDetails.get(startDate).A4reams;
+    } // end of method getA4Reams
     
-
-    //gets the amount of reams for a given order
-    public int getReams(LocalDate startDate) {
-        return paperDetails.get(startDate).reams;
-    } // end of method getReams
-
     //gets the end date of a given order
     public LocalDate getEndDate(LocalDate startDate) {
 
