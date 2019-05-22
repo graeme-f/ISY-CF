@@ -28,14 +28,14 @@ import java.net.*;
 import java.io.*;
 import java.util.Properties;
 import java.util.Scanner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import utility.LogFile;
 /**
  *
  * @author gfoster
  */
 public class SecurityClient extends Thread {
-    // initialize socket and input output streams 
+    // initialize socket and input output streams
+    static final LogFile logger = new LogFile(SecurityServer.class.getName());
     private Socket       socket    = null; 
     private Scanner      input     = null; 
     private PrintWriter  output    = null;
@@ -45,6 +45,8 @@ public class SecurityClient extends Thread {
     private final int    port;
     private boolean      authenticated = false;
     private boolean      rejected = false;
+    private boolean      connected = false;
+    private boolean      failed = false;
 // constructor to put ip address and port 
     public SecurityClient(String address, int port) 
     {
@@ -53,6 +55,10 @@ public class SecurityClient extends Thread {
     } // end of constructor SecurityClient
     
     public void run(){
+        authenticated = false;
+        rejected = false;
+        connected = false;
+        failed = false;
         // establish a connection 
         try
         { 
@@ -64,14 +70,14 @@ public class SecurityClient extends Thread {
             input = new Scanner(socket.getInputStream());
             output = new PrintWriter(socket.getOutputStream(),true); 
         } 
-        catch(UnknownHostException u) 
+        catch(IOException e) 
         { 
-            System.out.println(u); 
-        } 
-        catch(IOException i) 
-        { 
-            System.out.println(i); 
-        }   
+            System.out.println(e);
+            logger.logError(e.getMessage());
+            failed = true;
+            return;
+        }
+        connected = true;
         KnownCommands command;
         do {
             // Wait for authentication request
@@ -115,6 +121,9 @@ public class SecurityClient extends Thread {
   
     public boolean isAuthenticated() {return authenticated;}
     public boolean isRejected() {return rejected;}
+    public boolean isConnected() {return connected;}
+    public boolean hasFailed() {return failed;}
+    public boolean finished() {return (authenticated || rejected || failed);}
     
     void  giveToken(){
         // TODO Get token file and send to server 
@@ -146,7 +155,7 @@ public class SecurityClient extends Thread {
             scanner = new Scanner(data);
         } catch (FileNotFoundException ex) {
             String workingDir = "Current working directory: " + System.getProperty("user.dir");
-            Logger.getLogger("Security Server").log(Level.SEVERE, workingDir, ex);
+            logger.logError("{0} \n{1}", new Object[]{workingDir, ex});
             return "";
         }
         
@@ -186,7 +195,7 @@ public class SecurityClient extends Thread {
             fw.close();
         } catch (IOException ex) {
             String workingDir = "Current working directory: " + System.getProperty("user.dir");
-            Logger.getLogger(SecurityHandler.class.getName()).log(Level.SEVERE, workingDir, ex);
+            logger.logError("{0} \n{1}", new Object[]{workingDir, ex});
         }
     } // end of method writeToken()
     

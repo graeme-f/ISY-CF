@@ -26,10 +26,13 @@ package utility;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import static java.lang.Thread.sleep;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import security.SecurityClient;
 
@@ -133,8 +136,21 @@ public abstract class DataCollector extends DatabaseConnector{
     
     protected String insertDatabase(String sql){
         createSecurityConnection(); // establish a secure write connection to the database
-        do { } while (!sc.isAuthenticated() && !sc.isRejected());
+        while (!sc.finished()){
+            // if there is no code in this loop then sometimes it will loop forever
+            try {
+                sleep(5);
+            } catch (InterruptedException e) {
+                logger.log(e.getMessage());
+            }
+        }
         
+        if (sc.hasFailed()){
+            ErrorMessage.display("Failed to connect to the security server",
+                                 "Please check with the Tech department to see if it is running"
+                                );
+            return null;
+        }
         if (sc.isRejected()){
             String text = "A secure connection with the database could not be established.";
             String error = "You may need to request a new password.";
