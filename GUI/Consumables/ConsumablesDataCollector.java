@@ -44,29 +44,31 @@ import javafx.stage.Stage;
 //Unsure whether the data type should be localdate or date, will require testing
 import java.time.LocalDate;
 import utility.DataCollector;
+import utility.DateUtil;
+import utility.ErrorMessage;
 
 /**
  *
  * @author mayankpandey
  */
 
-
 public class ConsumablesDataCollector extends DataCollector {
     
     //Made this class static to be usable in the SQL
       class Paper {
         int id;
-        int reams;
+        int A3reams;
+        int A4reams;
         LocalDate Start_Date;
         LocalDate End_Date;  
-    }
+    }//end of paper class
+  
     class Waste {
         int id;
         int amount;
         LocalDate Start_Date;
         LocalDate End_Date;  
-        
-    }//end of paper class
+    }
     class WasteType {
         int id;
         String description;
@@ -79,43 +81,49 @@ public class ConsumablesDataCollector extends DataCollector {
     HashMap <Integer, ConsumablesDataCollector.WasteType> wasteTypeDetails;
     public static ConsumablesDataCollector getInstance() 
     { 
+    
+    private Date lastDate;
+    public static ConsumablesDataCollector getInstance() { 
+
         if (singleInstance == null) 
             singleInstance = new ConsumablesDataCollector(); 
   
         return singleInstance; 
     } // end of getInstance method
-    
        
     // Creator is private to make this a singleton class
-    private ConsumablesDataCollector(){
+    private ConsumablesDataCollector() {
         super();
         getAllPaper();
     } // end of constructor
     
-    private void getAllPaper(){
+    private void getAllPaper() {
         paperDetails = new HashMap(); 
         // TODO vehicle list needs to come from the database
          // our SQL SELECT query. 
       String query = "SELECT * FROM Paper";
 
        ResultSet rs = doQuery(query);
-
       
       try {
       // iterate through the java resultset
-      while (rs.next())
-      {
+
+      while (rs.next()) {
 
           //Creates an instance of the paper class, to be usable in this static method.
+
           Paper paper = new Paper();
         
-         //Find the tables with the same name located in the literal string and add them to paper's properties
-        paper.id = rs.getInt("Paper_ID"); 
+
+        //Find the tables with the same name located in the literal string and add them to paper's properties
+        paper.id = rs.getInt("Paper_ID");
         Date startDate  = rs.getDate("Start_Date");
-        Date endDate = rs.getDate("date_created");
-        int reams = rs.getInt("Amount");
+        Date endDate = rs.getDate("End_Date");
+        int A3reams = rs.getInt("A3");
+        int A4reams = rs.getInt("A4");
         
         // Add that information into the hashmap
+
         paperDetails.put(paper.id, paper); //paper.id is the key to HashMap
       }//end of while loop
       
@@ -128,21 +136,37 @@ public class ConsumablesDataCollector extends DataCollector {
       System.err.println("Returned SQL exception e");
       System.err.println(e.getMessage());
     }//end of catch statement
-    
+
         
+        if (paper.End_Date == null || paper.End_Date.compareTo(lastDate) > 0){
+            lastDate = paper.End_Date;
+        }
+        
+      }//end of while loop 
+      } //end of try statement
+
+     catch(SQLException error){
+            ErrorMessage.display(error.getMessage());
+     }
+     catch (Exception e) {
+
+            System.err.println("Returned SQL exception e");
+            System.err.println(e.getMessage());
+     }//end of try-catch codeblock    
     }//end of getAllPaper method
     
+
     //gets the amount of reams for a given order
-    public int getReams(LocalDate startDate){
+    public int getReams(LocalDate startDate) {
         return paperDetails.get(startDate).reams;
     } // end of method getReams
 
     //gets the end date of a given order
-    public LocalDate getEndDate(LocalDate startDate){
+    public LocalDate getEndDate(LocalDate startDate) {
+
         return paperDetails.get(startDate).End_Date;
     } // end of method getEndDate
-    
-
+   
     private void getWaste(){
         paperDetails = new HashMap(); 
         // TODO vehicle list needs to come from the database
@@ -223,3 +247,4 @@ public class ConsumablesDataCollector extends DataCollector {
     
     
 }//end of ConsumablesDataCollector class
+

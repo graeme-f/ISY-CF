@@ -89,15 +89,11 @@ public class FXMLTransportationController implements Initializable {
         String end    = endDate.getValue().toString();
         String fuel   = fuelList.getSelectionModel().getSelectedItem().toString();
         String amount = fuelTotal.getText();
-        dc.updateFuel(vehicleName,
-                    start,
-                    end,
-                    fuel,
-                    amount);
+        dc.updateFuel(vehicleName,start,end,fuel,amount);
     }
     
     @FXML private void DeleteVehicle(ActionEvent event) {
-        //dc.deleteVehicle(vehicleName);
+        dc.deleteVehicle(vehicleName);
     }
     @FXML private void AddVehicle(ActionEvent event) {
         System.out.println("Add Vehicle");
@@ -131,7 +127,7 @@ public class FXMLTransportationController implements Initializable {
         startDate.setValue(dc.getStartDate(vehicleName));
         endDate.setValue(LocalDate.now());
         fuelTotal.clear();
-        btnUpdateFuel.setDisable(false);
+        btnUpdateFuel.setDisable(true);
     } // end of method setVehicleDetails()
     
     private void vehicleChanged(ObservableValue<? extends String> observable,String oldValue,String newValue){
@@ -139,7 +135,8 @@ public class FXMLTransportationController implements Initializable {
         gpVehicleForm.setVisible(true);
         setVehicleDetails(newValue);
         setVehicleSummary(newValue);
-
+        
+        btnDeleteVehicle.setDisable(false);
         fuelTotal.requestFocus(); // Doesn't seem to work :(
     } // end of method vehicleChanged
     
@@ -158,7 +155,7 @@ public class FXMLTransportationController implements Initializable {
         vehicleLists.getItems().addAll(carList);
         gpVehicleForm.setVisible(false);
         btnUpdateFuel.setDisable(true);
-        //btnDeleteVehicle.setDisable(true);
+        btnDeleteVehicle.setDisable(true);
         
         // Update and show the details when a vehicle is selected
         vehicleLists.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>()
@@ -174,6 +171,17 @@ public class FXMLTransportationController implements Initializable {
         ObservableList<String> fuelType = FXCollections.<String>observableArrayList(fuels);
         fuelList.setItems(fuelType);
         fuelTotal.setTextFormatter(new TextFormatter<Integer>(new IntegerStringConverter(), 0, integerFilter));
+        fuelTotal.textProperty().addListener((observable, oldvalue, newvalue)
+        ->{
+                if(newvalue.isEmpty() || newvalue.equals("-"))
+                {
+                    btnUpdateFuel.setDisable(true);
+                }
+                else
+                {
+                    btnUpdateFuel.setDisable(false);
+                }
+        });
 
     } // end of method initialiseVehicles()
     
