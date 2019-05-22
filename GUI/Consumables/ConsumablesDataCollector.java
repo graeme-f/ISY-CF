@@ -43,6 +43,8 @@ import javafx.stage.Stage;
 
 //Unsure whether the data type should be localdate or date, will require testing
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Set;
 import utility.DataCollector;
 import utility.ErrorMessage;
 
@@ -77,7 +79,7 @@ public class ConsumablesDataCollector extends DataCollector {
     private static ConsumablesDataCollector singleInstance = null;
     HashMap <Integer, ConsumablesDataCollector.Paper> paperDetails;
     HashMap <Integer, ConsumablesDataCollector.Waste> wasteDetails;
-    HashMap <Integer, ConsumablesDataCollector.WasteType> wasteTypeDetails;
+    HashMap <Integer, WasteType> wasteTypeDetails;
     LocalDate lastDate = null;
     public static ConsumablesDataCollector getInstance() { 
 
@@ -224,6 +226,29 @@ public class ConsumablesDataCollector extends DataCollector {
       System.err.println("Returned SQL exception e");
       System.err.println(e.getMessage());
     }//end of catch statement
+    }
+    
+    public ArrayList<String> getWasteTypeList(){
+        ArrayList<String> wasteType = new ArrayList();
+        Set <HashMap.Entry <Integer, WasteType>> st = wasteTypeDetails.entrySet();
+        
+        for (HashMap.Entry <Integer, WasteType> me:st){
+            
+            wasteType.add(me.getValue().description);
+        }
+        return wasteType;
+    }
+    public String updateWaste(String wasteType, String startDate, String endDate, String amount){
+        String wasteTypeID = "1"; //TO DO get information from wasteType
+        String sql = " INSERT INTO " 
+                + "waste (Type, Start_Date, End_Date, Amount) "
+                + "VALUES ("
+                + wasteTypeID + ", "
+                + startDate + ", "
+                + endDate + ", "
+                + amount + ") ";
+        return insertDatabase (sql);
+        
     }
 
     
