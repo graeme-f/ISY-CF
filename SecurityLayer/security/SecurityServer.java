@@ -279,49 +279,47 @@ class SecurityHandler extends Thread {
     private boolean getCommand(){
         out.println(KnownCommands.COMMAND);
         String cmd;
-//        while(in.hasNextLine()){
-            cmd = in.nextLine();
-            System.out.println(cmd);
-            KnownCommands command = KnownCommands.getCommand(cmd);
-            switch (command) {
-                case EXIT:
-                    return true;
-                // INSERT data into the table
-                case INSERT:
-                    String sql = in.nextLine();
-                    System.out.println(sql);
-                    String error = dc.connect();
-                    if (error.isEmpty()){
-                        logger.log(Level.INFO, "Connection to the database has been established.");
-                    }else {
-                        logger.log(Level.SEVERE, error);
-                    }
-                    // Check that the sql is an insert statement
-                    // Log the statement to the file logger
-                    logger.log(Level.INFO, "{0}:{1}", new Object[]{remoteIP, sql});
-                    // Perform the statement
-                    Statement st = dc.getStatement();
-                    int rec;
-                    try {
-                        rec = st.executeUpdate(sql);
-                    }catch (SQLException e) {
-                       logger.log(Level.INFO,e.getMessage());
-                       return false;
-                    }
-                    if (rec == 1){
-                        logger.log(Level.INFO, "One record inserted.");                        
-                    } else {
-                        logger.log(Level.INFO, "{0} records inserted.", rec);
-                    }
-                    dc.close();
-                    return true;
-                // UPDATE data already on the table
-                case UPDATE:
-                    break;
-                default:
-                    break;
-            }
-//        }
+        cmd = in.nextLine();
+        System.out.println(cmd);
+        KnownCommands command = KnownCommands.getCommand(cmd);
+        switch (command) {
+            case EXIT:
+                return true;
+            // INSERT data into the table
+            case INSERT:
+                String sql = in.nextLine();
+                System.out.println(sql);
+                String error = dc.connect();
+                if (error.isEmpty()){
+                    logger.log(Level.INFO, "Connection to the database has been established.");
+                }else {
+                    logger.log(Level.SEVERE, error);
+                }
+                // Check that the sql is an insert statement
+                // Log the statement to the file logger
+                logger.log(Level.INFO, "{0}:{1}", new Object[]{remoteIP, sql});
+                // Perform the statement
+                Statement st = dc.getStatement();
+                int rec;
+                try {
+                    rec = st.executeUpdate(sql);
+                }catch (SQLException e) {
+                   logger.log(Level.INFO,e.getMessage());
+                   return false;
+                }
+                if (rec == 1){
+                    logger.log(Level.INFO, "One record inserted.");                        
+                } else {
+                    logger.log(Level.INFO, "{0} records inserted.", rec);
+                }
+                dc.close();
+                return true;
+            // UPDATE data already on the table
+            case UPDATE:
+                break;
+            default:
+                break;
+        }
         return false;
     } // end of method getCommand()
 
