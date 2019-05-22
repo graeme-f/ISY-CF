@@ -62,7 +62,7 @@ public class ConsumablesDataCollector extends DataCollector {
     }
     class Waste {
         int id;
-        int kg;
+        int amount;
         LocalDate Start_Date;
         LocalDate End_Date;  
         
@@ -164,10 +164,10 @@ public class ConsumablesDataCollector extends DataCollector {
         waste.id = rs.getInt("Waste_ID"); 
         Date startDate  = rs.getDate("Start_Date");
         Date endDate = rs.getDate("date_created");
-        int kg = rs.getInt("Amount");
+        int amount = rs.getInt("Amount");
         
         // Add that information into the hashmap
-        wasteDetails.put(waste.id, waste); //paper.id is the key to HashMap
+        wasteDetails.put(waste.id, waste); // waste.id is the key to HashMap
       }//end of while loop
      
       } 
@@ -183,7 +183,7 @@ public class ConsumablesDataCollector extends DataCollector {
         wasteTypeDetails = new HashMap(); 
         // TODO vehicle list needs to come from the database
          // our SQL SELECT query. 
-      String query = "SELECT * FROM Waste";
+      String query = "SELECT * FROM Waste_Type";
 
        ResultSet rs = doQuery(query);
 
