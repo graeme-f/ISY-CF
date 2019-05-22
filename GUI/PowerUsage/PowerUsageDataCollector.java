@@ -43,6 +43,8 @@ public class PowerUsageDataCollector extends DataCollector {
     private PowerUsageDataCollector() {
         super();
         lastDate = null;
+        getAllElectricity();
+        getAllGenerator();
     } // end of method PowerUsageDataCollector
 
     private void getAllElectricity() {
