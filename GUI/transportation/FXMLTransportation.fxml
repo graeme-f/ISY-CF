@@ -81,24 +81,30 @@
                                     <content>
                                       <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                              <children>
-                                                <ListView layoutX="9.0" prefHeight="149.0" prefWidth="244.0" />
-                                                <Button layoutX="9.0" layoutY="149.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="93.0" text="Ground" />
-                                                <Button layoutX="170.0" layoutY="149.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="83.0" text="Air" />
                                                 <Pane layoutX="87.0" layoutY="150.0" prefHeight="27.0" prefWidth="70.0" />
-                                                <GridPane layoutX="15.0" layoutY="177.0" prefHeight="90.0" prefWidth="231.0">
+                                                <GridPane layoutX="-2.0" prefHeight="285.0" prefWidth="264.0">
                                                   <columnConstraints>
                                                     <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                                                     <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                                                   </columnConstraints>
                                                   <rowConstraints>
+                                                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                                     <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                                     <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                                   </rowConstraints>
                                                    <children>
-                                                      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="No. of players" />
-                                                      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="No.of teachers" wrappingWidth="103.21875" GridPane.rowIndex="1" />
+                                                      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="No. of players" GridPane.rowIndex="3" />
+                                                      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="No.of teachers" wrappingWidth="103.21875" GridPane.rowIndex="4" />
+                                                      <TextField GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                                                      <TextField GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                                                      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="No. of buses" wrappingWidth="126.21875" />
+                                                      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Km traveled by bus" wrappingWidth="124.21875" GridPane.rowIndex="1" />
+                                                      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Km traveled by air" GridPane.rowIndex="2" />
                                                       <TextField GridPane.columnIndex="1" />
                                                       <TextField GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                                      <TextField GridPane.columnIndex="1" GridPane.rowIndex="2" />
                                                    </children>
                                                 </GridPane>
                                              </children>
@@ -109,8 +115,7 @@
                                     <content>
                                       <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                              <children>
-                                                <ListView layoutX="13.0" prefHeight="155.0" prefWidth="236.0" />
-                                                <GridPane layoutX="13.0" layoutY="155.0" prefHeight="90.0" prefWidth="235.0">
+                                                <GridPane layoutX="13.0" layoutY="2.0" prefHeight="243.0" prefWidth="235.0">
                                                   <columnConstraints>
                                                     <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                                                     <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -122,8 +127,9 @@
                                                   </rowConstraints>
                                                    <children>
                                                       <Text strokeType="OUTSIDE" strokeWidth="0.0" text="No.of buses" wrappingWidth="91.21875" />
-                                                      <Text strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="94.21875" GridPane.rowIndex="1" />
+                                                      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Km traveled" wrappingWidth="94.21875" GridPane.rowIndex="1" />
                                                       <TextField GridPane.columnIndex="1" />
+                                                      <TextField GridPane.columnIndex="1" GridPane.rowIndex="1" />
                                                    </children>
                                                 </GridPane>
                                              </children>
@@ -134,33 +140,55 @@
                                        <content>
                                           <AnchorPane prefHeight="200.0" prefWidth="200.0">
                                              <children>
-                                                <ListView layoutX="13.0" prefHeight="152.0" prefWidth="227.0" />
-                                                <Button layoutX="13.0" layoutY="150.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="85.0" text="Ground" />
-                                                <Button layoutX="153.0" layoutY="150.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="87.0" text="Air" />
-                                                <GridPane layoutX="16.0" layoutY="190.0" prefHeight="90.0" prefWidth="223.0">
+                                                <GridPane layoutX="21.0" prefHeight="261.0" prefWidth="240.0">
                                                   <columnConstraints>
                                                     <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                                                     <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                                                   </columnConstraints>
                                                   <rowConstraints>
+                                                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                                     <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                                     <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                                     <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                                   </rowConstraints>
                                                    <children>
-                                                      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="No. of students" wrappingWidth="105.21875" />
-                                                      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="No.of teachers" GridPane.rowIndex="1" />
+                                                      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="No. of students" wrappingWidth="105.21875" GridPane.rowIndex="2" />
+                                                      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="No.of teachers" GridPane.rowIndex="3" />
+                                                      <TextField GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                                      <TextField GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                                                      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="No. of buses" />
+                                                      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Km traveled by bus" GridPane.rowIndex="1" />
                                                       <TextField GridPane.columnIndex="1" />
                                                       <TextField GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                                      <TextField GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                                                      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Km travled by air" GridPane.rowIndex="4" />
                                                    </children>
                                                 </GridPane>
                                              </children>
                                           </AnchorPane>
                                        </content>
                                   </TitledPane>
-                                    <TitledPane animated="false" layoutX="10.0" layoutY="64.0" prefHeight="335.0" prefWidth="232.0" text="Feild trips">
+                                    <TitledPane animated="false" layoutX="10.0" layoutY="64.0" prefHeight="335.0" prefWidth="232.0" text="Field trips">
                                        <content>
-                                          <ListView prefHeight="206.0" prefWidth="230.0" />
+                                          <GridPane>
+                                            <columnConstraints>
+                                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                            </columnConstraints>
+                                            <rowConstraints>
+                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                            </rowConstraints>
+                                             <children>
+                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="No. of buses" GridPane.rowIndex="1" />
+                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Km traveled" GridPane.rowIndex="2" />
+                                                <TextField GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                                <TextField GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                             </children>
+                                          </GridPane>
                                        </content>
                                     </TitledPane>
                                 </panes>
