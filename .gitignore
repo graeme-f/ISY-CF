@@ -5,6 +5,7 @@ nbproject/
 *.jar
 *.class
 *.log
+*.log.*
 bin/
 dist/
 manifest.mf

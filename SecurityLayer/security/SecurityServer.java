@@ -235,15 +235,38 @@ class SecurityHandler extends Thread {
         return hashToken;
     } // end of method generateToken()
     
-    private void tokenWrite(String token, String IPAddr){
-    	String hashToken = Encrypt.getMD5Hash(Encrypt.salt(token, this.salt), DEBUG);
+    private void tokenWrite(String newToken, String IPAddr){
+    	String hashToken = Encrypt.getMD5Hash(Encrypt.salt(newToken, this.salt), DEBUG);
 
-    	System.out.println(IPAddr + ": " + token + " - " + hashToken);
+        // Read the newToken file and delete any line that matches with the IP address
     	String fileName = "data/knownTokens.txt";
-        // write the new token to the end of the knownTokens file
+        File data = new File(fileName);
+        Scanner scanner;
+        try {
+            scanner = new Scanner(data);
+        } catch (FileNotFoundException e) {
+            String workingDir = "Current working directory: " + System.getProperty("user.dir");
+            logger.log(Level.SEVERE, workingDir);
+            logger.log(Level.SEVERE, e.getMessage());
+            return;
+        }
+        String hashData = "";
+        while (scanner.hasNext()){
+            String IP = scanner.next();
+            String token = scanner.next();
+            
+            if (!IP.equals(IPAddr)) {
+                hashData += IP + "\t" + token +'\n';
+            }
+        }
+        scanner.close();
+        
+    	System.out.println(IPAddr + ": " + newToken + " - " + hashToken);
+        // write the new newToken to the end of the knownTokens file
         FileWriter fw;
         try {
             fw = new FileWriter(fileName,true);
+            fw.write(hashData);
             fw.write(IPAddr + "\t"+ hashToken + "\n");
             fw.close();
         } catch (IOException e) {

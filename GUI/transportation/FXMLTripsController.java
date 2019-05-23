@@ -28,6 +28,8 @@
  */
 package transportation;
 
+import java.net.URL;
+import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -46,11 +48,11 @@ public class FXMLTripsController implements Initializable {
     
     @FXML private DatePicker SEASACstartDate;
     @FXML private DatePicker SEASACendDate;
-    @FXML private DatePicker YACendDate;
+    @FXML private DatePicker YACstartDate;
     @FXML private DatePicker YACendDate;
     @FXML private DatePicker WWWstartDate;
     @FXML private DatePicker WWWendDate;
-    @FXML private DatePicker FieldTripsendDate;
+    @FXML private DatePicker FieldTripsstartDate;
     @FXML private DatePicker FieldTripsendDate;
 
     @FXML private TextField SEASACBusesNumber;
@@ -70,7 +72,12 @@ public class FXMLTripsController implements Initializable {
 
     @FXML private TextField FieldTripsBusesNumber;
     @FXML private TextField FieldTripsBusDistance;
+      
+    private TransportationDataCollector dc;
     
-    @FXML private Label VehicleDescription;
-    private String vehicleName;  
+    @Override
+    public void initialize(URL url, ResourceBundle rb) {
+        dc = TransportationDataCollector.getInstance();
+               
+    } // end of method initialize    
 }
