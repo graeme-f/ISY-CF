@@ -23,16 +23,12 @@
  */
 package transportation;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Properties;
 import java.util.Set;
 import utility.DataCollector;
 import utility.ErrorMessage;
@@ -173,13 +169,12 @@ public class TransportationDataCollector extends DataCollector {
         String vehicleID = "1"; // TODO get the number from the carName
         String sql = "INSERT INTO "
                 + "Fuel (Start_Date, End_Date, Type, Amount, Vehicle_ID) "
-                + "VALUES("
-                + startDate + ", "
-                + endDate + ", "
+                + "VALUES(\""
+                + startDate + "\", \""
+                + endDate + "\", "
                 + fuelID + ", "
                 + fuelAmount + ", "
-                + vehicleID + ", "
-                + ")";
+                + vehicleID + ")";
         return insertDatabase(sql);
     }
     
