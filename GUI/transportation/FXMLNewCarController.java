@@ -61,7 +61,7 @@ public class FXMLNewCarController  implements Initializable {
         description.clear();
         registration.clear();
         
-        ArrayList<String> makes = dc.getFuelList();
+        ArrayList<String> makes = dc.getCarTypeList();
         ObservableList<String> vehicleMakes = FXCollections.<String>observableArrayList(makes);
         vehicleTypes.getItems().addAll(vehicleMakes);
         vehicleTypes.setPromptText("Type of Vehicle");
