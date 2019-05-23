@@ -23,7 +23,7 @@
    <children>
       <VBox fx:id="VehicleBox" prefHeight="471.0" prefWidth="256.0" style="-fx-border-width: 1; -fx-border-color: black;">
          <children>
-            <Accordion>
+            <Accordion fx:id="leftSidePanel">
               <panes>
                 <TitledPane fx:id="transportPane" animated="false" prefHeight="538.0" prefWidth="254.0" text="Transport">
                      <content>

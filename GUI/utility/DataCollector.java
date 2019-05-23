@@ -87,13 +87,7 @@ public abstract class DataCollector extends DatabaseConnector{
         }
     } // end of method createSecurityConnection()
 
-    
-    @Override
-    public void finalize() throws Throwable{
-        close();
-        super.finalize();
-    }
-    
+   
     protected ResultSet doQuery(String sql){
         ResultSet rec;
         try {

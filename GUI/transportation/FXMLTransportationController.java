@@ -38,6 +38,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
+import javafx.scene.control.Accordion;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.DatePicker;
@@ -47,6 +48,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
 import javafx.scene.control.TextFormatter.Change;
+import javafx.scene.control.TitledPane;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import javafx.util.converter.IntegerStringConverter;
@@ -72,6 +74,8 @@ public class FXMLTransportationController implements Initializable {
     @FXML private Button btnUpdateFuel;
     
     @FXML private GridPane gpVehicleForm;
+    @FXML private Accordion leftSidePanel;
+    @FXML private TitledPane transportPane;
     private String vehicleName;
     
     private TransportationDataCollector dc;
@@ -133,6 +137,7 @@ public class FXMLTransportationController implements Initializable {
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        leftSidePanel.setExpandedPane(transportPane);
         dc = TransportationDataCollector.getInstance();
         initialiseVehicles();        
     } // end of method initialize    

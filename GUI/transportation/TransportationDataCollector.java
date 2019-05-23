@@ -43,6 +43,8 @@ public class TransportationDataCollector extends DataCollector {
     
     private static TransportationDataCollector singleInstance = null;
     HashMap<String, Car> carDetails;
+    HashMap<Integer, String> fuelList;
+    HashMap<Integer, String> vehicleList;
     
     public static TransportationDataCollector getInstance() 
     { 
@@ -55,79 +57,88 @@ public class TransportationDataCollector extends DataCollector {
     // Creator is private to make this a singleton class
     private TransportationDataCollector(){
         super();
+        getFuelTypes();
+        getVehicleTypes();
         getAllCars();
     } // end of constructor
     
-    private void getAllCars(){
-        carDetails = new HashMap(); 
-        // TODO vehicle list needs to come from the database
-        Car car = new Car();
-        car.id = 1;
-        car.name = "Red Car, the fast one. With a dent on the side";
-        car.fuel = "Petrol";
-        car.lastRecordedDate = LocalDate.of(2019, 02, 28);
-        carDetails.put(car.name, car);
-        
-        car = new Car();
-        car.id = 2;
-        car.name = "Blue Car";
-        car.fuel = "Diesel";
-        car.lastRecordedDate = LocalDate.of(2019, 03, 31);
-        carDetails.put(car.name, car);
-        
-        car = new Car();
-        car.id = 3;
-        car.name = "Orange Car";
-        car.fuel = "Diesel";
-        car.lastRecordedDate = LocalDate.of(2019, 03, 31);
-        carDetails.put(car.name, car);
-        
-        car = new Car();
-        car.id = 4;
-        car.name = "Green Car";
-        car.fuel = "LPG";
-        car.lastRecordedDate = LocalDate.of(2019, 03, 31);
-        carDetails.put(car.name, car);
-        
-        car = new Car();
-        car.id = 5;
-        car.name = "Yellow Car";
-        car.fuel = "Petrol";
-        car.lastRecordedDate = LocalDate.of(2019, 02, 28);
-        carDetails.put(car.name, car);
-    } // end method getAllCars
-
-    public ArrayList<String> getCarList(){
-        ArrayList<String> cars = new ArrayList();
-        Set< HashMap.Entry< String, Car> > st = carDetails.entrySet();    
-  
-       for (HashMap.Entry< String, Car> me:st) 
-       {
-           cars.add(me.getKey());
-       }
-       return cars;
-    } // end method getCarList()
-    
-    public ArrayList<String> getFuelList(){
-        // TODO fuel types need to come from the database
-        ArrayList<String> fuels = new ArrayList();
+    private void getFuelTypes(){
+        fuelList = new HashMap();
         String sql = "SELECT * FROM Fuel_Type";
         ResultSet result = doQuery(sql);
         try {
             while (result.next()) {
-                fuels.add (result.getString("description"));}
+                int fuelID = result.getInt("Fuel_Type_ID");
+                String desc = result.getString("description");
+                fuelList.put (fuelID, desc);}
         } catch (SQLException error) {
                 ErrorMessage.display(error.getMessage());
+        }
+
+    }
+
+    private void getVehicleTypes(){
+        vehicleList = new HashMap();
+        String sql = "SELECT * FROM Vehicle_Type";
+        ResultSet result = doQuery(sql);
+        try {
+            while (result.next()) {
+                int vehicleID = result.getInt("Vehicle_Type_ID");
+                String desc = result.getString("Description");
+                vehicleList.put (vehicleID, desc);}
+        } catch (SQLException error) {
+                ErrorMessage.display(error.getMessage());
+        }
+
+    }
+
+    private void getAllCars(){
+        carDetails = new HashMap();
+        Car car = new Car();
+        String sql = "SELECT * FROM Vehicle";
+        ResultSet result = doQuery(sql);
+        try {
+            while (result.next()) {
+                car.id = result.getInt("Vehicle_ID");
+                car.name = result.getString("Description");
+                int fuelID = result.getInt("Type");
+                car.fuel = fuelList.get(fuelID);
+                carDetails.put(car.name, car);
+            }
+        } catch (SQLException error) {
+                ErrorMessage.display(error.getMessage());
+        }
+        
+    } // end method getAllCars
+
+    public ArrayList<String> getCarList(){
+        ArrayList<String> cars = new ArrayList();
+        Set< HashMap.Entry< String, Car> > st = carDetails.entrySet();
+        for (HashMap.Entry< String, Car> me:st) 
+        {
+            cars.add(me.getKey());
+        }
+         return cars;
+    } // end method getCarList()
+    
+    public ArrayList<String> getFuelList(){
+        ArrayList<String> fuels = new ArrayList();
+        Set< HashMap.Entry<Integer, String> > st = fuelList.entrySet();
+        for (HashMap.Entry<Integer, String> me:st) 
+        {
+            fuels.add(me.getValue());
         }
         return fuels;
     } // end method getFuelList()
 
     public ArrayList<String> getCarTypeList(){
-        // TODO fuel types need to come from the database
-        ArrayList<String> fuels = new ArrayList();
-        fuels.add("Bus");
-        fuels.add("Car/Truck");
-        return fuels;
+        ArrayList<String> types = new ArrayList();
+        Set< HashMap.Entry<Integer, String> > st = vehicleList.entrySet();
+        for (HashMap.Entry<Integer, String> me:st) 
+        {
+            types.add(me.getValue());
+        }
+        return types;
     } // end method getCarTypeList() 
 
     public String getFuel(String carName){
