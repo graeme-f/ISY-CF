@@ -131,8 +131,9 @@ public class SecurityClient extends Thread {
         if (haveToken){
             // send token
         } else {
-            output.println("NO TOKEN AVAILABLE");
+            output.println(tokenRead());
         } // end haveToken
+  
               
     } // end of giveToken
     
@@ -167,6 +168,26 @@ public class SecurityClient extends Thread {
         return null;
     } // end of method readPassword()
 
+    private String tokenRead(){
+        File data = new File("data/MyToken.txt");
+        Scanner scanner;
+        try {
+            scanner = new Scanner(data);
+        } catch (FileNotFoundException ex) {
+            String workingDir = "Current working directory: " + System.getProperty("user.dir");
+            logger.logError("{0} \n{1}", new Object[]{workingDir, ex});
+            return "";
+        }
+        
+        while (scanner.hasNext()){
+           String token = scanner.next();
+           System.out.println(token);
+           return token;
+        }
+        scanner.close();
+        return null;
+    } // end of method tokenRead()
+        
     public void exit(){
         output.println(KnownCommands.EXIT);
     } // end of method exit()
