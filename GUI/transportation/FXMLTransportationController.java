@@ -53,6 +53,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.converter.IntegerStringConverter;
+import utility.ErrorMessage;
 
 /**
  *
@@ -60,12 +61,7 @@ import javafx.util.converter.IntegerStringConverter;
  */
 public class FXMLTransportationController implements Initializable {
     
-    @FXML private HBox ContainerBox;
-    @FXML private VBox VehicleBox;
-    @FXML private VBox DetailsBox;
-    @FXML private VBox TripBox;
     @FXML private TextArea details;
-    @FXML private TitledPane transportPane;
     
     @FXML private Label VehicleDescription;
     
@@ -75,8 +71,6 @@ public class FXMLTransportationController implements Initializable {
     @FXML private DatePicker endDate;
     @FXML private TextField fuelTotal;
     
-    
-    @FXML private Button btnAddVehicle;
     @FXML private Button btnDeleteVehicle;
     @FXML private Button btnUpdateFuel;
     
@@ -103,13 +97,13 @@ public class FXMLTransportationController implements Initializable {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("FXMLNewCar.fxml"));
         try {
             newScene = new Scene(loader.load());
-        } catch (IOException ex) {
+        } catch (IOException e) {
             System.out.println("Fail");
-            System.out.println(ex);
-            //TODO: handle error
+            System.out.println(e);
+            ErrorMessage.display("Unable to open window", e.getMessage());
             return;
         }
-
+        
         Stage inputStage = new Stage();
         inputStage.initOwner(Transportation.primaryStage);
         inputStage.setTitle("Create a new vehicle");
