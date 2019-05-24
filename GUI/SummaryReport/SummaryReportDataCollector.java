@@ -7,18 +7,16 @@ import java.util.Calendar;
 
 public class SummaryReportDataCollector extends DataCollector {
 
-    private  SummaryReportDataCollector() {
-        super();
-    }
 
 
 
 
-    public double[][] getElectricityCF(int month) {
 
-        double total[][] = new double[3][13];
+    public double[][] getElectricityCF() {
 
-        /*first array is 0:Electricity, 1:Generator, 2:Air Conditioners
+        double total[][] = new double[4][13];
+
+        /*first array is 0:Electricity, 1:Generator, 2:Air Conditioners 3:Total of totals - The supreme lord of total
         second array is months, 0:July, 11: June, 12: Total for Year*/
 
         int schoolyear = Calendar.getInstance().get(Calendar.YEAR);
@@ -29,11 +27,11 @@ public class SummaryReportDataCollector extends DataCollector {
         String monthSql[] = new String[13];
         for (int i = 0; i < 13; i++) {
             if (i<3) {
-                monthSql[i] = "Start_Date Like " + schoolyear + "-0" + (i+7) + "%%%";
+                monthSql[i] = "Start_Date LIKE \"" + schoolyear + "-0" + (i+7) + "%\"";
             } else if (i<6) {
-                monthSql[i] = "Start_Date Like " + schoolyear + "-" + (i + 7) + "%%%";
+                monthSql[i] = "Start_Date Like \"" + schoolyear + "-" + (i + 7) + "%\"";
             } else {
-                monthSql[i] = "Start_Date Like " + schoolyear + "-" + (i - 5) + "%%%";;
+                monthSql[i] = "Start_Date Like \"" + schoolyear + "-" + (i - 5) + "%\"";
             }
         }
 
@@ -43,42 +41,42 @@ public class SummaryReportDataCollector extends DataCollector {
             for (int i = 0; i < 13; i++) {
 
                 if (i != 12){
-                    results = doQuery("select Meter_Units where " + monthSql[i] + " From Electricity");
+                    results = doQuery("SELECT Meter_Units FROM Electricity WHERE " + monthSql[i]);
 
                     //query for kwh from database
                     while (results.next()) {
                         total[0][i] = ((double) results.getInt("Meter_Units") * 0.075716);
                     }
                 } else {
-                    results = doQuery("select Meter_Units where " + getBetweenSchoolYear() + " From Electricity");
+                    results = doQuery("select Meter_Units From Electricity where " + getBetweenSchoolYear());
                     while (results.next()) {
                         total[0][i] = ((double) results.getInt("Meter_Units") * 0.075716);
                     }
                 }
 
                 if (i != 12) {
-                    results = doQuery("select Amount where " + monthSql[i] + " From Generator");
+                    results = doQuery("select Amount From Generator where " + monthSql[i]);
                     //query for liters from database
                     while (results.next()) {
                         total[1][i] = ((double) results.getInt("Amount")*2.72);
                     }
                 } else {
-                    results = doQuery("select Amount where " + getBetweenSchoolYear() + " From Generator");
+                    results = doQuery("select Amount From Generator where " + getBetweenSchoolYear() );
                     while (results.next()) {
                         total[1][i] = ((double) results.getInt("Amount") * 2.72);
                     }
                 }
 
                 if (i != 12) {
-                    results = doQuery("select Number*Multiplier ACCF where " + monthSql[i] + " From AC_Type" +
-                            "inner join AC_CO2 using(AC_Type_ID)");
+                    results = doQuery("select Number*Multiplier ACCF From AC_Type " +
+                            "inner join AC_CO2 on AC_Type.AC_Type_ID = AC_CO2.AC_Type_AC_Type_ID where "+ monthSql[i]);
                     //query for ac info from database
                     while (results.next()) {
                         total[2][i] = (double) results.getInt("ACCF");
                     }
                 } else {
-                    results = doQuery("select Number*Multiplier ACCF where " + getBetweenSchoolYear() + " From AC_Type" +
-                            "inner join AC_CO2 using(AC_Type_ID)");
+                    results = doQuery("select Number*Multiplier ACCF From AC_Type inner join AC_CO2 " +
+                            "on AC_Type.AC_Type_ID = AC_CO2.AC_Type_AC_Type_ID where " + getBetweenSchoolYear());
                     while (results.next()) {
                         total[2][i] = (double) results.getInt("Amount");
                     }
@@ -92,6 +90,7 @@ public class SummaryReportDataCollector extends DataCollector {
         } catch (Exception e){
             System.out.println("Error: " + e.toString() + e.getMessage());
         }
+        total[3][0] = total[0][13] +total[1][13] +total[3][13];
         return total;
     } //end of method getElectricityCF
 
