@@ -1,0 +1,10 @@
+Chicken, Snack Bar, 672
+Chicken, Western, 672
+Chicken, Cafeteria, 365.77632
+Chicken, Mananas, 365.77632
+Pork, Snack Bar, 73.155264 
+Pork, Western, 67.2
+Pork, Cafeteria, 146.310528
+Beef, Snack Bar, 73.155264
+Beef, Mananas, 365.77632
+Fish, Cafeteria, 146.310528

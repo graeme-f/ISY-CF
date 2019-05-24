@@ -26,6 +26,7 @@ package utility;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import static java.lang.Thread.sleep;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Calendar;
@@ -38,7 +39,7 @@ import security.SecurityClient;
  * @author gfoster
  */
 public abstract class DataCollector extends DatabaseConnector{
-    
+
     private SecurityClient sc = null;
 
     private int schooYear; // the start of the school year
@@ -46,11 +47,9 @@ public abstract class DataCollector extends DatabaseConnector{
         // This runs when the instance is created.
     protected DataCollector() {
         String error = connect();
-        if (error.isEmpty()){
-            System.out.println("Connection to the database has been established.");
-        }else {
-            System.out.println(error);
+        if (!error.isEmpty()){
             ErrorMessage.display("An error occurred while trying to connect to the database.", error);
+            logger.log(error);
         }
         schooYear = Calendar.getInstance().get(Calendar.YEAR);
         // If it is between January and June subtract a year 
@@ -64,11 +63,11 @@ public abstract class DataCollector extends DatabaseConnector{
     } // end of method getStartDate()
 
     protected String getEndDate(){
-        return "\"" + (schooYear+1) + "-06-30%\"";
+        return "\"" + (schooYear+1) + "-06-30 %\"";
     } // end of method getStartDate()
 
     protected String getBetweenSchoolYear(){
-        return "BETWEEN " + getStartDate() + " AND " + getEndDate();
+        return " BETWEEN " + getStartDate() + " AND " + getEndDate();
     } // end of method getSchoolYear()
     
     private void createSecurityConnection(){
@@ -83,37 +82,30 @@ public abstract class DataCollector extends DatabaseConnector{
             sc = new SecurityClient(IPAddr, port);
             sc.start();
         } catch(IOException e) {
-           System.out.println(e.getMessage());
+           logger.log(e.getMessage());
         }
     } // end of method createSecurityConnection()
-
-    
-    @Override
-    public void finalize() throws Throwable{
-        close();
-        super.finalize();
-    }
-    
+   
     protected ResultSet doQuery(String sql){
         ResultSet rec;
         try {
             rec = st.executeQuery(sql);
         } catch (SQLException e) {
-            String error = "Connection lost, retrying";
+            String error = "Connection lost, retrying...";
             ErrorMessage.display("An error occurred while reading data from the database.", error);
-            System.out.println(error);
+            logger.log(error);
             return emergencyQuery(sql);
         }
         return rec;
     } // end of method doQuery
     
     private ResultSet emergencyQuery(String sql){
-        String error = connect();
+        String error = forceConnect();
             if (error.isEmpty()){
-                System.out.println("Connection to the database has been established.");
+                logger.log("Connection to the database has been established.");
             }else {
-            System.out.println(error);
             ErrorMessage.display("An error occurred while trying to connect to the database.", error);
+            logger.log(error);
         }
 
         ResultSet rec;
@@ -125,23 +117,39 @@ public abstract class DataCollector extends DatabaseConnector{
                     + s.getErrorCode() + "\n\n"
                     + s.getSQLState();
             ErrorMessage.display("An error occurred while reading data from the database.", error);
-            System.out.println(error);
+            logger.log(error);
             return null;
         }
         String msg = "Connection re-established";
             ErrorMessage.display("Information Message", "Connection to the database.", msg);
-            System.out.println(msg);
+            logger.log(msg);
         return rec;
     } // end of method emergencyQuery()
     
     protected String insertDatabase(String sql){
         createSecurityConnection(); // establish a secure write connection to the database
-        do { } while (!sc.isAuthenticated() && !sc.isRejected());
+        // Wait until the secure connection has been established
+        while (!sc.finished()){
+            // if there is no code in this loop then sometimes it will loop forever
+            try {
+                sleep(5);
+            } catch (InterruptedException e) {
+                logger.log(e.getMessage());
+            }
+        }
         
+        if (sc.hasFailed()){
+            ErrorMessage.display("Failed to connect to the security server",
+                                 "Please check with the Tech department to see if it is running"
+                                );
+            logger.log("The security server does not appear to be running");
+            return null;
+        }
         if (sc.isRejected()){
             String text = "A secure connection with the database could not be established.";
             String error = "You may need to request a new password.";
             ErrorMessage.display(text, error);
+            logger.log("\t{0}\n\t{1}", new Object [] {text, error});
             return null;
         }
         String message = sc.insertDatabase(sql);

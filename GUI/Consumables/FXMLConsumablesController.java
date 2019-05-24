@@ -24,6 +24,7 @@
 package Consumables;
 
 import java.net.URL;
+import java.time.LocalDate;
 import java.util.ResourceBundle;
 import java.util.function.UnaryOperator;
 import javafx.event.ActionEvent;
@@ -32,6 +33,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
+import javafx.util.converter.IntegerStringConverter;
 
 /**
  * FXML Controller class
@@ -40,26 +42,53 @@ import javafx.scene.control.TextFormatter;
  */
 public class FXMLConsumablesController implements Initializable {
     
-    @FXML private DatePicker startDate;
-    @FXML private DatePicker endDate;
+    @FXML private DatePicker StartDate;
+    @FXML private DatePicker EndDate;
     @FXML private TextField A4;
     @FXML private TextField A3;
+    @FXML private TextField Amount;
     
     private ConsumablesDataCollector dc;
     
-    @FXML private void UpdateFuel(ActionEvent event) {
-        
-    }
+    @FXML private void updatePaper(ActionEvent event) {
+        String start  = StartDate.getValue().toString();
+        String end    = EndDate.getValue().toString();
+        String a4   = A4.getText();
+        String a3 = A3.getText();
+//        dc.update(start,end,a4,a3);
+    } // end of method updatePaper()
+    
+    @FXML private void updateWaste(ActionEvent event) {
+        String start  = StartDate.getValue().toString();
+        String end    = EndDate.getValue().toString();
+        String amount   = Amount.getText();
+//        dc.update(start,end,a4,a3);
+    } // end of method updateWaste()
     
     /**
      * Initializes the controller class.
+     * @param url
+     * @param rb
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         dc = ConsumablesDataCollector.getInstance();
-    }
+        initializePaper();
+        initializeWaste();
+    } // end of method initialize()
     
+    private void initializePaper() {
+//        StartDate.setValue(dc.getPaperStartDate());
+//        EndDate.setValue(LocalDate.now());
+        A4.setTextFormatter(new TextFormatter<>(new IntegerStringConverter(), 0, integerFilter));
+        A3.setTextFormatter(new TextFormatter<>(new IntegerStringConverter(), 0, integerFilter));
+    } // end of method initializePaper()
     
+    private void initializeWaste() {
+//        StartDate.setValue(dc.getPaperStartDate());
+//        EndDate.setValue(LocalDate.now());
+//        Amount.setTextFormatter(new TextFormatter<>(new IntegerStringConverter(), 0, integerFilter));
+    } // end of method initializeWaste()
     
     UnaryOperator<TextFormatter.Change> integerFilter = change -> {
         String newText = change.getControlNewText();

@@ -1,0 +1,2 @@
+1 largebin 1.863 3
+2 small bin 1.375 5
