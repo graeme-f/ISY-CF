@@ -243,9 +243,9 @@ public class ConsumablesDataCollector extends DataCollector {
         String sql = " INSERT INTO " 
                 + "waste (Type, Start_Date, End_Date, Amount) "
                 + "VALUES ("
-                + wasteTypeID + ", "
-                + startDate + ", "
-                + endDate + ", "
+                + wasteTypeID + ", \""
+                + startDate + "\", \""
+                + endDate + "\", "
                 + amount + ") ";
         return insertDatabase (sql);
         
