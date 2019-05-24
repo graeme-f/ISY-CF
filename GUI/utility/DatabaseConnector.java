@@ -50,16 +50,7 @@ public class DatabaseConnector {
         return instance;
     }
     
-    @Override
-    protected void finalize() throws Throwable{
-        logger.log("Closing db connection.");
-        try {
-            close();
-        } finally {
-            super.finalize();
-        }
-    }
-    
+  
     protected DatabaseConnector() {
        conn = null;
        st = null;
