@@ -85,6 +85,13 @@ public class FXMLPowerUsageController implements Initializable {
         String amount = meterUnits.getText();
         dc.insertElectricityData(start, end, amount);
     } // end of UpdateElectricity
+    
+    @FXML private void updateGenerator(ActionEvent event) {
+        String start = GeneratorStartDate.getValue().toString();
+        String end = GeneratorEndDate.getValue().toString();
+        String amount = fuelAmount.getText();
+        dc.insertGeneratorData(start, end, amount);
+    }
 
     private PowerUsageDataCollector dc;
 
@@ -104,8 +111,18 @@ public class FXMLPowerUsageController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
         dc = PowerUsageDataCollector.getInstance();
+        initializeAll();
+    }
+    
+    private void initializeAll() {
         initializeElectricity();
+        initializeGenerators();
+        setAllDetails();
+    }
+    
+    private void setAllDetails() {
         setElectricityDetails();
+        setGeneratorDetails();
     }
 
     private void initializeElectricity() {
@@ -120,5 +137,16 @@ public class FXMLPowerUsageController implements Initializable {
         meterUnits.clear();
     }
 
+    private void initializeGenerators() {
+        btnUpdateGenerator.setDisable(false);
+        fuelAmount.setTextFormatter(new TextFormatter<Integer>(new IntegerStringConverter(), 0, integerFilter));
+    }
+    
+    private void setGeneratorDetails() {
+        ArrayList<Integer> generators = dc.getGeneratorList();
+        GeneratorStartDate.setValue(dc.getLastDate());
+        GeneratorEndDate.setValue(LocalDate.now());
+        fuelAmount.clear();
+    }
     
 }
