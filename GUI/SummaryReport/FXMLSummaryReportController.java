@@ -182,7 +182,7 @@ public class FXMLSummaryReportController extends SummaryReportDataCollector impl
 
     private int CFTransport;
     private int CFTrip;
-    private int CFElectricity;
+    private int CFElectricity; //these will be unnecessary with the controller
     private int CFAC;
     private int CFWaste;
     private int CFMeat;

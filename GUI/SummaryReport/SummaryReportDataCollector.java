@@ -124,5 +124,4 @@ public class SummaryReportDataCollector extends DataCollector {
         return total;
     }
 
-
-}
+} //end of ConsumablesCF method (still not specific to db
