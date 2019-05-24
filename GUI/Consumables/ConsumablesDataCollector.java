@@ -156,6 +156,18 @@ public class ConsumablesDataCollector extends DataCollector {
         return paperDetails.get(startDate).End_Date;
     } // end of method getEndDate
    
+    public String updatePaper(String startDate, String endDate, String A3reams, String A4reams){
+        String paperid = "1"; //TO DO get information from wasteType
+        String sql = " INSERT INTO " 
+                + "paper (Start_Date, End_Date, A4_reams, A3_reams) "
+                + "VALUES (,\""
+                + startDate + "\", \""
+                + endDate + "\", "
+                + A4reams + ","
+                + A3reams + ") ";
+        return insertDatabase (sql);
+    }
+    
     private void getWaste(){
         paperDetails = new HashMap(); 
         // TODO vehicle list needs to come from the database
