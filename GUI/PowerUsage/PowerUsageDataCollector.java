@@ -106,23 +106,23 @@ public class PowerUsageDataCollector extends DataCollector {
     } // end of method getAllGenerator
 
     private void getAllAcType() {
-        generatorDetails = new HashMap<>();
-        String query = "SELECT * FROM AC_Type WHERE Start_Date " + getBetweenSchoolYear();
+        acTypeDetails = new HashMap<>();
+        String query = "SELECT * FROM AC_Type "; //WHERE Start_Date " + getBetweenSchoolYear();
         ResultSet rec = doQuery(query);
         ACType acType = new ACType();
         try {
             while (rec.next()) {
                 acType.id = rec.getInt("AC_Type_ID");
-                acType.startDate = rec.getDate("Start_Date").toLocalDate();
-                acType.endDate = rec.getDate("End_Date").toLocalDate();
+//                acType.startDate = rec.getDate("Start_Date").toLocalDate();
+//                acType.endDate = rec.getDate("End_Date").toLocalDate();
                 acType.description = rec.getString("Description");
                 acType.number = rec.getInt("Number");
                 acTypeDetails.put(acType.id, acType);
-                if (lastDate == null) {
-                    lastDate = acType.endDate;
-                } else if (acType.endDate.compareTo(lastDate) > 0) {
-                    lastDate = acType.endDate;
-                }
+//                if (lastDate == null) {
+//                    lastDate = acType.endDate;
+//                } else if (acType.endDate.compareTo(lastDate) > 0) {
+//                    lastDate = acType.endDate;
+//                }
             }
         } catch (SQLException error) {
             ErrorMessage.display(error.getMessage());
