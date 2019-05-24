@@ -47,6 +47,7 @@ public class FXMLConsumablesController implements Initializable {
     @FXML private TextField A4;
     @FXML private TextField A3;
     @FXML private TextField Amount;
+    @FXML private TextField WasteType;
     
     private ConsumablesDataCollector dc;
     
@@ -55,14 +56,15 @@ public class FXMLConsumablesController implements Initializable {
         String end    = EndDate.getValue().toString();
         String a4   = A4.getText();
         String a3 = A3.getText();
-//        dc.update(start,end,a4,a3);
+        dc.updatePaper(start,end,a4,a3);
     } // end of method updatePaper()
     
     @FXML private void updateWaste(ActionEvent event) {
         String start  = StartDate.getValue().toString();
         String end    = EndDate.getValue().toString();
         String amount   = Amount.getText();
-//        dc.update(start,end,a4,a3);
+        String wasteType = WasteType.getText();
+        dc.updateWaste(wasteType,start,end,amount);
     } // end of method updateWaste()
     
     /**
@@ -96,5 +98,5 @@ public class FXMLConsumablesController implements Initializable {
             return change;
         }
         return null;
-    }; // end of intergerFilter
+    }; // end of integerFilter
 }

@@ -26,16 +26,27 @@ public class PowerUsageDataCollector extends DataCollector {
         int amount;
     } // end of inner class Generator
 
+    class ACType {
+        int id;
+        //TODO
+        // LocalDate startDate;
+        // Months and stuff in the database, the code supports it
+        LocalDate startDate;
+        LocalDate endDate;
+        String description;
+        int number;
+    }
+
     private static PowerUsageDataCollector singleInstance = null;
     private HashMap<Integer, Electricity> electricityDetails;
     private HashMap<Integer, Generator> generatorDetails;
+    private HashMap<Integer, ACType> acTypeDetails;
 
     // Singleton
     public static PowerUsageDataCollector getInstance()
     {
         if (singleInstance == null)
             singleInstance = new PowerUsageDataCollector();
-
         return singleInstance;
     } // end of method getInstance
 
@@ -45,6 +56,7 @@ public class PowerUsageDataCollector extends DataCollector {
         lastDate = null;
         getAllElectricity();
         getAllGenerator();
+        getAllAcType();
     } // end of method PowerUsageDataCollector
 
     private void getAllElectricity() {
@@ -93,6 +105,30 @@ public class PowerUsageDataCollector extends DataCollector {
         }
     } // end of method getAllGenerator
 
+    private void getAllAcType() {
+        acTypeDetails = new HashMap<>();
+        String query = "SELECT * FROM AC_Type "; //WHERE Start_Date " + getBetweenSchoolYear();
+        ResultSet rec = doQuery(query);
+        ACType acType = new ACType();
+        try {
+            while (rec.next()) {
+                acType.id = rec.getInt("AC_Type_ID");
+//                acType.startDate = rec.getDate("Start_Date").toLocalDate();
+//                acType.endDate = rec.getDate("End_Date").toLocalDate();
+                acType.description = rec.getString("Description");
+                acType.number = rec.getInt("Number");
+                acTypeDetails.put(acType.id, acType);
+//                if (lastDate == null) {
+//                    lastDate = acType.endDate;
+//                } else if (acType.endDate.compareTo(lastDate) > 0) {
+//                    lastDate = acType.endDate;
+//                }
+            }
+        } catch (SQLException error) {
+            ErrorMessage.display(error.getMessage());
+        }
+    } // end of method getAllAcType
+
     public ArrayList<Integer> getElectricityList(){
         ArrayList<Integer> electricity = new ArrayList<>();
         Set< HashMap.Entry< Integer, PowerUsageDataCollector.Electricity> > st = electricityDetails.entrySet();
@@ -115,6 +151,17 @@ public class PowerUsageDataCollector extends DataCollector {
         return generator;
     } // end of method getGeneratorList
 
+    public ArrayList<Integer> getAcTypeList(){
+        ArrayList<Integer> acType = new ArrayList<>();
+        Set< HashMap.Entry< Integer, PowerUsageDataCollector.ACType> > st = acTypeDetails.entrySet();
+
+        for (HashMap.Entry< Integer, PowerUsageDataCollector.ACType> me:st)
+        {
+            acType.add(me.getKey());
+        }
+        return acType;
+    } // end of method getAcTypeList
+
 
     public HashMap<String, Integer> getElectricityMonthMeterUnits()  {
         HashMap<String, Integer> monthMeterUnits = new HashMap<>();
@@ -128,7 +175,7 @@ public class PowerUsageDataCollector extends DataCollector {
             }
         }
         return monthMeterUnits;
-    } // end of method getMonthMeterUnits
+    } // end of method getElectricityMonthMeterUnits
 
     public HashMap<String, Integer> getGeneratorMonthAmount()  {
         HashMap<String, Integer> monthAmount = new HashMap<>();
@@ -142,7 +189,22 @@ public class PowerUsageDataCollector extends DataCollector {
             }
         }
         return monthAmount;
-    } // end of method getMonthMeterUnits
+    } // end of method getGeneratorMonthAmount
+
+    public HashMap<String, Integer> getAcTypeNumber()  {
+        HashMap<String, Integer> monthNumber = new HashMap<>();
+        for (ACType a : acTypeDetails.values()) {
+            String month = getMonth(a.startDate);
+            if (monthNumber.containsKey(month)) {
+                int subtotal = monthNumber.get(month);
+                monthNumber.put(month, subtotal + a.number);
+            } else {
+                monthNumber.put(month, a.number);
+            }
+        }
+        return monthNumber;
+    } // end of method getAcTypeNumber
+
 
     public String getMonth(LocalDate date) {
         return date.getMonth().toString();
@@ -154,12 +216,17 @@ public class PowerUsageDataCollector extends DataCollector {
 
 
     public String insertElectricityData(String startDate, String endDate, String meterUnits) {
-        return insertDatabase("INSERT into electricity (Start_Date, End_Date, Meter_Units) VALUES(\'" + startDate + "\', " +
+        return insertDatabase("INSERT into Electricity (Start_Date, End_Date, Meter_Units) VALUES(\'" + startDate + "\', " +
                 "\'" + endDate + "\', \'" + meterUnits + ")");
     } // end of method insertElectricityData
 
     public String insertGeneratorData(String startDate, String endDate, String amount) {
-        return insertDatabase("INSERT into electricity (Start_Date, End_Date, Amount) VALUES(\'" + startDate + "\', " +
+        return insertDatabase("INSERT into Generator (Start_Date, End_Date, Amount) VALUES(\'" + startDate + "\', " +
                 "\'" + endDate + "\', \'" + amount + ")");
     } // end of method insertGeneratorData
+
+    public String insertAcTypeData(String startDate, String endDate, String description, int number) {
+        return insertDatabase("INSERT into AC_Type (Start_Date, End_Date, Description, Number) VALUES(\'" + startDate + "\', " +
+                "\'" + endDate + "\', \'" + description + "\', \'" + number + "')");
+    } // end of method insertAcTypeData
 }
