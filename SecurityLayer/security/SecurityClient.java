@@ -28,12 +28,14 @@ import java.net.*;
 import java.io.*;
 import java.util.Properties;
 import java.util.Scanner;
+import utility.LogFile;
 /**
  *
  * @author gfoster
  */
 public class SecurityClient extends Thread {
-    // initialize socket and input output streams 
+    // initialize socket and input output streams
+    static final LogFile logger = new LogFile(SecurityServer.class.getName());
     private Socket       socket    = null; 
     private Scanner      input     = null; 
     private PrintWriter  output    = null;
@@ -43,6 +45,8 @@ public class SecurityClient extends Thread {
     private final int    port;
     private boolean      authenticated = false;
     private boolean      rejected = false;
+    private boolean      connected = false;
+    private boolean      failed = false;
 // constructor to put ip address and port 
     public SecurityClient(String address, int port) 
     {
@@ -51,54 +55,56 @@ public class SecurityClient extends Thread {
     } // end of constructor SecurityClient
     
     public void run(){
+        authenticated = false;
+        rejected = false;
+        connected = false;
+        failed = false;
         // establish a connection 
         try
         { 
             socket = new Socket(address, port); 
-            System.out.println("CLIENT:>Connected"); 
-  
+            System.out.println("CLIENT:>Connected");
             // takes input from terminal
             userEntry = new Scanner(System.in);
             // sends output to the socket 
             input = new Scanner(socket.getInputStream());
             output = new PrintWriter(socket.getOutputStream(),true); 
         } 
-        catch(UnknownHostException u) 
+        catch(IOException e) 
         { 
-            System.out.println(u); 
-        } 
-        catch(IOException i) 
-        { 
-            System.out.println(i); 
-        } 
-  
-        String response;
+            System.out.println(e);
+            logger.logError(e.getMessage());
+            failed = true;
+            return;
+        }
+        connected = true;
+        KnownCommands command;
         do {
             // Wait for authentication request
-            response = input.nextLine();
-            switch (response) {
-                case "TOKEN":
-                    System.out.println("CLIENT:>" + response); 
+            command = KnownCommands.getCommand(input.nextLine());
+            switch (command) {
+                case TOKEN:
+                    System.out.println("CLIENT:>" + command); 
                     giveToken();
                     break;
-                case "PASSWORD":
-                    System.out.println("CLIENT:>" + response);
+                case PASSWORD:
+                    System.out.println("CLIENT:>" + command);
                     givePassword();
                     break;
-                case "AUTHENTICATED":
+                case AUTHENTICATED:
                     authenticated = true;
-                    System.out.println("CLIENT:>" + response); 
+                    System.out.println("CLIENT:>" + command);
                     break;
-                case "EXIT":
+                case EXIT:
                     rejected = true;
-                    System.out.println("CLIENT:>" + response); 
+                    System.out.println("CLIENT:>" + command); 
                     break;
                 default:
-                    System.out.println("CLIENT:>" + response); 
+                    System.out.println("CLIENT:>" + command); 
                     break;
             }
-        } while (!response.equals("EXIT") && !response.equals("AUTHENTICATED"));
-        System.out.println("CLIENT:>Last response was: " + response); 
+        } while (command != KnownCommands.EXIT && command != KnownCommands.AUTHENTICATED);
+        System.out.println("CLIENT:>Last response was: " + command); 
         
 
 //        try
@@ -115,6 +121,9 @@ public class SecurityClient extends Thread {
   
     public boolean isAuthenticated() {return authenticated;}
     public boolean isRejected() {return rejected;}
+    public boolean isConnected() {return connected;}
+    public boolean hasFailed() {return failed;}
+    public boolean finished() {return (authenticated || rejected || failed);}
     
     void  giveToken(){
         // TODO Get token file and send to server 
@@ -122,22 +131,63 @@ public class SecurityClient extends Thread {
         if (haveToken){
             // send token
         } else {
-            output.println("NO TOKEN AVAILABLE");
+            output.println(tokenRead());
         } // end haveToken
+  
               
     } // end of giveToken
     
     void givePassword(){
-        String response; 
-        output.println("This is my password");
-        response = input.nextLine();
-        System.out.println("CLIENT:>" + response);
-        if (response.equals("AUTHENTICATED")){
-            response = input.nextLine();
-            System.out.println("CLIENT:>" + response);
+        KnownCommands command; 
+        output.println(passwordRead());
+        command = KnownCommands.getCommand(input.nextLine());
+        System.out.println("CLIENT:>" + command);
+        if (command == KnownCommands.AUTHENTICATED){
+            String token = input.nextLine();
+            tokenWrite(token);
+            System.out.println("CLIENT:>" + token);
         }
     } //end of give password
+    
+     private String passwordRead(){
+        File data = new File("OneUsePassword.txt");
+        Scanner scanner;
+        try {
+            scanner = new Scanner(data);
+        } catch (FileNotFoundException ex) {
+            String workingDir = "Current working directory: " + System.getProperty("user.dir");
+            logger.logError("{0} \n{1}", new Object[]{workingDir, ex});
+            return "";
+        }
+        
+        while (scanner.hasNext()){
+           String password = scanner.next();
+           return password;
+        }
+        scanner.close();
+        return null;
+    } // end of method readPassword()
 
+    private String tokenRead(){
+        File data = new File("data/MyToken.txt");
+        Scanner scanner;
+        try {
+            scanner = new Scanner(data);
+        } catch (FileNotFoundException ex) {
+            String workingDir = "Current working directory: " + System.getProperty("user.dir");
+            logger.logError("{0} \n{1}", new Object[]{workingDir, ex});
+            return "";
+        }
+        
+        while (scanner.hasNext()){
+           String token = scanner.next();
+           System.out.println(token);
+           return token;
+        }
+        scanner.close();
+        return null;
+    } // end of method tokenRead()
+        
     public void exit(){
         output.println(KnownCommands.EXIT);
     } // end of method exit()
@@ -153,7 +203,22 @@ public class SecurityClient extends Thread {
         response = input.nextLine();
         System.out.println("CLIENT:>" + response);
         return response;
-    } // end of method updateDatabase()
+    } // end of method insertDatabase()
+    
+     private void tokenWrite(String token){
+    	System.out.println( "Token received: " + token);
+    	String fileName = "data/MyToken.txt";
+        // write the new token to the end of the knownTokens file
+        FileWriter fw;
+        try {
+            fw = new FileWriter(fileName,true);
+            fw.write(token);
+            fw.close();
+        } catch (IOException ex) {
+            String workingDir = "Current working directory: " + System.getProperty("user.dir");
+            logger.logError("{0} \n{1}", new Object[]{workingDir, ex});
+        }
+    } // end of method writeToken()
     
     public static void main(String args[]) 
     { 

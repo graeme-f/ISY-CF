@@ -9,6 +9,7 @@
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
@@ -16,12 +17,13 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
 
 <HBox fx:id="ContainerBox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="475.0" prefWidth="568.0" style="-fx-border-width: 2; -fx-border-color: black;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="transportation.FXMLTransportationController">
    <children>
       <VBox fx:id="VehicleBox" prefHeight="471.0" prefWidth="256.0" style="-fx-border-width: 1; -fx-border-color: black;">
          <children>
-            <Accordion>
+            <Accordion fx:id="leftSidePanel">
               <panes>
                 <TitledPane fx:id="transportPane" animated="false" prefHeight="538.0" prefWidth="254.0" text="Transport">
                      <content>
@@ -67,7 +69,132 @@
                   </TitledPane>
                 <TitledPane animated="false" text="Trips">
                      <content>
-                        <VBox prefHeight="200.0" prefWidth="100.0" />
+                        <VBox prefHeight="418.0" prefWidth="283.0">
+                           <children>
+                              <Accordion />
+                              <Accordion />
+                              <Accordion />
+                              <Accordion />
+                              <Accordion>
+                                <panes>
+                                  <TitledPane animated="false" prefHeight="340.0" prefWidth="250.0" text="SEASAC">
+                                    <content>
+                                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                             <children>
+                                                <Pane layoutX="87.0" layoutY="150.0" prefHeight="27.0" prefWidth="70.0" />
+                                                <GridPane layoutX="-2.0" prefHeight="285.0" prefWidth="264.0">
+                                                  <columnConstraints>
+                                                    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                                    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                                  </columnConstraints>
+                                                  <rowConstraints>
+                                                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                  </rowConstraints>
+                                                   <children>
+                                                      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="No. of players" GridPane.rowIndex="3" />
+                                                      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="No.of teachers" wrappingWidth="103.21875" GridPane.rowIndex="4" />
+                                                      <TextField GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                                                      <TextField GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                                                      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="No. of buses" wrappingWidth="126.21875" />
+                                                      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Km traveled by bus" wrappingWidth="124.21875" GridPane.rowIndex="1" />
+                                                      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Km traveled by air" GridPane.rowIndex="2" />
+                                                      <TextField GridPane.columnIndex="1" />
+                                                      <TextField GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                                      <TextField GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                                   </children>
+                                                </GridPane>
+                                             </children>
+                                          </AnchorPane>
+                                    </content>
+                                  </TitledPane>
+                                  <TitledPane animated="false" prefHeight="293.0" prefWidth="232.0" text="YAC">
+                                    <content>
+                                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                             <children>
+                                                <GridPane layoutX="13.0" layoutY="2.0" prefHeight="243.0" prefWidth="235.0">
+                                                  <columnConstraints>
+                                                    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                                    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                                  </columnConstraints>
+                                                  <rowConstraints>
+                                                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                  </rowConstraints>
+                                                   <children>
+                                                      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="No.of buses" wrappingWidth="91.21875" />
+                                                      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Km traveled" wrappingWidth="94.21875" GridPane.rowIndex="1" />
+                                                      <TextField GridPane.columnIndex="1" />
+                                                      <TextField GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                                   </children>
+                                                </GridPane>
+                                             </children>
+                                          </AnchorPane>
+                                    </content>
+                                  </TitledPane>
+                                  <TitledPane animated="false" prefHeight="384.0" prefWidth="232.0" text="WWW">
+                                       <content>
+                                          <AnchorPane prefHeight="200.0" prefWidth="200.0">
+                                             <children>
+                                                <GridPane layoutX="21.0" prefHeight="261.0" prefWidth="240.0">
+                                                  <columnConstraints>
+                                                    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                                    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                                  </columnConstraints>
+                                                  <rowConstraints>
+                                                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                  </rowConstraints>
+                                                   <children>
+                                                      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="No. of students" wrappingWidth="105.21875" GridPane.rowIndex="2" />
+                                                      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="No.of teachers" GridPane.rowIndex="3" />
+                                                      <TextField GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                                      <TextField GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                                                      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="No. of buses" />
+                                                      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Km traveled by bus" GridPane.rowIndex="1" />
+                                                      <TextField GridPane.columnIndex="1" />
+                                                      <TextField GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                                      <TextField GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                                                      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Km travled by air" GridPane.rowIndex="4" />
+                                                   </children>
+                                                </GridPane>
+                                             </children>
+                                          </AnchorPane>
+                                       </content>
+                                  </TitledPane>
+                                    <TitledPane animated="false" layoutX="10.0" layoutY="64.0" prefHeight="335.0" prefWidth="232.0" text="Field trips">
+                                       <content>
+                                          <GridPane>
+                                            <columnConstraints>
+                                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                            </columnConstraints>
+                                            <rowConstraints>
+                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                            </rowConstraints>
+                                             <children>
+                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="No. of buses" GridPane.rowIndex="1" />
+                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Km traveled" GridPane.rowIndex="2" />
+                                                <TextField GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                                <TextField GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                             </children>
+                                          </GridPane>
+                                       </content>
+                                    </TitledPane>
+                                </panes>
+                              </Accordion>
+                              <Accordion />
+                           </children></VBox>
                      </content>
                   </TitledPane>
               </panes>

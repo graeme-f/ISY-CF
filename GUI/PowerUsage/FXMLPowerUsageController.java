@@ -23,7 +23,6 @@
  */
 package PowerUsage;
 
-import java.awt.event.ActionEvent;
 import java.net.URL;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -32,6 +31,7 @@ import java.util.function.UnaryOperator;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -60,7 +60,7 @@ public class FXMLPowerUsageController implements Initializable {
 
     @FXML private VBox GeneratorBox;
     @FXML private TextArea GeneratorDetails;
-    @FXML private Label GeneratorDescription;
+    @FXML private TextField GeneratorDescription;
     @FXML private DatePicker GeneratorStartDate;
     @FXML private DatePicker GeneratorEndDate;
     @FXML private ChoiceBox fuelBox;
@@ -79,6 +79,20 @@ public class FXMLPowerUsageController implements Initializable {
     @FXML private Button btnDeleteAC;
     @FXML private Button btnUpdateAC;
 
+    @FXML private void updateElectricity(ActionEvent event) {
+        String start  = ElectricityStartDate.getValue().toString();
+        String end    = ElectricityEndDate.getValue().toString();
+        String amount = meterUnits.getText();
+        dc.insertElectricityData(start, end, amount);
+    } // end of UpdateElectricity
+    
+    @FXML private void updateGenerator(ActionEvent event) {
+        String start = GeneratorStartDate.getValue().toString();
+        String end = GeneratorEndDate.getValue().toString();
+        String amount = fuelAmount.getText();
+        dc.insertGeneratorData(start, end, amount);
+    }
+
     private PowerUsageDataCollector dc;
 
     UnaryOperator<TextFormatter.Change> integerFilter = change -> {
@@ -89,12 +103,6 @@ public class FXMLPowerUsageController implements Initializable {
         return null;
     };
 
-
-    @FXML private void UpdateElectricity(ActionEvent event) {
-
-    } // end of UpdateElectricity
-
-
     /**
      * Initializes the controller class.
      */
@@ -103,24 +111,42 @@ public class FXMLPowerUsageController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
         dc = PowerUsageDataCollector.getInstance();
+        initializeAll();
+    }
+    
+    private void initializeAll() {
+        initializeElectricity();
+        initializeGenerators();
+        setAllDetails();
+    }
+    
+    private void setAllDetails() {
+        setElectricityDetails();
+        setGeneratorDetails();
     }
 
     private void initializeElectricity() {
-        btnUpdateElectricity.setDisable(true);
+        btnUpdateElectricity.setDisable(false);
         meterUnits.setTextFormatter(new TextFormatter<Integer>(new IntegerStringConverter(), 0, integerFilter));
-
     }
 
-    private void setElectricityDetails(int id) {
+    private void setElectricityDetails() {
         ArrayList<Integer> electricity = dc.getElectricityList();
-        ObservableList<Integer> electricityList = FXCollections.observableArrayList(electricity);
-        ElectricityLists.getItems().addAll(electricityList);
-        btnUpdateElectricity.setDisable(true);
-
-        ElectricityDescription.setText("ID: " + id);
+        ElectricityStartDate.setValue(dc.getLastDate());
         ElectricityEndDate.setValue(LocalDate.now());
         meterUnits.clear();
     }
 
+    private void initializeGenerators() {
+        btnUpdateGenerator.setDisable(false);
+        fuelAmount.setTextFormatter(new TextFormatter<Integer>(new IntegerStringConverter(), 0, integerFilter));
+    }
+    
+    private void setGeneratorDetails() {
+        ArrayList<Integer> generators = dc.getGeneratorList();
+        GeneratorStartDate.setValue(dc.getLastDate());
+        GeneratorEndDate.setValue(LocalDate.now());
+        fuelAmount.clear();
+    }
     
 }

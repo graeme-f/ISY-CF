@@ -24,11 +24,14 @@
 package transportation;
 
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
 import utility.DataCollector;
+import utility.ErrorMessage;
 
 public class TransportationDataCollector extends DataCollector {
     class Car {
@@ -40,6 +43,8 @@ public class TransportationDataCollector extends DataCollector {
     
     private static TransportationDataCollector singleInstance = null;
     HashMap<String, Car> carDetails;
+    HashMap<Integer, String> fuelList;
+    HashMap<Integer, String> vehicleList;
     
     public static TransportationDataCollector getInstance() 
     { 
@@ -52,68 +57,90 @@ public class TransportationDataCollector extends DataCollector {
     // Creator is private to make this a singleton class
     private TransportationDataCollector(){
         super();
+        getFuelTypes();
+        getVehicleTypes();
         getAllCars();
     } // end of constructor
     
+    private void getFuelTypes(){
+        fuelList = new HashMap();
+        String sql = "SELECT * FROM Fuel_Type";
+        ResultSet result = doQuery(sql);
+        try {
+            while (result.next()) {
+                int fuelID = result.getInt("Fuel_Type_ID");
+                String desc = result.getString("description");
+                fuelList.put (fuelID, desc);}
+        } catch (SQLException error) {
+                ErrorMessage.display(error.getMessage());
+        }
+
+    }
+
+    private void getVehicleTypes(){
+        vehicleList = new HashMap();
+        String sql = "SELECT * FROM Vehicle_Type";
+        ResultSet result = doQuery(sql);
+        try {
+            while (result.next()) {
+                int vehicleID = result.getInt("Vehicle_Type_ID");
+                String desc = result.getString("Description");
+                vehicleList.put (vehicleID, desc);}
+        } catch (SQLException error) {
+                ErrorMessage.display(error.getMessage());
+        }
+
+    }
+
     private void getAllCars(){
-        carDetails = new HashMap(); 
-        // TODO vehicle list needs to come from the database
+        carDetails = new HashMap();
         Car car = new Car();
-        car.id = 1;
-        car.name = "Red Car, the fast one. With a dent on the side";
-        car.fuel = "Petrol";
-        car.lastRecordedDate = LocalDate.of(2019, 02, 28);
-        carDetails.put(car.name, car);
+        String sql = "SELECT * FROM Vehicle";
+        ResultSet result = doQuery(sql);
+        try {
+            while (result.next()) {
+                car.id = result.getInt("Vehicle_ID");
+                car.name = result.getString("Description");
+                int fuelID = result.getInt("Type");
+                car.fuel = fuelList.get(fuelID);
+                carDetails.put(car.name, car);
+            }
+        } catch (SQLException error) {
+                ErrorMessage.display(error.getMessage());
+        }
         
-        car = new Car();
-        car.id = 2;
-        car.name = "Blue Car";
-        car.fuel = "Diesel";
-        car.lastRecordedDate = LocalDate.of(2019, 03, 31);
-        carDetails.put(car.name, car);
-        
-        car = new Car();
-        car.id = 3;
-        car.name = "Orange Car";
-        car.fuel = "Diesel";
-        car.lastRecordedDate = LocalDate.of(2019, 03, 31);
-        carDetails.put(car.name, car);
-        
-        car = new Car();
-        car.id = 4;
-        car.name = "Green Car";
-        car.fuel = "LPG";
-        car.lastRecordedDate = LocalDate.of(2019, 03, 31);
-        carDetails.put(car.name, car);
-        
-        car = new Car();
-        car.id = 5;
-        car.name = "Yellow Car";
-        car.fuel = "Petrol";
-        car.lastRecordedDate = LocalDate.of(2019, 02, 28);
-        carDetails.put(car.name, car);
     } // end method getAllCars
 
     public ArrayList<String> getCarList(){
         ArrayList<String> cars = new ArrayList();
-        Set< HashMap.Entry< String, Car> > st = carDetails.entrySet();    
-  
-       for (HashMap.Entry< String, Car> me:st) 
-       {
-           cars.add(me.getKey());
-       }
-       return cars;
+        Set< HashMap.Entry< String, Car> > st = carDetails.entrySet();
+        for (HashMap.Entry< String, Car> me:st) 
+        {
+            cars.add(me.getKey());
+        }
+         return cars;
     } // end method getCarList()
     
     public ArrayList<String> getFuelList(){
-        // TODO fuel types need to come from the database
         ArrayList<String> fuels = new ArrayList();
-        fuels.add("Petrol");
-        fuels.add("Diesel");
-        fuels.add("LPG");
+        Set< HashMap.Entry<Integer, String> > st = fuelList.entrySet();
+        for (HashMap.Entry<Integer, String> me:st) 
+        {
+            fuels.add(me.getValue());
+        }
         return fuels;
     } // end method getFuelList()
-    
+
+    public ArrayList<String> getCarTypeList(){
+        ArrayList<String> types = new ArrayList();
+        Set< HashMap.Entry<Integer, String> > st = vehicleList.entrySet();
+        for (HashMap.Entry<Integer, String> me:st) 
+        {
+            types.add(me.getValue());
+        }
+        return types;
+    } // end method getCarTypeList() 
+
     public String getFuel(String carName){
         return carDetails.get(carName).fuel;
     } // end of method getFuel
@@ -149,20 +176,17 @@ public class TransportationDataCollector extends DataCollector {
                              String endDate,
                              String fuelType,
                              String fuelAmount){
-        String fuelID = "1";
-        String vehicleID = "1";
+        String fuelID = "1"; // TODO get the number from the fuelType
+        String vehicleID = "1"; // TODO get the number from the carName
         String sql = "INSERT INTO "
                 + "Fuel (Start_Date, End_Date, Type, Amount, Vehicle_ID) "
-                + "VALUES("
-                + startDate + ", "
-                + endDate + ", "
+                + "VALUES(\""
+                + startDate + "\", \""
+                + endDate + "\", "
                 + fuelID + ", "
                 + fuelAmount + ", "
-                + vehicleID + ", "
-                + ")";
+                + vehicleID + ")";
         return insertDatabase(sql);
     }
-    
-    
     
 } // end class TransportationDataCollector

@@ -38,6 +38,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
+import javafx.scene.control.Accordion;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.DatePicker;
@@ -49,10 +50,9 @@ import javafx.scene.control.TextFormatter;
 import javafx.scene.control.TextFormatter.Change;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.converter.IntegerStringConverter;
+import utility.ErrorMessage;
 
 /**
  *
@@ -60,12 +60,7 @@ import javafx.util.converter.IntegerStringConverter;
  */
 public class FXMLTransportationController implements Initializable {
     
-    @FXML private HBox ContainerBox;
-    @FXML private VBox VehicleBox;
-    @FXML private VBox DetailsBox;
-    @FXML private VBox TripBox;
     @FXML private TextArea details;
-    @FXML private TitledPane transportPane;
     
     @FXML private Label VehicleDescription;
     
@@ -75,12 +70,12 @@ public class FXMLTransportationController implements Initializable {
     @FXML private DatePicker endDate;
     @FXML private TextField fuelTotal;
     
-    
-    @FXML private Button btnAddVehicle;
     @FXML private Button btnDeleteVehicle;
     @FXML private Button btnUpdateFuel;
     
     @FXML private GridPane gpVehicleForm;
+    @FXML private Accordion leftSidePanel;
+    @FXML private TitledPane transportPane;
     private String vehicleName;
     
     private TransportationDataCollector dc;
@@ -89,15 +84,11 @@ public class FXMLTransportationController implements Initializable {
         String end    = endDate.getValue().toString();
         String fuel   = fuelList.getSelectionModel().getSelectedItem().toString();
         String amount = fuelTotal.getText();
-        dc.updateFuel(vehicleName,
-                    start,
-                    end,
-                    fuel,
-                    amount);
+        dc.updateFuel(vehicleName,start,end,fuel,amount);
     }
     
     @FXML private void DeleteVehicle(ActionEvent event) {
-        //dc.deleteVehicle(vehicleName);
+        dc.deleteVehicle(vehicleName);
     }
     @FXML private void AddVehicle(ActionEvent event) {
         System.out.println("Add Vehicle");
@@ -107,13 +98,13 @@ public class FXMLTransportationController implements Initializable {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("FXMLNewCar.fxml"));
         try {
             newScene = new Scene(loader.load());
-        } catch (IOException ex) {
+        } catch (IOException e) {
             System.out.println("Fail");
-            System.out.println(ex);
-            //TODO: handle error
+            System.out.println(e);
+            ErrorMessage.display("Unable to open window", e.getMessage());
             return;
         }
-
+        
         Stage inputStage = new Stage();
         inputStage.initOwner(Transportation.primaryStage);
         inputStage.setTitle("Create a new vehicle");
@@ -131,7 +122,7 @@ public class FXMLTransportationController implements Initializable {
         startDate.setValue(dc.getStartDate(vehicleName));
         endDate.setValue(LocalDate.now());
         fuelTotal.clear();
-        btnUpdateFuel.setDisable(false);
+        btnUpdateFuel.setDisable(true);
     } // end of method setVehicleDetails()
     
     private void vehicleChanged(ObservableValue<? extends String> observable,String oldValue,String newValue){
@@ -139,12 +130,14 @@ public class FXMLTransportationController implements Initializable {
         gpVehicleForm.setVisible(true);
         setVehicleDetails(newValue);
         setVehicleSummary(newValue);
-
+        
+        btnDeleteVehicle.setDisable(false);
         fuelTotal.requestFocus(); // Doesn't seem to work :(
     } // end of method vehicleChanged
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        leftSidePanel.setExpandedPane(transportPane);
         dc = TransportationDataCollector.getInstance();
         initialiseVehicles();        
     } // end of method initialize    
@@ -158,7 +151,7 @@ public class FXMLTransportationController implements Initializable {
         vehicleLists.getItems().addAll(carList);
         gpVehicleForm.setVisible(false);
         btnUpdateFuel.setDisable(true);
-        //btnDeleteVehicle.setDisable(true);
+        btnDeleteVehicle.setDisable(true);
         
         // Update and show the details when a vehicle is selected
         vehicleLists.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>()
@@ -174,6 +167,17 @@ public class FXMLTransportationController implements Initializable {
         ObservableList<String> fuelType = FXCollections.<String>observableArrayList(fuels);
         fuelList.setItems(fuelType);
         fuelTotal.setTextFormatter(new TextFormatter<Integer>(new IntegerStringConverter(), 0, integerFilter));
+        fuelTotal.textProperty().addListener((observable, oldvalue, newvalue)
+        ->{
+                if(newvalue.isEmpty() || newvalue.equals("-"))
+                {
+                    btnUpdateFuel.setDisable(true);
+                }
+                else
+                {
+                    btnUpdateFuel.setDisable(false);
+                }
+        });
 
     } // end of method initialiseVehicles()
     
