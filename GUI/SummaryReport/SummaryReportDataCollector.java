@@ -1,66 +1,89 @@
 package SummaryReport;
 
+import utility.DataCollector;
+
 import java.sql.*;
+import java.util.Calendar;
 
-public class SummaryReportDataCollector {
+public class SummaryReportDataCollector extends DataCollector {
 
-    public static Connection connect() {
-        Connection conn = null;
-        try {
-            // db parameters
-            String url = "database.db";
-            // create a connection to the database
-            conn = DriverManager.getConnection(url);
+    private  SummaryReportDataCollector() {
+        super();
+    }
 
-            System.out.println("Connection to SQLite has been established.");
 
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
+
+
+    public double[][] getElectricityCF(int month) {
+
+        double total[][] = new double[3][13];
+
+        /*first array is 0:Electricity, 1:Generator, 2:Air Conditioners
+        second array is months, 0:July, 11: June, 12: Total for Year*/
+
+        int schoolyear = Calendar.getInstance().get(Calendar.YEAR);
+        // If it is between January and June subtract a year
+        if (Calendar.getInstance().get(Calendar.MONTH) < 7) {
+            schoolyear--;
         }
-        return conn;
-    } // end of method connect
-
-    private static void close(Connection conn){
-        try {
-            if (conn != null) {
-                conn.close();
+        String monthSql[] = new String[13];
+        for (int i = 0; i < 13; i++) {
+            if (i<3) {
+                monthSql[i] = "Start_Date Like " + schoolyear + "-0" + (i+7) + "%%%";
+            } else if (i<6) {
+                monthSql[i] = "Start_Date Like " + schoolyear + "-" + (i + 7) + "%%%";
+            } else {
+                monthSql[i] = "Start_Date Like " + schoolyear + "-" + (i - 5) + "%%%";;
             }
-        } catch (SQLException ex) {
-            System.out.println(ex.getMessage());
         }
-    } // end of method close
-
-    public static double getElectricityCF(Connection conn) {
-        double kilowattHours = 0;
-        double generatorCF = 0;
-        double[] acUsage = new double[4]; //AC Types: 0:yorkMulti, 1:Mitsubishi, 2:Panasonic, 3:YorkUni
-
 
         try {
-            Statement st = conn.createStatement();
             // The SQL query to be used
-            String query = "select Meter_Units where startDate between something or something From Electricity"; //or something not real at all
-            ResultSet results = st.executeQuery(query);
-            //query for kwh from database
-            while (results.next()){
-                kilowattHours += (double) results.getInt("Meter_Units");
-            }
+            ResultSet results;
+            for (int i = 0; i < 13; i++) {
 
-            String query1 = "select Amount where startDate between something or something From Generator"; //or something not real at all
-            ResultSet genResults = st.executeQuery(query1);
-            //query for liters from database
-            while (genResults.next()){
-                generatorCF += (double) genResults.getInt("Amount");
-            }
+                if (i != 12){
+                    results = doQuery("select Meter_Units where " + monthSql[i] + " From Electricity");
 
-            String query2 = "select AC_Type_ID where startDate between something or something From AC_Type"; //or something not real at all
-            ResultSet acResults = st.executeQuery(query2);
-            //query for ac info from database
-            while (acResults.next()){
-                acUsage[0] += (double) acResults.getInt("Amount");
-            }
-            close(conn);
+                    //query for kwh from database
+                    while (results.next()) {
+                        total[0][i] = ((double) results.getInt("Meter_Units") * 0.075716);
+                    }
+                } else {
+                    results = doQuery("select Meter_Units where " + getBetweenSchoolYear() + " From Electricity");
+                    while (results.next()) {
+                        total[0][i] = ((double) results.getInt("Meter_Units") * 0.075716);
+                    }
+                }
 
+                if (i != 12) {
+                    results = doQuery("select Amount where " + monthSql[i] + " From Generator");
+                    //query for liters from database
+                    while (results.next()) {
+                        total[1][i] = ((double) results.getInt("Amount")*2.72);
+                    }
+                } else {
+                    results = doQuery("select Amount where " + getBetweenSchoolYear() + " From Generator");
+                    while (results.next()) {
+                        total[1][i] = ((double) results.getInt("Amount") * 2.72);
+                    }
+                }
+
+                if (i != 12) {
+                    results = doQuery("select Number*Multiplier ACCF where " + monthSql[i] + " From AC_Type" +
+                            "inner join AC_CO2 using(AC_Type_ID)");
+                    //query for ac info from database
+                    while (results.next()) {
+                        total[2][i] = (double) results.getInt("ACCF");
+                    }
+                } else {
+                    results = doQuery("select Number*Multiplier ACCF where " + getBetweenSchoolYear() + " From AC_Type" +
+                            "inner join AC_CO2 using(AC_Type_ID)");
+                    while (results.next()) {
+                        total[2][i] = (double) results.getInt("Amount");
+                    }
+                }
+            }
         } catch (SQLException s){
             System.out.println("SQL error: "
                     + s.toString() + " "
@@ -69,12 +92,38 @@ public class SummaryReportDataCollector {
         } catch (Exception e){
             System.out.println("Error: " + e.toString() + e.getMessage());
         }
+        return total;
+    } //end of method getElectricityCF
 
-
-        //equations to calculate carbon footprint in kg co2e
-        kilowattHours =  (kilowattHours * 0.075716);
-        generatorCF = (generatorCF *2.72);
-        double total = kilowattHours + generatorCF + acUsage[0] + acUsage[1] + acUsage[2] + acUsage[3];
+    public double getConsumableCF() {
+        double total = 0;
+        double meat[] = new double[4];
+        ResultSet meatResults = doQuery("select Amount, Type where " + getBetweenSchoolYear()
+                + " From Consumables ");
+        try {
+            while (meatResults.next()){
+                if (meatResults.getString("Type").equals("Chicken")){
+                    meat[0] = meatResults.getInt("Amount");
+                } else if(meatResults.getString("Type").equals("Beef")){
+                    meat[1] = meatResults.getInt("Amount");
+                }
+                else if(meatResults.getString("Type").equals("Pork")){
+                    meat[2] = meatResults.getInt("Amount");
+                }
+                else if(meatResults.getString("Type").equals("Fish")){
+                    meat[3] = meatResults.getInt("Amount");
+                }
+            }
+        } catch (SQLException s){
+            System.out.println("SQL error: "
+                    + s.toString() + " "
+                    + s.getErrorCode() + " "
+                    + s.getSQLState());
+        } catch (Exception e){
+            System.out.println("Error: " + e.toString() + e.getMessage());
+        }
         return total;
     }
+
+
 }
