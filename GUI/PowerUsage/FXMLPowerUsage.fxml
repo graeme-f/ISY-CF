@@ -59,7 +59,7 @@
                               </GridPane>
                               <HBox prefHeight="63.0" prefWidth="301.0">
                                  <children>
-                                    <Button fx:id="btnUpdateElectricity" mnemonicParsing="false" onAction="#updateElectricity" prefHeight="27.0" prefWidth="74.0" text="Update" />
+                                    <Button fx:id="btnUpdateElectricity" mnemonicParsing="false" onAction="#UpdateElectricity" prefHeight="27.0" prefWidth="74.0" text="Update" />
                                  </children></HBox>
                            </children>
                         </VBox>
@@ -99,7 +99,7 @@
                               </GridPane>
                               <HBox prefHeight="100.0" prefWidth="200.0">
                                  <children>
-                                    <Button mnemonicParsing="false" text="Update" />
+                                    <Button fx:id="btnUpdateGenerator" mnemonicParsing="false" text="Update" />
                                  </children></HBox>
                            </children>
                         </VBox>
@@ -140,7 +140,7 @@
                               </GridPane>
                               <HBox prefHeight="100.0" prefWidth="200.0">
                                  <children>
-                                    <Button mnemonicParsing="false" text="Update" />
+                                    <Button fx:id="btnUpdateAC" mnemonicParsing="false" text="Update" />
                                  </children></HBox>
                            </children>
                         </VBox>
@@ -155,7 +155,7 @@
       <VBox prefHeight="396.0" prefWidth="296.0">
          <children>
             <Label prefHeight="59.0" prefWidth="294.0" text="Label" />
-            <TextField prefHeight="344.0" prefWidth="296.0" />
+            <TextField fx:id="ElectricityDetails" prefHeight="344.0" prefWidth="296.0" />
          </children>
       </VBox>
    </children>
