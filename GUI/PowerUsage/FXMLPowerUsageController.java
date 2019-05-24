@@ -26,7 +26,9 @@ package PowerUsage;
 import java.net.URL;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.ResourceBundle;
+import java.util.Set;
 import java.util.function.UnaryOperator;
 
 import javafx.collections.FXCollections;
@@ -50,9 +52,6 @@ public class FXMLPowerUsageController implements Initializable {
 
     @FXML private VBox ElectricityBox;
     @FXML private ListView<Integer> ElectricityLists;
-    @FXML private TextArea ElectricityDetails;
-    @FXML private TextField ElectricityId;
-    @FXML private Label ElectricityDescription;
     @FXML private DatePicker ElectricityStartDate;
     @FXML private DatePicker ElectricityEndDate;
     @FXML private TextField meterUnits;
@@ -78,6 +77,8 @@ public class FXMLPowerUsageController implements Initializable {
     @FXML private Button btnAddAC;
     @FXML private Button btnDeleteAC;
     @FXML private Button btnUpdateAC;
+
+    @FXML private TextArea details;
 
     @FXML private void updateElectricity(ActionEvent event) {
         String start  = ElectricityStartDate.getValue().toString();
@@ -135,6 +136,7 @@ public class FXMLPowerUsageController implements Initializable {
         ElectricityStartDate.setValue(dc.getLastDate());
         ElectricityEndDate.setValue(LocalDate.now());
         meterUnits.clear();
+        setElectricitySummary();
     }
 
     private void initializeGenerators() {
@@ -147,6 +149,17 @@ public class FXMLPowerUsageController implements Initializable {
         GeneratorStartDate.setValue(dc.getLastDate());
         GeneratorEndDate.setValue(LocalDate.now());
         fuelAmount.clear();
+    }
+    
+    private void setElectricitySummary() {
+        HashMap<String, Integer> electricityMonthlyMeterUnits = dc.getElectricityMonthMeterUnits();
+        Set< HashMap.Entry< String, Integer> > st = electricityMonthlyMeterUnits.entrySet();
+        String summary = "";
+        for (HashMap.Entry< String, Integer> me:st)
+        {
+            summary += me.getKey() + "\t" + me.getValue() + "\n";
+        }
+        details.setText(summary);
     }
     
 }
