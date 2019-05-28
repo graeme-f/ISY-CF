@@ -28,6 +28,7 @@
  */
 package transportation;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.fxml.FXML;
@@ -38,6 +39,11 @@ import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
+import utility.ErrorMessage;
 
 /**
  *
@@ -80,4 +86,19 @@ public class FXMLTripsController implements Initializable {
         dc = TransportationDataCollector.getInstance();
                
     } // end of method initialize    
+    
+    @FXML private void AddVehicle(ActionEvent event) {
+        System.out.println("Add Trip");
+        event.consume();
+
+        Scene newScene;
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("FXMLNewTrip.fxml"));//not sure about this piece
+        try {
+            newScene = new Scene(loader.load());
+        } catch (IOException e) {
+            System.out.println("Fail");
+            System.out.println(e);
+            ErrorMessage.display("Unable to open window", e.getMessage());
+        }
+    }
 }
