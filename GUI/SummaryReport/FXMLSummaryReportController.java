@@ -25,6 +25,7 @@
 package SummaryReport;
 
 import java.awt.event.MouseEvent;
+import SummaryReport.SummaryReportDataCollector;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.net.URL;
@@ -50,7 +51,7 @@ import javafx.scene.text.TextFlow;
  *
  * @author gfoster
  */
-public class FXMLSummaryReportController  implements Initializable {
+public class FXMLSummaryReportController extends SummaryReportDataCollector implements Initializable {
     @FXML private StackPane Transport;
     @FXML private StackPane Trip;
     @FXML private StackPane Electricity;
@@ -181,7 +182,7 @@ public class FXMLSummaryReportController  implements Initializable {
 
     private int CFTransport;
     private int CFTrip;
-    private int CFElectricity;
+    private int CFElectricity; //these will be unnecessary with the controller
     private int CFAC;
     private int CFWaste;
     private int CFMeat;
@@ -293,25 +294,27 @@ public class FXMLSummaryReportController  implements Initializable {
     }
     
     private String electricityDetails(){
+        double[][] elec = getElectricityCF();
         return "The summary details need to be obtained from the database\n"
                 + "Month\t\tKWatts\tDiesel\n"
-                + "July\t\t???\t???\n"
-                + "August\t\t???\t???\n"
-                + "September\t???\t???\n"
-                + "October\t\t???\t???\n"
-                + "November\t???\t???\n"
-                + "December\t???\t???\n"
-                + "January\t\t???\t???\n"
-                + "February\t\t???\t???\n"
-                + "March\t\t???\t???\n"
-                + "April\t\t???\t???\n"
-                + "May\t\t???\t???\n"
-                + "June\t\t???\t???\n";
+                + "July\t\t"+ ((int) elec[0][0])+"\t???\n"
+                + "August\t\t"+ ((int) elec[0][1])+"\t???\n"
+                + "September\t"+ ((int) elec[0][2])+"\t???\n"
+                + "October\t\t"+ ((int) elec[0][3])+"\t???\n"
+                + "November\t"+ ((int) elec[0][4])+ "\t???\n"
+                + "December\t"+ ((int) elec[0][5])+ "\t???\n"
+                + "January\t\t"+ ((int) elec[0][6])+"\t???\n"
+                + "February\t"+ ((int) elec[0][7])+"\t???\n"
+                + "March\t\t"+ ((int) elec[0][8])+"\t???\n"
+                + "April\t\t"+ ((int) elec[0][9])+"\t???\n"
+                + "May\t\t"+ ((int) elec[0][10])+"\t???\n"
+                + "June\t\t"+ ((int) elec[0][11])+"\t???\n";
     }
     
     private String electricityFinal(){
+        double[][] total = getElectricityCF();
         return "Total\t\t???\t???\n\n"
-                + "The total Carbon Dioxide emmisions for the 2018-19 school year due to the school vehicles is 16 tonnes.";
+                + "The total Carbon Dioxide emmisions from electricity for the 2018-19 school is in"+ ((int)total[3][0]) +" tonnes.";
     }
     
     private String acDetails(){
