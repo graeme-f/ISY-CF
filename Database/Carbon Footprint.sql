@@ -49,7 +49,7 @@ DROP TABLE IF EXISTS `ISY-CF`.`Vehicle` ;
 
 CREATE TABLE IF NOT EXISTS `ISY-CF`.`Vehicle` (
   `Vehicle_ID` INT NOT NULL AUTO_INCREMENT,
-  `Registration` VARCHAR(12) NOT NULL,
+  `Registration` VARCHAR(12),
   `Description` VARCHAR(120) NOT NULL,
   `Vehicle_Type_ID` INT NOT NULL,
   `Decommissioned` TINYINT(1) NOT NULL DEFAULT 0,

@@ -94,15 +94,18 @@ public class TransportationDataCollector extends DataCollector {
 
     private void getAllCars(){
         carDetails = new HashMap();
-        Car car = new Car();
-        String sql = "SELECT * FROM Vehicle";
+        Car car;
+        String sql = "SELECT Vehicle_ID, Description, Fuel_Type_ID, MAX(Fuel.End_Date) as lastDate "
+                + "FROM Vehicle INNER JOIN Fuel USING(Vehicle_ID)"
+                + "GROUP BY Vehicle_ID";
         ResultSet result = doQuery(sql);
         try {
             while (result.next()) {
+                car = new Car();
                 car.id = result.getInt("Vehicle_ID");
                 car.name = result.getString("Description");
-                int fuelID = result.getInt("Type");
-                car.fuel = fuelList.get(fuelID);
+                car.fuel = fuelList.get(result.getInt("Fuel_Type_ID"));
+                car.lastRecordedDate = result.getDate("lastDate").toLocalDate();
                 carDetails.put(car.name, car);
             }
         } catch (SQLException error) {
@@ -146,17 +149,28 @@ public class TransportationDataCollector extends DataCollector {
     } // end of method getFuel
 
     public LocalDate getStartDate(String carName){
-        return carDetails.get(carName).lastRecordedDate;
+        return carDetails.get(carName).lastRecordedDate.plusDays(1);
     } // end of method getStartDate
     
     public String vehicleSummary(String carName){
-        // TODO the vehicle summary needs to come from the database
+        String sql = "SELECT SUM(Amount) as total, MONTH(Start_Date) as Month, YEAR(Start_Date) as year FROM Fuel "
+                + " WHERE Vehicle_id = " + carDetails.get(carName).id 
+                + " AND Start_Date " + getBetweenSchoolYear()
+                + " GROUP BY year, month";
+        ResultSet result = doQuery(sql);
         String vehicleSummary = "";
         vehicleSummary += carName + "\n\n";
-        vehicleSummary += "January" + "\t" + "63 litres" + "\n";
-        vehicleSummary += "February" + "\t" + "157 litres" + "\n";
-        vehicleSummary += "March" + "\t" + "83 litres" + "\n";
-        vehicleSummary += "\nTotal usage" + "\t" + "303 litres";
+        int totalFuel = 0;
+        try {
+            while (result.next()) {
+                totalFuel += result.getInt("Total");
+                vehicleSummary += getMonthName(result.getInt("Month")) + "\t";
+                vehicleSummary += result.getString("Total") + "\n";
+            }
+            vehicleSummary += "Total fuel\t"+totalFuel + "\n";
+        } catch (SQLException error) {
+                ErrorMessage.display(error.getMessage());
+        }
         return vehicleSummary;
     } // end of method vehicleSummary
 
@@ -176,14 +190,15 @@ public class TransportationDataCollector extends DataCollector {
                              String endDate,
                              String fuelType,
                              String fuelAmount){
-        String fuelID = "1"; // TODO get the number from the fuelType
-        String vehicleID = "1"; // TODO get the number from the carName
+        int vehicleID = carDetails.get(carName).id;
+        LocalDate ed = LocalDate.parse(endDate);
+        if (carDetails.get(carName).lastRecordedDate.compareTo(ed) < 0)
+            carDetails.get(carName).lastRecordedDate = ed;
         String sql = "INSERT INTO "
-                + "Fuel (Start_Date, End_Date, Type, Amount, Vehicle_ID) "
+                + "Fuel (Start_Date, End_Date, Amount, Vehicle_ID) "
                 + "VALUES(\""
                 + startDate + "\", \""
                 + endDate + "\", "
-                + fuelID + ", "
                 + fuelAmount + ", "
                 + vehicleID + ")";
         return insertDatabase(sql);

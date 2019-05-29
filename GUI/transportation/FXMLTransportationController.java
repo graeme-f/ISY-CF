@@ -84,12 +84,22 @@ public class FXMLTransportationController implements Initializable {
         String end    = endDate.getValue().toString();
         String fuel   = fuelList.getSelectionModel().getSelectedItem().toString();
         String amount = fuelTotal.getText();
-        dc.updateFuel(vehicleName,start,end,fuel,amount);
+        String result = dc.updateFuel(vehicleName,start,end,fuel,amount);
+        // Display the result on the screen, this also delays the processing
+        // enough so that the vehicle summary will be properly displayed.
+        ErrorMessage.display("Information", result, "Fuel details updated");
+        setVehicleDetails(vehicleName);
+        setVehicleSummary(vehicleName);
     }
     
     @FXML private void DeleteVehicle(ActionEvent event) {
         dc.deleteVehicle(vehicleName);
     }
+    
+    @FXML private void addOneMonth(ActionEvent event){
+        endDate.setValue(startDate.getValue().plusMonths(1).minusDays(1));
+    }
+    
     @FXML private void AddVehicle(ActionEvent event) {
         System.out.println("Add Vehicle");
         event.consume();

@@ -54,13 +54,19 @@
                                  <children>
                                     <DatePicker fx:id="endDate" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                                     <DatePicker fx:id="startDate" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                                    <Label text="End Date" GridPane.rowIndex="2" />
                                     <Label text="Fuel Type" GridPane.rowIndex="3" />
                                     <ChoiceBox fx:id="fuelList" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
                                     <Label text="Fuel Total" GridPane.rowIndex="4" />
                                     <TextField fx:id="fuelTotal" GridPane.columnIndex="1" GridPane.rowIndex="4" />
                                     <Label text="Start Date" GridPane.rowIndex="1" />
                                     <Button fx:id="btnUpdateFuel" mnemonicParsing="false" onAction="#UpdateFuel" prefHeight="25.0" prefWidth="128.0" text="Update Fuel" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                                    <HBox prefHeight="100.0" prefWidth="200.0" GridPane.rowIndex="2">
+                                       <children>
+                                          <Label minWidth="50.0" text="End Date" />
+                                          <Pane prefHeight="200.0" prefWidth="200.0" />
+                                          <Button minWidth="80.0" mnemonicParsing="false" onAction="#addOneMonth" text="One Month" />
+                                       </children>
+                                    </HBox>
                                  </children>
                               </GridPane>
                            </children>
@@ -214,7 +220,10 @@
                   <Font name="System Bold" size="16.0" />
                </font>
             </Label>
-            <TextArea fx:id="details" editable="false" prefHeight="444.0" prefWidth="307.0" text="Text goes here." />
+            <TextArea fx:id="details" editable="false" prefHeight="444.0" prefWidth="307.0" text="Select a vehicle to start.">
+               <font>
+                  <Font name="Courier New" size="12.0" />
+               </font></TextArea>
          </children>
       </VBox>
    </children>

@@ -41,7 +41,6 @@ public class DatabaseConnector {
     
     protected final LogFile logger = ErrorMessage.logger;
     protected Connection conn;
-    protected Statement st;
 
     public static DatabaseConnector getInstance(){
         if (instance == null){
@@ -53,7 +52,6 @@ public class DatabaseConnector {
   
     protected DatabaseConnector() {
        conn = null;
-       st = null;
     } // end of constructor
     
     public final String forceConnect(){
@@ -101,26 +99,27 @@ public class DatabaseConnector {
             logger.logError(error);
             return error;
         }
+        return "";
+    } // end connect method
+    
+    public Statement getStatement(){
         try {
-            st = conn.createStatement();
+            Statement st = conn.createStatement();
+            return st;
         } catch(SQLException e) {
             String error = "Connection with the database established but "
                     + "the database doesn't appear to be configured correctly."
                     + "\n\n"
                     + e.getMessage();
             logger.logError(error);
-            return error;
+            return null;
         }
-        return "";
-    } // end connect method
-    
-    public Statement getStatement(){
-        return st;
     }
     public void close(){
         try {
             if (conn != null) {
                 conn.close();
+                conn = null;
                 logger.log("Connection to the database has been closed.");
             }
         } catch (SQLException e) {
