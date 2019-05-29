@@ -70,6 +70,35 @@ public abstract class DataCollector extends DatabaseConnector{
         return " BETWEEN " + getStartDate() + " AND " + getEndDate();
     } // end of method getSchoolYear()
     
+    protected String getMonthName(int m){
+        switch (m) {
+            case 1:
+                return "January   ";
+            case 2:
+                return "February  ";
+            case 3:
+                return "March     ";
+            case 4:
+                return "April     ";
+            case 5:
+                return "May       ";
+            case 6:
+                return "June      ";
+            case 7:
+                return "July      ";
+            case 8:
+                return "August    ";
+            case 9:
+                return "September ";
+            case 10:
+                return "October   ";
+            case 11:
+                return "November  ";
+            default:
+                return "December  ";
+        }
+    } // end of getMonthName()
+    
     private void createSecurityConnection(){
         try(FileInputStream f = new FileInputStream("db.properties")) {
             // load the properties file
@@ -89,7 +118,7 @@ public abstract class DataCollector extends DatabaseConnector{
     protected ResultSet doQuery(String sql){
         ResultSet rec;
         try {
-            rec = st.executeQuery(sql);
+            rec = getStatement().executeQuery(sql);
         } catch (SQLException e) {
             String error = "Connection lost, retrying...";
             ErrorMessage.display("An error occurred while reading data from the database.", error);
@@ -110,7 +139,7 @@ public abstract class DataCollector extends DatabaseConnector{
 
         ResultSet rec;
         try {
-            rec = st.executeQuery(sql);
+            rec = getStatement().executeQuery(sql);
         } catch (SQLException s) {
             error = "SQL error: "
                     + s.toString() + "\n\n"
