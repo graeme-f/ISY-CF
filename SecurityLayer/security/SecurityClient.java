@@ -85,7 +85,7 @@ public class SecurityClient extends Thread {
             switch (command) {
                 case TOKEN:
                     System.out.println("CLIENT:>" + command); 
-                    giveToken();
+                    output.println(tokenRead());
                     break;
                 case PASSWORD:
                     System.out.println("CLIENT:>" + command);
@@ -105,18 +105,6 @@ public class SecurityClient extends Thread {
             }
         } while (command != KnownCommands.EXIT && command != KnownCommands.AUTHENTICATED);
         System.out.println("CLIENT:>Last response was: " + command); 
-        
-
-//        try
-//        { 
-//            input.close(); 
-//            output.close(); 
-//            socket.close(); 
-//        } 
-//        catch(IOException i) 
-//        { 
-//            System.out.println(i); 
-//        } 
     } 
   
     public boolean isAuthenticated() {return authenticated;}
@@ -124,19 +112,7 @@ public class SecurityClient extends Thread {
     public boolean isConnected() {return connected;}
     public boolean hasFailed() {return failed;}
     public boolean finished() {return (authenticated || rejected || failed);}
-    
-    void  giveToken(){
-        // TODO Get token file and send to server 
-        boolean haveToken = false;
-        if (haveToken){
-            // send token
-        } else {
-            output.println(tokenRead());
-        } // end haveToken
-  
-              
-    } // end of giveToken
-    
+   
     void givePassword(){
         KnownCommands command; 
         output.println(passwordRead());
