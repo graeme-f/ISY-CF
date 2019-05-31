@@ -107,12 +107,19 @@ public class DatabaseConnector {
             Statement st = conn.createStatement();
             return st;
         } catch(SQLException e) {
-            String error = "Connection with the database established but "
-                    + "the database doesn't appear to be configured correctly."
+            String error = "Connection with the database has been lost. "
+                    + "Trying to connext again."
                     + "\n\n"
                     + e.getMessage();
             logger.logError(error);
-            return null;
+            forceConnect();
+            try {
+                Statement st = conn.createStatement();
+                return st;
+            } catch(SQLException ex) {
+                logger.logError(ex.getMessage());
+                return null;
+            }
         }
     }
     public void close(){
