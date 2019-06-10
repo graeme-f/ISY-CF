@@ -87,7 +87,11 @@ public class FXMLTransportationController implements Initializable {
         String result = dc.updateFuel(vehicleName,start,end,fuel,amount);
         // Display the result on the screen, this also delays the processing
         // enough so that the vehicle summary will be properly displayed.
-        ErrorMessage.display("Information", result, "Fuel details updated");
+        if (null == result){
+            ErrorMessage.display("Unable to update the fuel details.");
+        } else {
+            ErrorMessage.display("Information", result, "Fuel details updated");
+        }
         setVehicleDetails(vehicleName);
         setVehicleSummary(vehicleName);
     }
