@@ -103,7 +103,7 @@ public class SecurityClient extends Thread {
                     System.out.println("CLIENT:>" + command); 
                     break;
             }
-        } while (command != KnownCommands.EXIT && command != KnownCommands.AUTHENTICATED);
+        } while (!finished());
         System.out.println("CLIENT:>Last response was: " + command); 
     } 
   
@@ -113,12 +113,13 @@ public class SecurityClient extends Thread {
     public boolean hasFailed() {return failed;}
     public boolean finished() {return (authenticated || rejected || failed);}
    
-    void givePassword(){
+    private void givePassword(){
         KnownCommands command; 
         output.println(passwordRead());
         command = KnownCommands.getCommand(input.nextLine());
         System.out.println("CLIENT:>" + command);
         if (command == KnownCommands.AUTHENTICATED){
+            authenticated = true;
             String token = input.nextLine();
             tokenWrite(token);
             System.out.println("CLIENT:>" + token);
