@@ -149,6 +149,7 @@ public class FXMLTransportationController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         leftSidePanel.setExpandedPane(transportPane);
         dc = TransportationDataCollector.getInstance();
+        details.setText(dc.vehicleDisplay());
         initialiseVehicles();        
     } // end of method initialize    
     
