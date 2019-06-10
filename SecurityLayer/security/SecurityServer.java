@@ -35,6 +35,7 @@ import java.text.SimpleDateFormat;
 import java.util.Properties;
 import java.util.Scanner;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.xml.bind.DatatypeConverter;
 import utility.DatabaseConnector;
 import utility.Encrypt;
@@ -50,6 +51,7 @@ public class SecurityServer {
     static final LogFile logger = new LogFile(SecurityServer.class.getName());
     private ServerSocket server;
     private String salt;
+    private InetAddress hostIP;
     
     // constructor with port 
     public SecurityServer(int port, String salt) throws IOException 
@@ -58,16 +60,28 @@ public class SecurityServer {
         System.out.println("Server started"); 
     } // end of constructor
     
+    private InetAddress getHostIPAddr(){
+        try {
+            return InetAddress.getLocalHost();
+        } catch (UnknownHostException ex) {
+            logger.log(Level.SEVERE,ex.getLocalizedMessage());
+            return null;
+        }
+    }
     public void run(){
         while (true) {
             Socket socket;
+            hostIP = getHostIPAddr();
             // starts server and waits for a connection 
             try
             { 
+                if (null == hostIP){
+                    System.out.println("Waiting for a client ...");
+                } else {
+                    System.out.println("Waiting for a client on  " + hostIP.getHostAddress() + " ...");
+                }
 
-                System.out.println("Waiting for a client ..."); 
-
-                socket = server.accept(); 
+                socket = server.accept();
                 System.out.println("Client accepted"); 
 
                 // takes input from the client socket

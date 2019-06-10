@@ -57,13 +57,18 @@ public class TransportationDataCollector extends DataCollector {
     // Creator is private to make this a singleton class
     private TransportationDataCollector(){
         super();
-        getFuelTypes();
-        getVehicleTypes();
-        getAllCars();
+        fuelList = new HashMap();
+        vehicleList = new HashMap();
+        carDetails = new HashMap();
+
+        if (conn != null){
+            getFuelTypes();
+            getVehicleTypes();
+            getAllCars();
+        }
     } // end of constructor
     
     private void getFuelTypes(){
-        fuelList = new HashMap();
         String sql = "SELECT * FROM Fuel_Type";
         ResultSet result = doQuery(sql);
         try {
@@ -78,7 +83,6 @@ public class TransportationDataCollector extends DataCollector {
     }
 
     private void getVehicleTypes(){
-        vehicleList = new HashMap();
         String sql = "SELECT * FROM Vehicle_Type";
         ResultSet result = doQuery(sql);
         try {
@@ -93,7 +97,6 @@ public class TransportationDataCollector extends DataCollector {
     }
 
     private void getAllCars(){
-        carDetails = new HashMap();
         Car car;
         String sql = "SELECT Vehicle_ID, Description, Fuel_Type_ID, MAX(Fuel.End_Date) as lastDate "
                 + "FROM Vehicle INNER JOIN Fuel USING(Vehicle_ID)"
@@ -152,6 +155,17 @@ public class TransportationDataCollector extends DataCollector {
         return carDetails.get(carName).lastRecordedDate.plusDays(1);
     } // end of method getStartDate
     
+    public String vehicleDisplay(){
+        if (conn != null){
+            if (carDetails.isEmpty()){
+                return "No vehicles found on the database";
+            } else {
+                return "Select a vehicle to start;";
+            }
+        } else {
+            return "Unable to make a connection with the database.";
+        }
+    }
     public String vehicleSummary(String carName){
         String sql = "SELECT SUM(Amount) as total, MONTH(Start_Date) as Month, YEAR(Start_Date) as year FROM Fuel "
                 + " WHERE Vehicle_id = " + carDetails.get(carName).id 

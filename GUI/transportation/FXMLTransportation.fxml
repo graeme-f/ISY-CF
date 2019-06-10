@@ -19,7 +19,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<HBox fx:id="ContainerBox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="475.0" prefWidth="568.0" style="-fx-border-width: 2; -fx-border-color: black;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="transportation.FXMLTransportationController">
+<HBox fx:id="ContainerBox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="475.0" prefWidth="674.0" style="-fx-border-width: 2; -fx-border-color: black;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="transportation.FXMLTransportationController">
    <children>
       <VBox fx:id="VehicleBox" prefHeight="471.0" prefWidth="256.0" style="-fx-border-width: 1; -fx-border-color: black;">
          <children>
@@ -213,14 +213,14 @@
             </Accordion>
          </children>
       </VBox>
-      <VBox fx:id="TripBox" prefHeight="152.0" prefWidth="309.0" style="-fx-border-color: black; -fx-border-width: 1;">
+      <VBox fx:id="TripBox" prefHeight="471.0" prefWidth="383.0" style="-fx-border-color: black; -fx-border-width: 1;">
          <children>
             <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="25.0" prefWidth="307.0" text="Details">
                <font>
                   <Font name="System Bold" size="16.0" />
                </font>
             </Label>
-            <TextArea fx:id="details" editable="false" prefHeight="444.0" prefWidth="307.0" text="Select a vehicle to start.">
+            <TextArea fx:id="details" editable="false" prefHeight="444.0" prefWidth="312.0" text="Select a vehicle to start.">
                <font>
                   <Font name="Courier New" size="12.0" />
                </font></TextArea>
