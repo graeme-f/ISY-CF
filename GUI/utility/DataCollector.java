@@ -188,4 +188,18 @@ public abstract class DataCollector extends DatabaseConnector{
         return message;
     } // end of method updateDatabase()
     
+    protected int getLastInsertID() {
+        String sql = "SELECT LAST_INSERT_ID()";
+        ResultSet result = doQuery(sql);
+        int id = 0;
+        try {
+            while (result.next()) {
+                id = result.getInt("LAST_INSERT_ID()");
+            }
+        } catch (SQLException error) {
+                ErrorMessage.display(error.getMessage());
+        }
+        return id;
+    } // end of method getLastInsertID
+    
 } // end of class DataCollector

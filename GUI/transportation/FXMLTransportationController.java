@@ -77,6 +77,7 @@ public class FXMLTransportationController implements Initializable {
     @FXML private Accordion leftSidePanel;
     @FXML private TitledPane transportPane;
     private String vehicleName;
+    private ObservableList<String> carList;
     
     private TransportationDataCollector dc;
     @FXML private void UpdateFuel(ActionEvent event) {
@@ -124,6 +125,8 @@ public class FXMLTransportationController implements Initializable {
         inputStage.setTitle("Create a new vehicle");
         inputStage.setScene(newScene);
         inputStage.showAndWait();
+        FXMLNewCarController ncc = loader.<FXMLNewCarController>getController();
+        carList.add(ncc.getCarDesc());
     }
     
     public void setVehicleSummary(String vehicleName){
@@ -161,9 +164,9 @@ public class FXMLTransportationController implements Initializable {
         // The following code will bind the managed property to the visibility of the container
         // If the container's visibility is turned off it will not be managed by the window
         // Which means that is will not take up any space in the window.
-        ArrayList<String> cars = dc.getCarList();
-        ObservableList<String> carList = FXCollections.<String>observableArrayList(cars);
-        vehicleLists.getItems().addAll(carList);
+//        ArrayList<String> cars = dc.getCarList();
+        carList = FXCollections.<String>observableArrayList(dc.getCarList());
+        vehicleLists.setItems(carList);//.addAll(carList);
         gpVehicleForm.setVisible(false);
         btnUpdateFuel.setDisable(true);
         btnDeleteVehicle.setDisable(true);
