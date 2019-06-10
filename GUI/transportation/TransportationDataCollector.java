@@ -43,8 +43,8 @@ public class TransportationDataCollector extends DataCollector {
     
     private static TransportationDataCollector singleInstance = null;
     HashMap<String, Car> carDetails;
-    HashMap<Integer, String> fuelList;
-    HashMap<Integer, String> vehicleList;
+    HashMap<String, Integer> fuelList;
+    HashMap<String, Integer> vehicleList;
     
     public static TransportationDataCollector getInstance() 
     { 
@@ -75,7 +75,7 @@ public class TransportationDataCollector extends DataCollector {
             while (result.next()) {
                 int fuelID = result.getInt("Fuel_Type_ID");
                 String desc = result.getString("description");
-                fuelList.put (fuelID, desc);}
+                fuelList.put (desc, fuelID);}
         } catch (SQLException error) {
                 ErrorMessage.display(error.getMessage());
         }
@@ -89,7 +89,7 @@ public class TransportationDataCollector extends DataCollector {
             while (result.next()) {
                 int vehicleID = result.getInt("Vehicle_Type_ID");
                 String desc = result.getString("Description");
-                vehicleList.put (vehicleID, desc);}
+                vehicleList.put (desc, vehicleID);}
         } catch (SQLException error) {
                 ErrorMessage.display(error.getMessage());
         }
@@ -98,17 +98,23 @@ public class TransportationDataCollector extends DataCollector {
 
     private void getAllCars(){
         Car car;
-        String sql = "SELECT Vehicle_ID, Description, Fuel_Type_ID, MAX(Fuel.End_Date) as lastDate "
-                + "FROM Vehicle INNER JOIN Fuel USING(Vehicle_ID)"
+        String sql = "SELECT Vehicle_ID, Vehicle.Description, Fuel_Type.Description, MAX(Fuel.End_Date) as lastDate "
+                + "FROM Vehicle INNER JOIN Fuel_Type USING(Fuel_Type_ID) "
+                + "LEFT JOIN Fuel USING(Vehicle_ID) "
                 + "GROUP BY Vehicle_ID";
         ResultSet result = doQuery(sql);
         try {
             while (result.next()) {
                 car = new Car();
                 car.id = result.getInt("Vehicle_ID");
-                car.name = result.getString("Description");
-                car.fuel = fuelList.get(result.getInt("Fuel_Type_ID"));
-                car.lastRecordedDate = result.getDate("lastDate").toLocalDate();
+                car.name = result.getString("Vehicle.Description");
+                car.fuel = result.getString("Fuel_Type.Description");
+                String lastDate = result.getString("lastDate");
+                if (lastDate != null) {
+                	car.lastRecordedDate = result.getDate("lastDate").toLocalDate();
+                } else {
+                	car.lastRecordedDate = LocalDate.now().minusMonths(1);
+                }
                 carDetails.put(car.name, car);
             }
         } catch (SQLException error) {
@@ -129,20 +135,20 @@ public class TransportationDataCollector extends DataCollector {
     
     public ArrayList<String> getFuelList(){
         ArrayList<String> fuels = new ArrayList();
-        Set< HashMap.Entry<Integer, String> > st = fuelList.entrySet();
-        for (HashMap.Entry<Integer, String> me:st) 
+        Set< HashMap.Entry<String, Integer> > st = fuelList.entrySet();
+        for (HashMap.Entry<String, Integer> me:st) 
         {
-            fuels.add(me.getValue());
+            fuels.add(me.getKey());
         }
         return fuels;
     } // end method getFuelList()
 
     public ArrayList<String> getCarTypeList(){
         ArrayList<String> types = new ArrayList();
-        Set< HashMap.Entry<Integer, String> > st = vehicleList.entrySet();
-        for (HashMap.Entry<Integer, String> me:st) 
+        Set< HashMap.Entry<String, Integer> > st = vehicleList.entrySet();
+        for (HashMap.Entry<String, Integer> me:st) 
         {
-            types.add(me.getValue());
+            types.add(me.getKey());
         }
         return types;
     } // end method getCarTypeList() 
@@ -188,11 +194,21 @@ public class TransportationDataCollector extends DataCollector {
         return vehicleSummary;
     } // end of method vehicleSummary
 
-    public String createNewVehicle(String [] values){
-        for (String line : values){
-            System.out.println(line);
-        }
-        return "Security controller not yet built, database not updated";
+    public String createNewVehicle(String description,
+    		                       String registration,
+    		                       String vehicleType,
+    		                       String fuelType
+    		                       ){
+    	int vehicleTypeID = vehicleList.get(vehicleType);
+    	int fuelTypeID = fuelList.get(fuelType);
+    	String sql = "INSERT INTO "
+    			    + "Vehicle (Description, Registration, Vehicle_Type_ID, Fuel_Type_ID) "
+			        + "VALUES(\""
+			        + description + "\", \""
+			        + registration + "\", "
+			        + vehicleTypeID + ", "
+			        + fuelTypeID + ")";
+    	return insertDatabase(sql);
     } // end of method createNewVehicle
     
     public String deleteVehicle(String carName){

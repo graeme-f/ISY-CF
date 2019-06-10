@@ -83,14 +83,15 @@ public class FXMLNewCarController  implements Initializable {
 
     @FXML private void saveAndCloseWindow(ActionEvent event) {
         dc = TransportationDataCollector.getInstance();
-        String [] values = { description.getText()
-                           , registration.getText()
-                           , vehicleTypes.getValue().toString()
-                           , fuelTypes.getValue().toString()};
-        String error = dc.createNewVehicle(values);
-        if (error != null){
-            ErrorMessage.display("An error occurred while trying to save the new vehicle data.", error);
+        String result = dc.createNewVehicle(description.getText()
+                , registration.getText()
+                , vehicleTypes.getValue().toString()
+                , fuelTypes.getValue().toString());
+        if (null == result){
+            ErrorMessage.display("An error occurred while trying to save the new vehicle data.");
             return;
+        } else {
+        	ErrorMessage.display("Information", result, "New Vehicle created.");
         }
         closeWindow(event);
     } // end of method CloseWindow
