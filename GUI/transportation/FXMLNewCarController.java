@@ -82,6 +82,8 @@ public class FXMLNewCarController  implements Initializable {
     } // end of method CloseWindow
 
     @FXML private void saveAndCloseWindow(ActionEvent event) {
+        if (!valid())
+        	return;
         dc = TransportationDataCollector.getInstance();
         String result = dc.createNewVehicle(description.getText()
                 , registration.getText()
@@ -95,4 +97,15 @@ public class FXMLNewCarController  implements Initializable {
         }
         closeWindow(event);
     } // end of method CloseWindow
+    
+    private boolean valid() {
+    	if (description.getText().isEmpty()) return false;
+        if (vehicleTypes.getValue().toString().isEmpty()) return false;
+        if (fuelTypes.getValue().toString().isEmpty()) return false;
+    	return true;
+    } // end of method valid
+    public String getCarDesc() {
+    	return description.getText();
+    } // end of method getCarDesc
+    
 } // end of class FXMLNewCarController
