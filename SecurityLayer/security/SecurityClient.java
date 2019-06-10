@@ -28,6 +28,8 @@ import java.net.*;
 import java.io.*;
 import java.util.Properties;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import utility.LogFile;
 /**
  *
@@ -72,10 +74,18 @@ public class SecurityClient extends Thread {
         } 
         catch(IOException e) 
         { 
-            System.out.println(e);
-            logger.logError(e.getMessage());
-            failed = true;
-            return;
+            try {
+                System.out.println(e);
+                logger.logError(e.getMessage());
+                logger.logError("Connecting with IP address {0}, "
+                        + "to server with IP Address {1} "
+                        + "using port {2}",
+                        new Object [] {InetAddress.getLocalHost(), address, port});
+                failed = true;
+                return;
+            } catch (UnknownHostException ex) {
+                Logger.getLogger(SecurityClient.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
         connected = true;
         KnownCommands command;

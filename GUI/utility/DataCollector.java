@@ -106,9 +106,9 @@ public abstract class DataCollector extends DatabaseConnector{
             prop.load(f);
 
             // assign db parameters
-            int port = Integer.parseInt(prop.getProperty("port"));
-            String IPAddr = prop.getProperty("IP");
-            sc = new SecurityClient(IPAddr, port);
+            port = prop.getProperty("port");
+            IPAddr = prop.getProperty("IP");
+            sc = new SecurityClient(IPAddr, Integer.parseInt(port));
             sc.start();
         } catch(IOException e) {
            logger.log(e.getMessage());
@@ -169,7 +169,9 @@ public abstract class DataCollector extends DatabaseConnector{
         
         if (sc.hasFailed()){
             ErrorMessage.display("Failed to connect to the security server",
-                                 "Please check with the Tech department to see if it is running"
+                                 "Please check with the Tech department "
+                                + "to see if it is running "
+                                + "and that port " + port + " is open."
                                 );
             logger.log("The security server does not appear to be running");
             return null;

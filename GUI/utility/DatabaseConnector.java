@@ -41,6 +41,8 @@ public class DatabaseConnector {
     
     protected final LogFile logger = ErrorMessage.logger;
     protected Connection conn;
+    protected String IPAddr;
+    protected String port;
 
     public static DatabaseConnector getInstance(){
         if (instance == null){
