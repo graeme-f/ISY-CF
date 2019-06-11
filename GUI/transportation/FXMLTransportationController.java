@@ -99,7 +99,10 @@ public class FXMLTransportationController extends GUIController implements Initi
     }
     
     @FXML private void DeleteVehicle(ActionEvent event) {
-        dc.deleteVehicle(vehicleName);
+        String result = dc.deleteVehicle(vehicleName);
+        if (null != result){
+            carList.remove(vehicleName);
+        }
     }
     
     @FXML private void addOneMonth(ActionEvent event){
