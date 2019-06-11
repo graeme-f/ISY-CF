@@ -49,6 +49,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
 import javafx.scene.control.TextFormatter.Change;
 import javafx.scene.control.TitledPane;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import javafx.util.converter.IntegerStringConverter;
@@ -63,6 +64,9 @@ public class FXMLTransportationController extends GUIController implements Initi
     
     @FXML private TextArea details;
     
+    /*************************************************************************/
+    /*   VEHICLES
+    /*************************************************************************/
     @FXML private Label VehicleDescription;
     
     @FXML private ListView vehicleLists;
@@ -79,6 +83,20 @@ public class FXMLTransportationController extends GUIController implements Initi
     @FXML private TitledPane transportPane;
     private String vehicleName;
     private ObservableList<String> carList;
+    
+    /*************************************************************************/
+    /*   TRIPS
+    /*************************************************************************/
+    @FXML private GridPane tripDetails;
+    @FXML private ToggleGroup tripType;
+    @FXML private DatePicker tripStartDate;
+    @FXML private DatePicker tripEndDate;
+    @FXML private TextField tripBusesNumber;
+    @FXML private TextField tripBusDistance;
+    @FXML private TextField tripAirDistance;
+    @FXML private TextField tripStudentNumber;
+    @FXML private TextField tripTeacherNumber;
+    
     
     private TransportationDataCollector dc;
     @FXML private void UpdateFuel(ActionEvent event) {
