@@ -33,15 +33,15 @@
                               <HBox prefHeight="37.0" prefWidth="232.0">
                                  <children>
                                     <Button fx:id="btnAddVehicle" mnemonicParsing="false" onAction="#AddVehicle" text="Add Vehicle" />
-                                    <Pane prefHeight="37.0" prefWidth="60.0" />
-                                    <Button fx:id="btnDeleteVehicle" mnemonicParsing="false" onAction="#DeleteVehicle" text="Delete Vehicle" />
+                                    <Button fx:id="btnDeleteVehicle" mnemonicParsing="false" onAction="#DeleteVehicle" text="Delete Vehicle" translateX="110.0" />
                                  </children>
                               </HBox>
                               <Label fx:id="VehicleDescription" prefHeight="17.0" prefWidth="232.0" text="Please select a car" />
                               <GridPane fx:id="gpVehicleForm">
                                 <columnConstraints>
-                                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="133.0" minWidth="10.0" prefWidth="128.0" />
+                                    <ColumnConstraints hgrow="SOMETIMES" maxWidth="89.0" minWidth="10.0" prefWidth="17.0" />
+                                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="148.0" minWidth="10.0" prefWidth="140.0" />
                                 </columnConstraints>
                                 <rowConstraints>
                                     <RowConstraints />
@@ -52,21 +52,25 @@
                                     <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                 </rowConstraints>
                                  <children>
-                                    <DatePicker fx:id="endDate" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                                    <DatePicker fx:id="startDate" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                    <DatePicker fx:id="endDate" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+                                    <DatePicker fx:id="startDate" GridPane.columnIndex="2" GridPane.rowIndex="1" />
                                     <Label text="Fuel Type" GridPane.rowIndex="3" />
-                                    <ChoiceBox fx:id="fuelList" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                                    <ChoiceBox fx:id="fuelList" prefWidth="150.0" GridPane.columnIndex="2" GridPane.rowIndex="3" />
                                     <Label text="Fuel Total" GridPane.rowIndex="4" />
-                                    <TextField fx:id="fuelTotal" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                                    <TextField fx:id="fuelTotal" GridPane.columnIndex="2" GridPane.rowIndex="4" />
                                     <Label text="Start Date" GridPane.rowIndex="1" />
-                                    <Button fx:id="btnUpdateFuel" mnemonicParsing="false" onAction="#UpdateFuel" prefHeight="25.0" prefWidth="128.0" text="Update Fuel" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                                    <Button fx:id="btnUpdateFuel" mnemonicParsing="false" onAction="#UpdateFuel" prefHeight="25.0" prefWidth="128.0" text="Update Fuel" GridPane.columnIndex="2" GridPane.rowIndex="5" />
                                     <HBox prefHeight="100.0" prefWidth="200.0" GridPane.rowIndex="2">
                                        <children>
-                                          <Label minWidth="50.0" text="End Date" />
-                                          <Pane prefHeight="200.0" prefWidth="200.0" />
-                                          <Button minWidth="80.0" mnemonicParsing="false" onAction="#addOneMonth" text="One Month" />
+                                          <Label minWidth="50.0" text="End Date" translateY="5.0" />
+                                          <Button minWidth="80.0" mnemonicParsing="false" onAction="#addOneMonth" text="One Month" translateX="10.0" translateY="2.0" />
                                        </children>
                                     </HBox>
+                                    <Label prefHeight="27.0" prefWidth="79.0" text="*" textFill="#f50101" translateX="8.0" GridPane.columnIndex="1" GridPane.rowIndex="4">
+                                       <font>
+                                          <Font name="System Bold" size="18.0" />
+                                       </font>
+                                    </Label>
                                  </children>
                               </GridPane>
                            </children>

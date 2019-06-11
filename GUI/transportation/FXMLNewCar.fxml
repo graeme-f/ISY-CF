@@ -10,10 +10,12 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.text.Font?>
 
 <GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="150.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="transportation.FXMLNewCarController">
   <columnConstraints>
-    <ColumnConstraints hgrow="SOMETIMES" maxWidth="295.0" minWidth="10.0" prefWidth="159.0" />
+    <ColumnConstraints hgrow="SOMETIMES" maxWidth="295.0" minWidth="10.0" prefWidth="155.0" />
+      <ColumnConstraints hgrow="SOMETIMES" maxWidth="295.0" minWidth="10.0" prefWidth="18.0" />
     <ColumnConstraints hgrow="SOMETIMES" maxWidth="443.0" minWidth="10.0" prefWidth="441.0" />
   </columnConstraints>
   <rowConstraints>
@@ -28,17 +30,32 @@
       <Label text="Registration Number" GridPane.rowIndex="1" />
       <Label text="Vehicle Type" GridPane.rowIndex="2" />
       <Label text="Fuel Type" GridPane.rowIndex="3" />
-      <TextField fx:id="description" GridPane.columnIndex="1" />
-      <TextField fx:id="registration" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-      <ComboBox fx:id="vehicleTypes" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-      <ComboBox fx:id="fuelTypes" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-      <HBox prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="4">
+      <TextField fx:id="description" promptText="Please enter a description" GridPane.columnIndex="2" />
+      <TextField fx:id="registration" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+      <ComboBox fx:id="vehicleTypes" prefWidth="150.0" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+      <ComboBox fx:id="fuelTypes" prefWidth="150.0" GridPane.columnIndex="2" GridPane.rowIndex="3" />
+      <HBox prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="2" GridPane.rowIndex="4">
          <children>
             <Button fx:id="btnCancel" mnemonicParsing="false" onAction="#closeWindow" prefHeight="34.0" prefWidth="153.0" text="Cancel" />
             <Pane prefHeight="30.0" prefWidth="155.0" />
             <Button fx:id="btnCreate" mnemonicParsing="false" onAction="#saveAndCloseWindow" prefHeight="36.0" prefWidth="132.0" text="Create" />
          </children>
       </HBox>
+      <Label text="*" textFill="#f50101" GridPane.columnIndex="1">
+         <font>
+            <Font name="System Bold" size="18.0" />
+         </font>
+      </Label>
+      <Label text="*" textFill="#f50101" GridPane.columnIndex="1" GridPane.rowIndex="2">
+         <font>
+            <Font name="System Bold" size="18.0" />
+         </font>
+      </Label>
+      <Label text="*" textFill="#f50101" GridPane.columnIndex="1" GridPane.rowIndex="3">
+         <font>
+            <Font name="System Bold" size="18.0" />
+         </font>
+      </Label>
    </children>
    <padding>
       <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />

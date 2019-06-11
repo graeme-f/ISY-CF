@@ -53,12 +53,13 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import javafx.util.converter.IntegerStringConverter;
 import utility.ErrorMessage;
+import utility.GUIController;
 
 /**
  *
  * @author gfoster
  */
-public class FXMLTransportationController implements Initializable {
+public class FXMLTransportationController extends GUIController implements Initializable {
     
     @FXML private TextArea details;
     
@@ -98,7 +99,10 @@ public class FXMLTransportationController implements Initializable {
     }
     
     @FXML private void DeleteVehicle(ActionEvent event) {
-        dc.deleteVehicle(vehicleName);
+        String result = dc.deleteVehicle(vehicleName);
+        if (null != result){
+            carList.remove(vehicleName);
+        }
     }
     
     @FXML private void addOneMonth(ActionEvent event){
@@ -187,14 +191,14 @@ public class FXMLTransportationController implements Initializable {
         fuelTotal.setTextFormatter(new TextFormatter<Integer>(new IntegerStringConverter(), 0, integerFilter));
         fuelTotal.textProperty().addListener((observable, oldvalue, newvalue)
         ->{
-                if(newvalue.isEmpty() || newvalue.equals("-"))
-                {
-                    btnUpdateFuel.setDisable(true);
-                }
-                else
-                {
-                    btnUpdateFuel.setDisable(false);
-                }
+            if(newvalue.isEmpty() || newvalue.equals("-"))
+            {
+                setBorder(fuelTotal, "");
+                btnUpdateFuel.setDisable(true);
+            } else {
+                setBorder(fuelTotal, newvalue);
+                btnUpdateFuel.setDisable(false);
+            }
         });
 
     } // end of method initialiseVehicles()
