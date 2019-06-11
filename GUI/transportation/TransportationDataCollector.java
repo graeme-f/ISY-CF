@@ -43,6 +43,7 @@ public class TransportationDataCollector extends DataCollector {
     
     private static TransportationDataCollector singleInstance = null;
     HashMap<String, Car> carDetails;
+    ArrayList<String> cars;
     HashMap<String, Integer> fuelList;
     HashMap<String, Integer> vehicleList;
     
@@ -57,6 +58,7 @@ public class TransportationDataCollector extends DataCollector {
     // Creator is private to make this a singleton class
     private TransportationDataCollector(){
         super();
+        cars = null;
         fuelList = new HashMap();
         vehicleList = new HashMap();
         carDetails = new HashMap();
@@ -101,6 +103,7 @@ public class TransportationDataCollector extends DataCollector {
         String sql = "SELECT Vehicle_ID, Vehicle.Description, Fuel_Type.Description, MAX(Fuel.End_Date) as lastDate "
                 + "FROM Vehicle INNER JOIN Fuel_Type USING(Fuel_Type_ID) "
                 + "LEFT JOIN Fuel USING(Vehicle_ID) "
+                + "WHERE Decommissioned = 0 "
                 + "GROUP BY Vehicle_ID";
         ResultSet result = doQuery(sql);
         try {
@@ -124,12 +127,14 @@ public class TransportationDataCollector extends DataCollector {
     } // end method getAllCars
 
     public ArrayList<String> getCarList(){
-        ArrayList<String> cars = new ArrayList();
-        Set< HashMap.Entry< String, Car> > st = carDetails.entrySet();
-        for (HashMap.Entry< String, Car> me:st) 
-        {
-            cars.add(me.getKey());
-        }
+    	if (cars == null) {
+	        cars = new ArrayList();
+	        Set< HashMap.Entry< String, Car> > st = carDetails.entrySet();
+	        for (HashMap.Entry< String, Car> me:st) 
+	        {
+	            cars.add(me.getKey());
+	        }
+    	}
          return cars;
     } // end method getCarList()
     
@@ -171,7 +176,8 @@ public class TransportationDataCollector extends DataCollector {
         } else {
             return "Unable to make a connection with the database.";
         }
-    }
+    } // end of vehicleDisplay
+    
     public String vehicleSummary(String carName){
         String sql = "SELECT SUM(Amount) as total, MONTH(Start_Date) as Month, YEAR(Start_Date) as year FROM Fuel "
                 + " WHERE Vehicle_id = " + carDetails.get(carName).id 
@@ -208,12 +214,27 @@ public class TransportationDataCollector extends DataCollector {
 			        + registration + "\", "
 			        + vehicleTypeID + ", "
 			        + fuelTypeID + ")";
-    	return insertDatabase(sql);
+    	String result = insertDatabase(sql);
+    	if (result != null) {
+            Car car = new Car();
+            car.id = getLastInsertID();
+            car.name = description;
+            car.fuel = fuelType;
+            car.lastRecordedDate = LocalDate.now().minusMonths(1);
+            carDetails.put(description, car);
+    		cars.add(description);
+    	}
+    	return result;
     } // end of method createNewVehicle
     
     public String deleteVehicle(String carName){
-        return "Not yet implemented";
-    }
+    	int vehicleID = carDetails.get(carName).id;
+    	String sql = "UPDATE vehicle "
+    				+ "SET Decommissioned = 1 "
+    				+ "WHERE Vehicle_ID = "
+    				+ vehicleID;
+    	return insertDatabase(sql);
+    } // end of method deleteVehicle
     
     public String updateFuel(String carName, 
                              String startDate,
