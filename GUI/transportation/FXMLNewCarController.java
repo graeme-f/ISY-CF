@@ -27,6 +27,8 @@ package transportation;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -37,12 +39,13 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import utility.ErrorMessage;
+import utility.GUIController;
 
 /**
  *
  * @author gfoster
  */
-public class FXMLNewCarController  implements Initializable {
+public class FXMLNewCarController  extends GUIController implements Initializable {
     
     @FXML private TextField description;
     @FXML private TextField registration;
@@ -59,21 +62,54 @@ public class FXMLNewCarController  implements Initializable {
         dc = TransportationDataCollector.getInstance();
         
         description.clear();
+        description.textProperty().addListener((observable, oldValue, newValue) -> {
+            setBorder(description, newValue);
+            enableCreate();
+        });
+        setBorder(description, "");
+
         registration.clear();
         
         ArrayList<String> makes = dc.getCarTypeList();
         ObservableList<String> vehicleMakes = FXCollections.<String>observableArrayList(makes);
         vehicleTypes.getItems().addAll(vehicleMakes);
         vehicleTypes.setPromptText("Type of Vehicle");
-        vehicleTypes.setEditable(true);
+        vehicleTypes.valueProperty().addListener(new ChangeListener<String>() {
+            @Override 
+            public void changed(ObservableValue ov, String t, String t1) {
+                setBorder(vehicleTypes, t1);
+                enableCreate();
+            }
+        });
+        setBorder(vehicleTypes, "");
         
         ArrayList<String> fuels = dc.getFuelList();
         ObservableList<String> fuelType = FXCollections.<String>observableArrayList(fuels);
         fuelTypes.getItems().addAll(fuelType);
         fuelTypes.setPromptText("Type of Fuel");
-        fuelTypes.setEditable(true);
+        fuelTypes.valueProperty().addListener(new ChangeListener<String>() {
+            @Override 
+            public void changed(ObservableValue ov, String t, String t1) {
+                setBorder(fuelTypes, t1);
+                enableCreate();
+            }
+        });
+        setBorder(fuelTypes, "");
         
+        enableCreate();
     } // end of method initialize
+    
+
+    private void enableCreate(){
+        if (description.getText().isEmpty() 
+           || vehicleTypes.getValue() == null
+           || fuelTypes.getValue() == null
+            ) {
+            btnCreate.setDisable(true);
+        } else {
+            btnCreate.setDisable(false);
+        }
+    } // end of method enableCreate
     
     @FXML private void closeWindow(ActionEvent event) {
         // get a handle to the stage
