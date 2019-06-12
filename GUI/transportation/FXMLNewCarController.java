@@ -140,6 +140,7 @@ public class FXMLNewCarController  extends GUIController implements Initializabl
         if (fuelTypes.getValue().toString().isEmpty()) return false;
     	return true;
     } // end of method valid
+    
     public String getCarDesc() {
     	return description.getText();
     } // end of method getCarDesc

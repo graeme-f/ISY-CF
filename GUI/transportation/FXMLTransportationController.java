@@ -49,6 +49,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
 import javafx.scene.control.TextFormatter.Change;
 import javafx.scene.control.TitledPane;
+import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
@@ -97,8 +98,11 @@ public class FXMLTransportationController extends GUIController implements Initi
     @FXML private TextField tripStudentNumber;
     @FXML private TextField tripTeacherNumber;
     
+    @FXML private Button btnAddTrip;
+    
     
     private TransportationDataCollector dc;
+    
     @FXML private void UpdateFuel(ActionEvent event) {
         String start  = startDate.getValue().toString();
         String end    = endDate.getValue().toString();
@@ -114,7 +118,7 @@ public class FXMLTransportationController extends GUIController implements Initi
         }
         setVehicleDetails(vehicleName);
         setVehicleSummary(vehicleName);
-    }
+    } // end of method UpdateFuel
     
     @FXML private void DeleteVehicle(ActionEvent event) {
         String result = dc.deleteVehicle(vehicleName);
@@ -149,8 +153,41 @@ public class FXMLTransportationController extends GUIController implements Initi
         inputStage.showAndWait();
         FXMLNewCarController ncc = loader.<FXMLNewCarController>getController();
         carList.add(ncc.getCarDesc());
-    }
+    } // end of method AddVehicle
     
+    @FXML private void AddTrip(ActionEvent event) {
+    	String trip = tripType.getSelectedToggle().toString();
+        String start  = tripStartDate.getValue().toString();
+        String end    = tripEndDate.getValue().toString();
+        String busNumber = tripBusesNumber.getText();
+        String busDistance = tripBusDistance.getText();
+        String airDistance = tripAirDistance.getText();
+        String studentNumber = tripStudentNumber.getText();
+        String teacherNumber = tripTeacherNumber.getText();
+        String result = dc.addTrip(trip
+        		                  ,start
+        		                  ,end
+        		                  ,"" // description
+        		                  ,busNumber
+        		                  ,busDistance
+        		                  ,airDistance
+        		                  ,studentNumber
+        		                  ,teacherNumber
+        		                  );
+        // Display the result on the screen, this also delays the processing
+        // enough so that the vehicle summary will be properly displayed.
+        if (null == result){
+            ErrorMessage.display("Unable to update the fuel details.");
+        } else {
+            ErrorMessage.display("Information", result, "Fuel details updated");
+        }
+        // TODO setTripSummary(trip);
+    } // end of method AddTrip
+ 
+
+    
+    
+
     public void setVehicleSummary(String vehicleName){
         details.setText(dc.vehicleSummary(vehicleName));
     } // end of method setVehicleSummary()
@@ -179,8 +216,71 @@ public class FXMLTransportationController extends GUIController implements Initi
         leftSidePanel.setExpandedPane(transportPane);
         dc = TransportationDataCollector.getInstance();
         details.setText(dc.vehicleDisplay());
-        initialiseVehicles();        
+        initialiseVehicles();
+        initialiseTrips();
     } // end of method initialize    
+    
+    private void initialiseTrips() {
+        tripType.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
+        	public void changed(ObservableValue<? extends Toggle> ov, Toggle oldToggle, Toggle newToggle) {
+        		tripDetails.setVisible(true);
+        	}
+        });
+        tripStartDate.setValue(LocalDate.now());
+        tripEndDate.setValue(LocalDate.now());
+        intFilter(tripBusesNumber);
+        intFilter(tripBusDistance);
+        intFilter(tripAirDistance);
+        intFilter(tripStudentNumber,true);
+        intFilter(tripTeacherNumber,true);
+        tripBusesNumber.clear();
+        tripBusDistance.clear();
+        tripAirDistance.clear();
+        tripStudentNumber.clear();
+        tripTeacherNumber.clear();
+        tripBusesNumber.textProperty().addListener((observable, oldValue, newValue) -> {
+            enableAddTrip();
+        });
+        tripBusDistance.textProperty().addListener((observable, oldValue, newValue) -> {
+            enableAddTrip();
+        });
+        tripAirDistance.textProperty().addListener((observable, oldValue, newValue) -> {
+            enableAddTrip();
+        });
+        tripStudentNumber.textProperty().addListener((observable, oldValue, newValue) -> {
+            setBorder(tripStudentNumber, newValue);
+            enableAddTrip();
+        });
+        tripTeacherNumber.textProperty().addListener((observable, oldValue, newValue) -> {
+            setBorder(tripTeacherNumber, newValue);
+            enableAddTrip();
+        });
+        enableAddTrip();
+    }
+    
+    private boolean validTrip() {
+    	if (tripStudentNumber.getText().isEmpty()) return false;
+    	if (tripTeacherNumber.getText().isEmpty()) return false;
+    	if (tripBusDistance.getText().isEmpty()
+    	   &&tripAirDistance.getText().isEmpty()
+    	   ) return false;
+    	if (tripBusDistance.getText().isEmpty()
+    	   && !tripBusesNumber.getText().isEmpty()
+    	   ) return false;
+    	if (!tripBusDistance.getText().isEmpty()
+    	   && tripBusesNumber.getText().isEmpty()
+    	   ) return false;
+    		
+    	return true;
+    } // end of method validTrip
+    
+    private void enableAddTrip(){
+        if (validTrip()) {
+        	btnAddTrip.setDisable(false);
+        } else {
+        	btnAddTrip.setDisable(true);
+        }
+    } // end of method enableAddTrip
     
     private void initialiseVehicles(){
         // The following code will bind the managed property to the visibility of the container
@@ -206,7 +306,7 @@ public class FXMLTransportationController extends GUIController implements Initi
         ArrayList<String> fuels = dc.getFuelList();
         ObservableList<String> fuelType = FXCollections.<String>observableArrayList(fuels);
         fuelList.setItems(fuelType);
-        fuelTotal.setTextFormatter(new TextFormatter<Integer>(new IntegerStringConverter(), 0, integerFilter));
+        intFilter(fuelTotal);
         fuelTotal.textProperty().addListener((observable, oldvalue, newvalue)
         ->{
             if(newvalue.isEmpty() || newvalue.equals("-"))
@@ -221,13 +321,4 @@ public class FXMLTransportationController extends GUIController implements Initi
 
     } // end of method initialiseVehicles()
     
-    UnaryOperator<Change> integerFilter = change -> {
-    String newText = change.getControlNewText();
-    if (newText.matches("-?([1-9][0-9]*)?")) { 
-        return change;
-    }
-    return null;
-};
-
-
 } // end of class FXMLTransportationController
