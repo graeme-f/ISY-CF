@@ -24,14 +24,20 @@
 
 package utility;
 
+import java.util.function.UnaryOperator;
+
 import javafx.scene.control.ComboBoxBase;
+import javafx.scene.control.TextField;
+import javafx.scene.control.TextFormatter;
 import javafx.scene.control.TextInputControl;
+import javafx.scene.control.TextFormatter.Change;
 import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderStroke;
 import javafx.scene.layout.BorderStrokeStyle;
 import javafx.scene.layout.BorderWidths;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.paint.Color;
+import javafx.util.converter.IntegerStringConverter;
 
 /**
  *
@@ -64,6 +70,36 @@ public class GUIController {
             c.setBorder(Border.EMPTY);
         }
     } // end of method setBorder
+    
+    protected void intFilter(TextField f) {
+        f.setTextFormatter(new TextFormatter<Integer>(new IntegerStringConverter(), 0, integerFilter));	
+    } // end of ontFilter
+    
+    protected void intFilter(TextField f, boolean required) {
+        f.setTextFormatter(new TextFormatter<Integer>(new IntegerStringConverter(), 0, integerFilter));
+        if (required) {
+        	setRequired(f);
+        }
+    } // end of ontFilter
 
+    UnaryOperator<Change> integerFilter = change -> {
+	    String newText = change.getControlNewText();
+	    if (newText.matches("-?([1-9][0-9]*)?")) { 
+	        return change;
+	    }
+	    return null;
+	};
 
+	protected void setRequired(TextField f) {
+        f.textProperty().addListener((observable, oldvalue, newvalue)
+        ->{
+            if(newvalue.isEmpty() || newvalue.equals("-"))
+            {
+                setBorder(f, "");
+            } else {
+                setBorder(f, newvalue);
+            }
+        });
+
+	}
 } // end of class GUIController

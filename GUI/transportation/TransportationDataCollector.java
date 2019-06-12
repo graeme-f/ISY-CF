@@ -41,11 +41,18 @@ public class TransportationDataCollector extends DataCollector {
         LocalDate lastRecordedDate;    
     } // end of inner class Car
     
+    class TripGroup {
+        int id;
+        String description;
+        boolean teacher_only;    
+    } // end of inner class TripGroup
+
     private static TransportationDataCollector singleInstance = null;
     HashMap<String, Car> carDetails;
     ArrayList<String> cars;
     HashMap<String, Integer> fuelList;
     HashMap<String, Integer> vehicleList;
+    HashMap<String, TripGroup> groupDetails;
     
     public static TransportationDataCollector getInstance() 
     { 
@@ -62,11 +69,13 @@ public class TransportationDataCollector extends DataCollector {
         fuelList = new HashMap();
         vehicleList = new HashMap();
         carDetails = new HashMap();
+        groupDetails = new HashMap();
 
         if (conn != null){
             getFuelTypes();
             getVehicleTypes();
             getAllCars();
+            getAllTripGroups();
         }
     } // end of constructor
     
@@ -253,6 +262,49 @@ public class TransportationDataCollector extends DataCollector {
                 + fuelAmount + ", "
                 + vehicleID + ")";
         return insertDatabase(sql);
-    }
+    } // end of method updateFuel
+    
+    private void getAllTripGroups(){
+    	TripGroup group;
+        String sql = "SELECT Trip_Group_ID, Description, Teacher_Only FROM trip_group";
+        ResultSet result = doQuery(sql);
+        try {
+            while (result.next()) {
+                group = new TripGroup();
+                group.id = result.getInt("Trip_Group_ID");
+                group.description = result.getString("Description");
+                group.teacher_only = result.getBoolean("Teacher_Only");
+                groupDetails.put(group.description, group);
+            }
+        } catch (SQLException error) {
+                ErrorMessage.display(error.getMessage());
+        }
+        
+    } // end method getAllCars
+
+    public String addTrip(String trip
+			            ,String start
+			            ,String end
+			            ,String description
+			            ,String busNumber
+			            ,String busDistance
+			            ,String airDistance
+			            ,String studentNumber
+			            ,String teacherNumber) {
+    	String group_ID = trip;
+        String sql = "INSERT INTO "
+                + "Trip (Start_Date, End_Date, Trip_Group_ID, Description, Number_of_Busses, Bus_Distance, Flight_Distance, Number_of_Students, Number_of_Teachers) "
+                + "VALUES(\""
+                + start + "\", \""
+                + end + "\", \""
+                + description + "\", "
+                + group_ID + ", "
+                + busNumber + ", "
+                + busDistance + ", "
+                + airDistance + ", "
+                + studentNumber + ", "
+                + teacherNumber + ")";
+        return insertDatabase(sql);
+    } // end of method addTrip
     
 } // end class TransportationDataCollector
