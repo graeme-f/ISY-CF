@@ -30,6 +30,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
+
 import utility.DataCollector;
 import utility.ErrorMessage;
 
@@ -53,6 +54,7 @@ public class TransportationDataCollector extends DataCollector {
     HashMap<String, Integer> fuelList;
     HashMap<String, Integer> vehicleList;
     HashMap<String, TripGroup> groupDetails;
+    ArrayList<String> trips;
     
     public static TransportationDataCollector getInstance() 
     { 
@@ -66,10 +68,10 @@ public class TransportationDataCollector extends DataCollector {
     private TransportationDataCollector(){
         super();
         cars = null;
-        fuelList = new HashMap();
-        vehicleList = new HashMap();
-        carDetails = new HashMap();
-        groupDetails = new HashMap();
+        fuelList = new HashMap<String, Integer>();
+        vehicleList = new HashMap<String, Integer>();
+        carDetails = new HashMap<String, Car>();
+        groupDetails = new HashMap<String, TripGroup>();
 
         if (conn != null){
             getFuelTypes();
@@ -137,7 +139,7 @@ public class TransportationDataCollector extends DataCollector {
 
     public ArrayList<String> getCarList(){
     	if (cars == null) {
-	        cars = new ArrayList();
+	        cars = new ArrayList<String>();
 	        Set< HashMap.Entry< String, Car> > st = carDetails.entrySet();
 	        for (HashMap.Entry< String, Car> me:st) 
 	        {
@@ -148,7 +150,7 @@ public class TransportationDataCollector extends DataCollector {
     } // end method getCarList()
     
     public ArrayList<String> getFuelList(){
-        ArrayList<String> fuels = new ArrayList();
+        ArrayList<String> fuels = new ArrayList<String>();
         Set< HashMap.Entry<String, Integer> > st = fuelList.entrySet();
         for (HashMap.Entry<String, Integer> me:st) 
         {
@@ -158,7 +160,7 @@ public class TransportationDataCollector extends DataCollector {
     } // end method getFuelList()
 
     public ArrayList<String> getCarTypeList(){
-        ArrayList<String> types = new ArrayList();
+        ArrayList<String> types = new ArrayList<String>();
         Set< HashMap.Entry<String, Integer> > st = vehicleList.entrySet();
         for (HashMap.Entry<String, Integer> me:st) 
         {
@@ -180,7 +182,7 @@ public class TransportationDataCollector extends DataCollector {
             if (carDetails.isEmpty()){
                 return "No vehicles found on the database";
             } else {
-                return "Select a vehicle to start;";
+                return "Select a vehicle to start.";
             }
         } else {
             return "Unable to make a connection with the database.";
@@ -282,23 +284,97 @@ public class TransportationDataCollector extends DataCollector {
         
     } // end method getAllCars
 
+    public ArrayList<String> getTripList(){
+    	if (trips == null) {
+    		trips = new ArrayList<String>();
+	        Set< HashMap.Entry< String, TripGroup> > st = groupDetails.entrySet();
+	        for (HashMap.Entry< String, TripGroup> me:st) 
+	        {
+	        	trips.add(me.getKey());
+	        }
+    	}
+        return trips;
+    } // end method getTripList()
+    
+    public boolean tripStaffOnly(String tripOption) {
+    	if (tripOption == null) {
+    		return false;
+    	}
+    	return groupDetails.get(tripOption).teacher_only;
+    } // end of method tripStaffOnly
+    
+    public int tripID(String tripOption) {
+    	if (tripOption == null) {
+    		return 0;
+    	}
+    	return groupDetails.get(tripOption).id;
+    } // end of method tripStaffOnly
+    
+    public String tripDisplay() {
+        if (conn != null){
+            if (groupDetails.isEmpty()){
+                return "No trips found on the database";
+            } else {
+                return "Select a trip to start.";
+            }
+        } else {
+            return "Unable to make a connection with the database.";
+        }
+	} // end of method tripDisplay
+    
+    public String tripSummary(String GroupName){
+        String sql = "SELECT YEAR(Start_Date) AS year, "
+        		+ "MONTH(Start_Date) AS month, "
+        		+ "Description, "
+        		+ "Number_of_buses, "
+        		+ "bus_distance, "
+        		+ "flight_distance, "
+        		+ "Number_of_students, "
+        		+ "Number_of_Teachers "
+        		+ "FROM trip WHERE Trip_GROUP_ID = " + tripID(GroupName) 
+                + " AND Start_Date " + getBetweenSchoolYear()
+                + " ORDER BY year, month, Description";
+        ResultSet result = doQuery(sql);
+        String tripSummary = "";
+        tripSummary += GroupName + "\n\n                  #Bus  Dist    Flight  Student Teacher\n";
+        int totalBus = 0;
+        int totalFlight = 0;
+        try {
+            while (result.next()) {
+                totalBus += result.getInt("bus_distance") * result.getInt("Number_of_buses") *2;
+                totalFlight += result.getInt("flight_distance") *2 * (result.getInt("Number_of_students") + result.getInt("Number_of_Teachers"));
+                tripSummary += pad(getMonthName(result.getInt("Month")),3) + " ";
+                tripSummary += pad(result.getString("Description"),16) + " ";
+                tripSummary += result.getString("Number_of_buses") + "\t";
+                tripSummary += result.getString("bus_distance") + "\t";
+                tripSummary += result.getString("flight_distance") + "\t";
+                tripSummary += result.getString("Number_of_students") + "\t";
+                tripSummary += result.getString("Number_of_Teachers") + "\n";
+            }
+            tripSummary += "\nTotal bus distance\t"+totalBus + "\nTotal flight distance\t" + totalFlight + "\n";
+        } catch (SQLException error) {
+                ErrorMessage.display(error.getMessage());
+        }
+        return tripSummary;
+    } // end of method tripSummary
+
     public String addTrip(String trip
-			            ,String start
-			            ,String end
-			            ,String description
-			            ,String busNumber
-			            ,String busDistance
-			            ,String airDistance
-			            ,String studentNumber
-			            ,String teacherNumber) {
-    	String group_ID = trip;
+			             ,String start
+			             ,String end
+			             ,String description
+			             ,String busNumber
+			             ,String busDistance
+			             ,String airDistance
+			             ,String studentNumber
+			             ,String teacherNumber) {
+    	int group_ID = tripID(trip);
         String sql = "INSERT INTO "
-                + "Trip (Start_Date, End_Date, Trip_Group_ID, Description, Number_of_Busses, Bus_Distance, Flight_Distance, Number_of_Students, Number_of_Teachers) "
+                + "Trip (Start_Date, End_Date, Trip_Group_ID, Description, Number_of_Buses, Bus_Distance, Flight_Distance, Number_of_Students, Number_of_Teachers) "
                 + "VALUES(\""
                 + start + "\", \""
-                + end + "\", \""
+                + end + "\", "
+                + group_ID + ", \""
                 + description + "\", "
-                + group_ID + ", "
                 + busNumber + ", "
                 + busDistance + ", "
                 + airDistance + ", "

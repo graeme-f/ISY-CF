@@ -49,8 +49,8 @@ public class FXMLNewCarController  extends GUIController implements Initializabl
     
     @FXML private TextField description;
     @FXML private TextField registration;
-    @FXML private ComboBox vehicleTypes;
-    @FXML private ComboBox fuelTypes;
+    @FXML private ComboBox<String> vehicleTypes;
+    @FXML private ComboBox<String> fuelTypes;
     
     @FXML private Button btnCancel;
     @FXML private Button btnCreate;
