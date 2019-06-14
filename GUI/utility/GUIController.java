@@ -102,4 +102,13 @@ public class GUIController {
         });
 
 	}
+	
+	protected String getNumber(TextField f) {
+		String result = f.getText();
+		if (result.isEmpty()) {
+			return "0";
+		} else {
+			return result;
+		}
+	} // end of method getNumber
 } // end of class GUIController

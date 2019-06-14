@@ -202,4 +202,16 @@ public abstract class DataCollector extends DatabaseConnector{
         return id;
     } // end of method getLastInsertID
     
+	protected String pad(String msg, int length) {
+		if (msg.length() >= length) {
+			return msg.substring(0,length);
+		} else {
+			String padding = "";
+			for (int i = msg.length(); i < length; i++) {
+				padding += " ";
+			}
+			return msg.concat(padding);
+		}
+	} // end of method pad
+	
 } // end of class DataCollector

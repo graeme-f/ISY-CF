@@ -28,7 +28,6 @@ import java.net.URL;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
-import java.util.function.UnaryOperator;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -46,14 +45,10 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.control.TextFormatter;
-import javafx.scene.control.TextFormatter.Change;
 import javafx.scene.control.TitledPane;
-import javafx.scene.control.Toggle;
-import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.RowConstraints;
 import javafx.stage.Stage;
-import javafx.util.converter.IntegerStringConverter;
 import utility.ErrorMessage;
 import utility.GUIController;
 
@@ -63,15 +58,23 @@ import utility.GUIController;
  */
 public class FXMLTransportationController extends GUIController implements Initializable {
     
-    @FXML private TextArea details;
     
+    /*************************************************************************/
+    /*   ACCORDION
+    /*************************************************************************/
+    @FXML private Accordion leftSidePanel;
+    @FXML private TitledPane transportPane;
+    @FXML private TitledPane tripPane;
+
+    @FXML private TextArea details;
+
     /*************************************************************************/
     /*   VEHICLES
     /*************************************************************************/
     @FXML private Label VehicleDescription;
     
-    @FXML private ListView vehicleLists;
-    @FXML private ChoiceBox fuelList;
+    @FXML private ListView<String> vehicleLists;
+    @FXML private ChoiceBox<String> fuelList;
     @FXML private DatePicker startDate;
     @FXML private DatePicker endDate;
     @FXML private TextField fuelTotal;
@@ -80,22 +83,24 @@ public class FXMLTransportationController extends GUIController implements Initi
     @FXML private Button btnUpdateFuel;
     
     @FXML private GridPane gpVehicleForm;
-    @FXML private Accordion leftSidePanel;
-    @FXML private TitledPane transportPane;
     private String vehicleName;
     private ObservableList<String> carList;
     
     /*************************************************************************/
     /*   TRIPS
     /*************************************************************************/
+    @FXML private ChoiceBox<String> tripOptions;
     @FXML private GridPane tripDetails;
-    @FXML private ToggleGroup tripType;
+    @FXML private RowConstraints tripStudentRow;
     @FXML private DatePicker tripStartDate;
     @FXML private DatePicker tripEndDate;
+    @FXML private TextField tripDescription;
     @FXML private TextField tripBusesNumber;
     @FXML private TextField tripBusDistance;
     @FXML private TextField tripAirDistance;
     @FXML private TextField tripStudentNumber;
+    @FXML private Label tripSNLabel;
+    @FXML private Label tripSNRequired;
     @FXML private TextField tripTeacherNumber;
     
     @FXML private Button btnAddTrip;
@@ -156,18 +161,19 @@ public class FXMLTransportationController extends GUIController implements Initi
     } // end of method AddVehicle
     
     @FXML private void AddTrip(ActionEvent event) {
-    	String trip = tripType.getSelectedToggle().toString();
+    	String trip = tripOptions.getSelectionModel().getSelectedItem();
         String start  = tripStartDate.getValue().toString();
         String end    = tripEndDate.getValue().toString();
-        String busNumber = tripBusesNumber.getText();
-        String busDistance = tripBusDistance.getText();
-        String airDistance = tripAirDistance.getText();
-        String studentNumber = tripStudentNumber.getText();
-        String teacherNumber = tripTeacherNumber.getText();
+        String desc   = tripDescription.getText();
+        String busNumber = getNumber(tripBusesNumber);
+        String busDistance = getNumber(tripBusDistance);
+        String airDistance = getNumber(tripAirDistance);
+        String studentNumber = getNumber(tripStudentNumber);
+        String teacherNumber = getNumber(tripTeacherNumber);
         String result = dc.addTrip(trip
         		                  ,start
         		                  ,end
-        		                  ,"" // description
+        		                  ,desc
         		                  ,busNumber
         		                  ,busDistance
         		                  ,airDistance
@@ -175,13 +181,13 @@ public class FXMLTransportationController extends GUIController implements Initi
         		                  ,teacherNumber
         		                  );
         // Display the result on the screen, this also delays the processing
-        // enough so that the vehicle summary will be properly displayed.
+        // enough so that the trip summary will be properly displayed.
         if (null == result){
-            ErrorMessage.display("Unable to update the fuel details.");
+            ErrorMessage.display("Unable to update the trip details.");
         } else {
-            ErrorMessage.display("Information", result, "Fuel details updated");
+            ErrorMessage.display("Information", result, "Trip details updated");
         }
-        // TODO setTripSummary(trip);
+        details.setText(dc.tripSummary(trip));
     } // end of method AddTrip
  
 
@@ -218,26 +224,61 @@ public class FXMLTransportationController extends GUIController implements Initi
         details.setText(dc.vehicleDisplay());
         initialiseVehicles();
         initialiseTrips();
+        leftSidePanel.expandedPaneProperty().addListener(new ChangeListener<TitledPane>() {
+			public void changed(ObservableValue<? extends TitledPane> ov, TitledPane oldValue, TitledPane newValue) {
+		        if (newValue == transportPane) {
+		        	details.setText(dc.vehicleDisplay());
+		        } else if (newValue == tripPane) {
+		        	details.setText(dc.tripDisplay());
+		        }
+			}
+        });
     } // end of method initialize    
     
     private void initialiseTrips() {
-        tripType.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
-        	public void changed(ObservableValue<? extends Toggle> ov, Toggle oldToggle, Toggle newToggle) {
-        		tripDetails.setVisible(true);
-        	}
-        });
+    	ObservableList<String> tripList = FXCollections.<String>observableArrayList(dc.getTripList());
+    	tripOptions.setItems(tripList);
+    	tripOptions.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>()
+        {
+            @Override
+            public void changed(ObservableValue<? extends String> ov,
+                    final String oldValue, final String newValue) 
+            {
+            	tripDetails.setVisible(true);
+            	if (dc.tripStaffOnly(newValue)) {
+            		tripStudentRow.setPrefHeight(0);
+            		tripStudentRow.setMaxHeight(0);
+            		tripSNLabel.setVisible(false);
+            		tripSNRequired.setVisible(false);
+            		tripStudentNumber.setVisible(false);
+                    tripStudentNumber.clear();
+            	} else {
+            		tripStudentRow.setPrefHeight(35);
+            		tripStudentRow.setMaxHeight(35);
+            		tripSNLabel.setVisible(true);
+            		tripSNRequired.setVisible(true);
+            		tripStudentNumber.setVisible(true);
+            	}
+            	details.setText(dc.tripSummary(newValue));
+        }});
         tripStartDate.setValue(LocalDate.now());
         tripEndDate.setValue(LocalDate.now());
+        setRequired(tripDescription);
+        setBorder(tripDescription,"");
         intFilter(tripBusesNumber);
         intFilter(tripBusDistance);
         intFilter(tripAirDistance);
         intFilter(tripStudentNumber,true);
         intFilter(tripTeacherNumber,true);
+        tripDescription.clear();
         tripBusesNumber.clear();
         tripBusDistance.clear();
         tripAirDistance.clear();
         tripStudentNumber.clear();
         tripTeacherNumber.clear();
+        tripDescription.textProperty().addListener((observable, oldValue, newValue) -> {
+            enableAddTrip();
+        });
         tripBusesNumber.textProperty().addListener((observable, oldValue, newValue) -> {
             enableAddTrip();
         });
@@ -259,7 +300,8 @@ public class FXMLTransportationController extends GUIController implements Initi
     }
     
     private boolean validTrip() {
-    	if (tripStudentNumber.getText().isEmpty()) return false;
+    	if (tripDescription.getText().isEmpty()) return false;
+    	if (tripStudentNumber.getText().isEmpty() && !dc.tripStaffOnly(tripOptions.getSelectionModel().getSelectedItem())) return false;
     	if (tripTeacherNumber.getText().isEmpty()) return false;
     	if (tripBusDistance.getText().isEmpty()
     	   &&tripAirDistance.getText().isEmpty()
