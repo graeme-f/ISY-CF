@@ -40,6 +40,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.util.converter.IntegerStringConverter;
+import utility.ErrorMessage;
 
 /**
  * FXML Controller class
@@ -80,11 +81,23 @@ public class FXMLPowerUsageController implements Initializable {
 
     @FXML private TextArea details;
 
+    @FXML private void addOneMonth(ActionEvent event){
+    	ElectricityEndDate.setValue(ElectricityStartDate.getValue().plusMonths(1).minusDays(1));
+    }
+    
     @FXML private void updateElectricity(ActionEvent event) {
         String start  = ElectricityStartDate.getValue().toString();
         String end    = ElectricityEndDate.getValue().toString();
         String amount = meterUnits.getText();
-        dc.insertElectricityData(start, end, amount);
+        String result = dc.insertElectricityData(start, end, amount);
+        // Display the result on the screen, this also delays the processing
+        // enough so that the electricity summary will be properly displayed.
+        if (null == result){
+            ErrorMessage.display("Unable to update the electricity details.");
+        } else {
+            ErrorMessage.display("Information", result, "Electricity details updated");
+        }
+        details.setText(dc.electricitySummary());
     } // end of UpdateElectricity
     
     @FXML private void updateGenerator(ActionEvent event) {
@@ -152,13 +165,7 @@ public class FXMLPowerUsageController implements Initializable {
     }
     
     private void setElectricitySummary() {
-        HashMap<String, Integer> electricityMonthlyMeterUnits = dc.getElectricityMonthMeterUnits();
-        Set< HashMap.Entry< String, Integer> > st = electricityMonthlyMeterUnits.entrySet();
-        String summary = "";
-        for (HashMap.Entry< String, Integer> me:st)
-        {
-            summary += me.getKey() + "\t" + me.getValue() + "\n";
-        }
+    	String summary = dc.electricitySummary();
         details.setText(summary);
     }
     

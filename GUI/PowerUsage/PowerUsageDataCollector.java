@@ -54,13 +54,17 @@ public class PowerUsageDataCollector extends DataCollector {
     private PowerUsageDataCollector() {
         super();
         lastDate = null;
-        getAllElectricity();
-        getAllGenerator();
-        getAllAcType();
+        electricityDetails = new HashMap<>();
+        generatorDetails = new HashMap<>();
+        acTypeDetails = new HashMap<>();
+        if (conn != null){
+	        getAllElectricity();
+	        getAllGenerator();
+	        getAllAcType();
+        }
     } // end of method PowerUsageDataCollector
 
     private void getAllElectricity() {
-        electricityDetails = new HashMap<>();
         String query = "SELECT * FROM Electricity WHERE Start_Date " + getBetweenSchoolYear();
         ResultSet rec = doQuery(query);
         Electricity electricity = new Electricity();
@@ -83,7 +87,6 @@ public class PowerUsageDataCollector extends DataCollector {
     } // end of method getAllElectricity
 
     private void getAllGenerator() {
-        generatorDetails = new HashMap<>();
         String query = "SELECT * FROM Generator WHERE Start_Date " + getBetweenSchoolYear();
         ResultSet rec = doQuery(query);
         Generator generator = new Generator();
@@ -104,9 +107,8 @@ public class PowerUsageDataCollector extends DataCollector {
             ErrorMessage.display(error.getMessage());
         }
     } // end of method getAllGenerator
-
+    
     private void getAllAcType() {
-        acTypeDetails = new HashMap<>();
         String query = "SELECT * FROM AC_Type "; //WHERE Start_Date " + getBetweenSchoolYear();
         ResultSet rec = doQuery(query);
         ACType acType = new ACType();
@@ -162,6 +164,28 @@ public class PowerUsageDataCollector extends DataCollector {
         return acType;
     } // end of method getAcTypeList
 
+    public String electricitySummary(){
+        String sql = "SELECT SUM(Meter_Units) as Total, "
+        		+ "MONTH(Start_Date) as Month, "
+        		+ "YEAR(Start_Date) as year "
+        		+ "FROM electricity "
+        		+ "WHERE Start_Date " + getBetweenSchoolYear()
+        		+ "GROUP BY year, month";
+        ResultSet result = doQuery(sql);
+        String electricitySummary = "";
+        int totalUsage = 0;
+        try {
+            while (result.next()) {
+            	totalUsage += result.getInt("Total");
+            	electricitySummary += pad(getMonthName(result.getInt("Month")),10) + "\t";
+            	electricitySummary += result.getString("Total") + "\n";
+            }
+            electricitySummary += "Total usage\t"+totalUsage + "\n";
+        } catch (SQLException error) {
+                ErrorMessage.display(error.getMessage());
+        }
+        return electricitySummary;
+    } // end of method electricitySummary
 
     public HashMap<String, Integer> getElectricityMonthMeterUnits()  {
         HashMap<String, Integer> monthMeterUnits = new HashMap<>();
@@ -217,16 +241,16 @@ public class PowerUsageDataCollector extends DataCollector {
 
     public String insertElectricityData(String startDate, String endDate, String meterUnits) {
         return insertDatabase("INSERT into Electricity (Start_Date, End_Date, Meter_Units) VALUES(\'" + startDate + "\', " +
-                "\'" + endDate + "\', \'" + meterUnits + ")");
+                "\'" + endDate + "\', " + meterUnits + ")");
     } // end of method insertElectricityData
 
     public String insertGeneratorData(String startDate, String endDate, String amount) {
         return insertDatabase("INSERT into Generator (Start_Date, End_Date, Amount) VALUES(\'" + startDate + "\', " +
-                "\'" + endDate + "\', \'" + amount + ")");
+                "\'" + endDate + "\', " + amount + ")");
     } // end of method insertGeneratorData
 
     public String insertAcTypeData(String startDate, String endDate, String description, int number) {
         return insertDatabase("INSERT into AC_Type (Start_Date, End_Date, Description, Number) VALUES(\'" + startDate + "\', " +
-                "\'" + endDate + "\', \'" + description + "\', \'" + number + "')");
+                "\'" + endDate + "\', \'" + description + "\', " + number + "')");
     } // end of method insertAcTypeData
 }
