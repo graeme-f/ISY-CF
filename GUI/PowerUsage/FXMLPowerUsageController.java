@@ -39,6 +39,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.util.converter.IntegerStringConverter;
@@ -76,14 +77,7 @@ public class FXMLPowerUsageController extends GUIController implements Initializ
     @FXML private Button btnSetGenEndDate;
     @FXML private Button btnUpdateGenerator;
 
-    @FXML private VBox ACBox;
-    @FXML private ListView ACList;
-    @FXML private ChoiceBox ACTypeList;
-    @FXML private ChoiceBox RefrigerantList;
-    @FXML private DatePicker ACStartDate;
-    @FXML private DatePicker ACEndDate;
-    @FXML private Button btnAddAC;
-    @FXML private Button btnDeleteAC;
+    @FXML private GridPane ACBox;
     @FXML private Button btnUpdateAC;
 
     @FXML private TextArea details;
@@ -121,13 +115,6 @@ public class FXMLPowerUsageController extends GUIController implements Initializ
 
     private PowerUsageDataCollector dc;
 
-    UnaryOperator<TextFormatter.Change> integerFilter = change -> {
-        String newText = change.getControlNewText();
-        if (newText.matches("-?([1-9][0-9]*)?")) {
-            return change;
-        }
-        return null;
-    };
 
     /**
      * Initializes the controller class.
@@ -155,6 +142,8 @@ public class FXMLPowerUsageController extends GUIController implements Initializ
         attachEndDateAction(btnSetGenEndDate, GeneratorStartDate, GeneratorEndDate);
         intFilter(fuelAmount, btnUpdateGenerator);
         initializeGenerator();
+        
+        initializeAC();
     }
     
     private void initializeElectricity() {
@@ -183,6 +172,28 @@ public class FXMLPowerUsageController extends GUIController implements Initializ
         btnUpdateGenerator.setDisable(true);
         fuelAmount.clear();
     } // end of method initializeGenerator
+    
+    private void initializeAC(){
+        ArrayList<String> ACTypes = dc.getAcTypeList();
+        int row = 0;
+        Label lbl = new Label();
+        lbl.setText("Description");
+        ACBox.add(lbl, 0, row);
+        lbl = new Label();
+        lbl.setText("Total Units");
+        ACBox.add(lbl, 1, row);
+        TextField txt;
+        for (String name : ACTypes){
+            lbl = new Label();
+            lbl.setText(name);
+            txt = new TextField();
+            intFilter(txt);
+            txt.setText(Integer.toString(row));
+            row++;
+            ACBox.add(lbl, 0, row);
+            ACBox.add(txt, 1, row);
+        }
+    } // end of method initializeAC
     
     private void setElectricitySummary() {
     	String summary = dc.electricitySummary();
