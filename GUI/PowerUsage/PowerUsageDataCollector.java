@@ -10,37 +10,7 @@ import java.util.*;
 
 public class PowerUsageDataCollector extends DataCollector {
 
-    class Electricity {
-        int id;
-        LocalDate startDate;
-        LocalDate endDate;
-        int meterUnits;
-    } // end of inner class Electricity
-
-    private LocalDate lastDate;
-
-    class Generator {
-        int id;
-        LocalDate startDate;
-        LocalDate endDate;
-        int amount;
-    } // end of inner class Generator
-
-    class ACType {
-        int id;
-        //TODO
-        // LocalDate startDate;
-        // Months and stuff in the database, the code supports it
-        LocalDate startDate;
-        LocalDate endDate;
-        String description;
-        int number;
-    }
-
     private static PowerUsageDataCollector singleInstance = null;
-    private HashMap<Integer, Electricity> electricityDetails;
-    private HashMap<Integer, Generator> generatorDetails;
-    private HashMap<Integer, ACType> acTypeDetails;
 
     // Singleton
     public static PowerUsageDataCollector getInstance()
@@ -53,117 +23,58 @@ public class PowerUsageDataCollector extends DataCollector {
     // This runs when the instance is created.
     private PowerUsageDataCollector() {
         super();
-        lastDate = null;
-        electricityDetails = new HashMap<>();
-        generatorDetails = new HashMap<>();
-        acTypeDetails = new HashMap<>();
-        if (conn != null){
-	        getAllElectricity();
-	        getAllGenerator();
-	        getAllAcType();
-        }
     } // end of method PowerUsageDataCollector
 
-    private void getAllElectricity() {
-        String query = "SELECT * FROM Electricity WHERE Start_Date " + getBetweenSchoolYear();
-        ResultSet rec = doQuery(query);
-        Electricity electricity = new Electricity();
+
+
+    public String generatorSummary(){
+        String sql = "SELECT SUM(Amount) as Total, "
+        		+ "MONTH(Start_Date) as Month, "
+        		+ "YEAR(Start_Date) as year "
+        		+ "FROM Generator "
+        		+ "WHERE Start_Date " + getBetweenSchoolYear()
+        		+ "GROUP BY year, month";
+        ResultSet result = doQuery(sql);
+        String generatorSummary = "";
+        int totalUsage = 0;
+        if (null == result) return generatorSummary;
         try {
-            while (rec.next()) {
-                electricity.id = rec.getInt("Electricity_ID");
-                electricity.startDate = rec.getDate("Start_Date").toLocalDate();
-                electricity.endDate = rec.getDate("End_Date").toLocalDate();
-                electricity.meterUnits = rec.getInt("Meter_Units");
-                electricityDetails.put(electricity.id, electricity);
-                if (lastDate == null) {
-                    lastDate = electricity.endDate;
-                } else if (electricity.endDate.compareTo(lastDate) > 0){
-                    lastDate = electricity.endDate;
-                }
+            while (result.next()) {
+            	totalUsage += result.getInt("Total");
+            	generatorSummary += pad(getMonthName(result.getInt("Month")),10) + "\t";
+            	generatorSummary += result.getString("Total") + "\n";
             }
-        } catch(SQLException error){
+            generatorSummary += "Total usage\t"+totalUsage + "\n";
+        } catch (SQLException error) {
                 ErrorMessage.display(error.getMessage());
         }
-    } // end of method getAllElectricity
-
-    private void getAllGenerator() {
-        String query = "SELECT * FROM Generator WHERE Start_Date " + getBetweenSchoolYear();
-        ResultSet rec = doQuery(query);
-        Generator generator = new Generator();
-        try {
-            while (rec.next()) {
-                generator.id = rec.getInt("Generator_ID");
-                generator.startDate = rec.getDate("Start_Date").toLocalDate();
-                generator.endDate = rec.getDate("End_Date").toLocalDate();
-                generator.amount = rec.getInt("Amount");
-                generatorDetails.put(generator.id, generator);
-                if (lastDate == null) {
-                    lastDate = generator.endDate;
-                } else if (generator.endDate.compareTo(lastDate) > 0) {
-                    lastDate = generator.endDate;
-                }
-            }
-        } catch (SQLException error) {
-            ErrorMessage.display(error.getMessage());
-        }
-    } // end of method getAllGenerator
+        return generatorSummary;
+    } // end of method generatorSummary
     
-    private void getAllAcType() {
-        String query = "SELECT * FROM AC_Type "; //WHERE Start_Date " + getBetweenSchoolYear();
-        ResultSet rec = doQuery(query);
-        ACType acType = new ACType();
+    public String acSummary(){
+        String sql = "SELECT SUM(Amount) as Total, "
+        		+ "MONTH(Start_Date) as Month, "
+        		+ "YEAR(Start_Date) as year "
+        		+ "FROM Generator "
+        		+ "WHERE Start_Date " + getBetweenSchoolYear()
+        		+ "GROUP BY year, month";
+        ResultSet result = doQuery(sql);
+        String acSummary = "";
+        int totalUsage = 0;
+        if (null == result) return acSummary;
         try {
-            while (rec.next()) {
-                acType.id = rec.getInt("AC_Type_ID");
-//                acType.startDate = rec.getDate("Start_Date").toLocalDate();
-//                acType.endDate = rec.getDate("End_Date").toLocalDate();
-                acType.description = rec.getString("Description");
-                acType.number = rec.getInt("Number");
-                acTypeDetails.put(acType.id, acType);
-//                if (lastDate == null) {
-//                    lastDate = acType.endDate;
-//                } else if (acType.endDate.compareTo(lastDate) > 0) {
-//                    lastDate = acType.endDate;
-//                }
+            while (result.next()) {
+            	totalUsage += result.getInt("Total");
+            	acSummary += pad(getMonthName(result.getInt("Month")),10) + "\t";
+            	acSummary += result.getString("Total") + "\n";
             }
+            acSummary += "Total usage\t"+totalUsage + "\n";
         } catch (SQLException error) {
-            ErrorMessage.display(error.getMessage());
+                ErrorMessage.display(error.getMessage());
         }
-    } // end of method getAllAcType
-
-    public ArrayList<Integer> getElectricityList(){
-        ArrayList<Integer> electricity = new ArrayList<>();
-        Set< HashMap.Entry< Integer, PowerUsageDataCollector.Electricity> > st = electricityDetails.entrySet();
-
-        for (HashMap.Entry< Integer, PowerUsageDataCollector.Electricity> me:st)
-        {
-            electricity.add(me.getKey());
-        }
-        return electricity;
-    } // end of method getElectricityList
-
-    public ArrayList<Integer> getGeneratorList(){
-        ArrayList<Integer> generator = new ArrayList<>();
-        Set< HashMap.Entry< Integer, PowerUsageDataCollector.Generator> > st = generatorDetails.entrySet();
-
-        for (HashMap.Entry< Integer, PowerUsageDataCollector.Generator> me:st)
-        {
-            generator.add(me.getKey());
-        }
-        return generator;
-    } // end of method getGeneratorList
-
-    public ArrayList<Integer> getAcTypeList(){
-        ArrayList<Integer> acType = new ArrayList<>();
-        Set< HashMap.Entry< Integer, PowerUsageDataCollector.ACType> > st = acTypeDetails.entrySet();
-
-        for (HashMap.Entry< Integer, PowerUsageDataCollector.ACType> me:st)
-        {
-            acType.add(me.getKey());
-        }
-        return acType;
-    } // end of method getAcTypeList
-
+        return acSummary;
+        
+    } // end of method acSummary
     public String electricitySummary(){
         String sql = "SELECT SUM(Meter_Units) as Total, "
         		+ "MONTH(Start_Date) as Month, "
@@ -188,55 +99,24 @@ public class PowerUsageDataCollector extends DataCollector {
         return electricitySummary;
     } // end of method electricitySummary
 
-    public HashMap<String, Integer> getElectricityMonthMeterUnits()  {
-        HashMap<String, Integer> monthMeterUnits = new HashMap<>();
-        for (Electricity e : electricityDetails.values()) {
-            String month = getMonth(e.startDate);
-            if (monthMeterUnits.containsKey(month)) {
-                int subtotal = monthMeterUnits.get(month);
-                monthMeterUnits.put(month, subtotal + e.meterUnits);
-            } else {
-                monthMeterUnits.put(month, e.meterUnits);
-            }
-        }
-        return monthMeterUnits;
-    } // end of method getElectricityMonthMeterUnits
-
-    public HashMap<String, Integer> getGeneratorMonthAmount()  {
-        HashMap<String, Integer> monthAmount = new HashMap<>();
-        for (Generator g : generatorDetails.values()) {
-            String month = getMonth(g.startDate);
-            if (monthAmount.containsKey(month)) {
-                int subtotal = monthAmount.get(month);
-                monthAmount.put(month, subtotal + g.amount);
-            } else {
-                monthAmount.put(month, g.amount);
-            }
-        }
-        return monthAmount;
-    } // end of method getGeneratorMonthAmount
-
-    public HashMap<String, Integer> getAcTypeNumber()  {
-        HashMap<String, Integer> monthNumber = new HashMap<>();
-        for (ACType a : acTypeDetails.values()) {
-            String month = getMonth(a.startDate);
-            if (monthNumber.containsKey(month)) {
-                int subtotal = monthNumber.get(month);
-                monthNumber.put(month, subtotal + a.number);
-            } else {
-                monthNumber.put(month, a.number);
-            }
-        }
-        return monthNumber;
-    } // end of method getAcTypeNumber
-
-
     public String getMonth(LocalDate date) {
         return date.getMonth().toString();
     } // end of method getMonth
 
-    public LocalDate getLastDate() {
-        return lastDate.plusDays(1);
+    public LocalDate getLastDate(String table) {
+        String query = "SELECT MAX(End_Date) AS last_Date FROM "
+                        + table 
+                        + " WHERE Start_Date " 
+                        + getBetweenSchoolYear();
+        ResultSet rec = doQuery(query);
+        try {
+            while (rec.next()) {        
+                return rec.getDate("last_Date").toLocalDate().plusDays(1);
+            }
+        } catch(SQLException error){
+            ErrorMessage.display(error.getMessage());
+        }
+        return null;
     } // end of method getLastDate
 
 

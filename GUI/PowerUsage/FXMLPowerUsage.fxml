@@ -16,9 +16,9 @@
 
 <HBox id="ContainerBox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" style="-fx-border-width: 2; -fx-border-color: black;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="PowerUsage.FXMLPowerUsageController">
    <children>
-      <Accordion>
+      <Accordion fx:id="leftSidePanel">
         <panes>
-          <TitledPane animated="false" prefHeight="538.0" prefWidth="300.0" text="Electricity">
+          <TitledPane fx:id="electricityPane" animated="false" prefHeight="538.0" prefWidth="300.0" text="Electricity">
                <content>
                   <VBox prefHeight="418.0" prefWidth="281.0">
                      <children>
@@ -61,7 +61,7 @@
                   </VBox>
                </content>
           </TitledPane>
-          <TitledPane animated="false" prefHeight="493.0" prefWidth="254.0" text="Generator">
+          <TitledPane fx:id="generatorPane" animated="false" prefHeight="493.0" prefWidth="254.0" text="Generator">
                <content>
                   <VBox prefHeight="300.0" prefWidth="100.0">
                      <children>
@@ -94,14 +94,14 @@
                         </GridPane>
                         <HBox prefWidth="200.0">
                            <children>
-                              <Button fx:id="btnUpdateGenerator" mnemonicParsing="false" text="Update" />
+                              <Button fx:id="btnUpdateGenerator" mnemonicParsing="false" onAction="#updateGenerator" text="Update" />
                            </children>
                         </HBox>
                      </children>
                   </VBox>
                </content>
           </TitledPane>
-          <TitledPane animated="false" prefHeight="493.0" prefWidth="254.0" text="Air Conditioner">
+          <TitledPane fx:id="acPane" animated="false" prefHeight="493.0" prefWidth="254.0" text="Air Conditioner">
                <content>
                   <VBox prefHeight="300.0" prefWidth="100.0">
                      <children>
