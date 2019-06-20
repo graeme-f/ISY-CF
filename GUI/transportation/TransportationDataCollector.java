@@ -115,7 +115,7 @@ public class TransportationDataCollector extends DataCollector {
                 + "FROM Vehicle INNER JOIN Fuel_Type USING(Fuel_Type_ID) "
                 + "LEFT JOIN Fuel USING(Vehicle_ID) "
                 + "WHERE Decommissioned = 0 "
-                + "GROUP BY Vehicle_ID";
+                + "GROUP BY Vehicle_ID, Fuel_Type.Description";
         ResultSet result = doQuery(sql);
         try {
             while (result.next()) {
@@ -268,7 +268,7 @@ public class TransportationDataCollector extends DataCollector {
     
     private void getAllTripGroups(){
     	TripGroup group;
-        String sql = "SELECT Trip_Group_ID, Description, Teacher_Only FROM trip_group";
+        String sql = "SELECT Trip_Group_ID, Description, Teacher_Only FROM Trip_Group";
         ResultSet result = doQuery(sql);
         try {
             while (result.next()) {
@@ -331,7 +331,7 @@ public class TransportationDataCollector extends DataCollector {
         		+ "flight_distance, "
         		+ "Number_of_students, "
         		+ "Number_of_Teachers "
-        		+ "FROM trip WHERE Trip_GROUP_ID = " + tripID(GroupName) 
+        		+ "FROM Trip WHERE Trip_GROUP_ID = " + tripID(GroupName) 
                 + " AND Start_Date " + getBetweenSchoolYear()
                 + " ORDER BY year, month, Description";
         ResultSet result = doQuery(sql);

@@ -168,12 +168,13 @@ public class PowerUsageDataCollector extends DataCollector {
         String sql = "SELECT SUM(Meter_Units) as Total, "
         		+ "MONTH(Start_Date) as Month, "
         		+ "YEAR(Start_Date) as year "
-        		+ "FROM electricity "
+        		+ "FROM Electricity "
         		+ "WHERE Start_Date " + getBetweenSchoolYear()
         		+ "GROUP BY year, month";
         ResultSet result = doQuery(sql);
         String electricitySummary = "";
         int totalUsage = 0;
+        if (null == result) return electricitySummary;
         try {
             while (result.next()) {
             	totalUsage += result.getInt("Total");

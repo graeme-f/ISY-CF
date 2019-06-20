@@ -78,7 +78,7 @@ public class FXMLTransportationController extends GUIController implements Initi
     @FXML private DatePicker startDate;
     @FXML private DatePicker endDate;
     @FXML private TextField fuelTotal;
-    
+    @FXML private Button btnSetVehicleEndDate;
     @FXML private Button btnDeleteVehicle;
     @FXML private Button btnUpdateFuel;
     
@@ -202,7 +202,14 @@ public class FXMLTransportationController extends GUIController implements Initi
         VehicleDescription.setText(vehicleName);
         fuelList.setValue(dc.getFuel(vehicleName));
         startDate.setValue(dc.getStartDate(vehicleName));
-        endDate.setValue(LocalDate.now());
+        if (defaultToToday){
+            btnSetVehicleEndDate.setText("One Month");
+            endDate.setValue(LocalDate.now());
+        } else {
+            btnSetVehicleEndDate.setText("Today");
+            endDate.setValue(startDate.getValue().plusMonths(1).minusDays(1));
+        }
+        attachEndDateAction(btnSetVehicleEndDate, startDate, endDate);
         fuelTotal.clear();
         btnUpdateFuel.setDisable(true);
     } // end of method setVehicleDetails()
