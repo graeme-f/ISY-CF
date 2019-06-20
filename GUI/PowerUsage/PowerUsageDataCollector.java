@@ -10,8 +10,16 @@ import java.util.*;
 
 public class PowerUsageDataCollector extends DataCollector {
 
+    class ACType {
+        int id;
+        String description;
+        int number;
+        int multiplier;
+    }
+        
     private static PowerUsageDataCollector singleInstance = null;
-
+    private HashMap<String, ACType> acTypeDetails;
+    
     // Singleton
     public static PowerUsageDataCollector getInstance()
     {
@@ -23,6 +31,8 @@ public class PowerUsageDataCollector extends DataCollector {
     // This runs when the instance is created.
     private PowerUsageDataCollector() {
         super();
+        acTypeDetails = new HashMap<>();
+        getAllAcType();
     } // end of method PowerUsageDataCollector
 
 
@@ -51,27 +61,58 @@ public class PowerUsageDataCollector extends DataCollector {
         return generatorSummary;
     } // end of method generatorSummary
     
-    public String acSummary(){
-        String sql = "SELECT SUM(Amount) as Total, "
-        		+ "MONTH(Start_Date) as Month, "
-        		+ "YEAR(Start_Date) as year "
-        		+ "FROM Generator "
-        		+ "WHERE Start_Date " + getBetweenSchoolYear()
-        		+ "GROUP BY year, month";
-        ResultSet result = doQuery(sql);
-        String acSummary = "";
-        int totalUsage = 0;
-        if (null == result) return acSummary;
-        try {
-            while (result.next()) {
-            	totalUsage += result.getInt("Total");
-            	acSummary += pad(getMonthName(result.getInt("Month")),10) + "\t";
-            	acSummary += result.getString("Total") + "\n";
+    private void getAllAcType() {
+        String query = "SELECT AC_Type_ID, Description, Number FROM AC_Type INNER JOIN"
+                + "( SELECT AC_Type_ID, MAX(Checked_Date) FROM AC_Type"
+                + "  GROUP BY AC_Type_ID) alias "
+                + "USING (AC_Type_ID)";
+        ACType acType;
+        ResultSet rec = doQuery(query);
+         try {
+            while (rec.next()) {
+                acType = new ACType();
+                acType.id = rec.getInt("AC_TYPE_ID");
+                acType.description = rec.getString("Description");
+                acType.number = rec.getInt("Number");
+                acTypeDetails.put(acType.description, acType);
             }
-            acSummary += "Total usage\t"+totalUsage + "\n";
         } catch (SQLException error) {
-                ErrorMessage.display(error.getMessage());
+            ErrorMessage.display(error.getMessage());
         }
+    } // end method getAllAcType
+    
+    public ArrayList<String> getAcTypeList(){
+        ArrayList<String> acType = new ArrayList<>();
+        Set< HashMap.Entry< String, ACType> > st = acTypeDetails.entrySet();
+
+        for (HashMap.Entry< String, ACType> me:st)
+        {
+            acType.add(me.getKey());
+        }
+        return acType;
+    } // end of method getAcTypeList
+    
+    public String acSummary(){
+//        String sql = "SELECT SUM(Amount) as Total, "
+//        		+ "MONTH(Start_Date) as Month, "
+//        		+ "YEAR(Start_Date) as year "
+//        		+ "FROM Generator "
+//        		+ "WHERE Start_Date " + getBetweenSchoolYear()
+//        		+ "GROUP BY year, month";
+//        ResultSet result = doQuery(sql);
+        String acSummary = "";
+//        int totalUsage = 0;
+//        if (null == result) return acSummary;
+//        try {
+//            while (result.next()) {
+//            	totalUsage += result.getInt("Total");
+//            	acSummary += pad(getMonthName(result.getInt("Month")),10) + "\t";
+//            	acSummary += result.getString("Total") + "\n";
+//            }
+//            acSummary += "Total usage\t"+totalUsage + "\n";
+//        } catch (SQLException error) {
+//                ErrorMessage.display(error.getMessage());
+//        }
         return acSummary;
         
     } // end of method acSummary
