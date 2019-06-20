@@ -30,6 +30,8 @@ import java.util.HashMap;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.function.UnaryOperator;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -51,6 +53,10 @@ import utility.GUIController;
 public class FXMLPowerUsageController extends GUIController implements Initializable {
 
     @FXML private HBox ContainerBox;
+    @FXML private Accordion leftSidePanel;
+    @FXML private TitledPane electricityPane;
+    @FXML private TitledPane generatorPane;
+    @FXML private TitledPane acPane;
 
     @FXML private VBox ElectricityBox;
     @FXML private ListView<Integer> ElectricityLists;
@@ -94,14 +100,23 @@ public class FXMLPowerUsageController extends GUIController implements Initializ
         } else {
             ErrorMessage.display("Information", result, "Electricity details updated");
         }
-        details.setText(dc.electricitySummary());
+        initializeElectricity();
     } // end of UpdateElectricity
     
     @FXML private void updateGenerator(ActionEvent event) {
         String start = GeneratorStartDate.getValue().toString();
         String end = GeneratorEndDate.getValue().toString();
         String amount = fuelAmount.getText();
-        dc.insertGeneratorData(start, end, amount);
+        String result = dc.insertGeneratorData(start, end, amount);
+        // Display the result on the screen, this also delays the processing
+        // enough so that the electricity summary will be properly displayed.
+        if (null == result){
+            ErrorMessage.display("Unable to update the generator details.");
+        } else {
+            ErrorMessage.display("Information", result, "Generator details updated");
+        }
+        initializeGenerator();
+        details.setText(dc.generatorSummary());
     }
 
     private PowerUsageDataCollector dc;
@@ -120,19 +135,30 @@ public class FXMLPowerUsageController extends GUIController implements Initializ
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // TODO
+        leftSidePanel.setExpandedPane(electricityPane);
         dc = PowerUsageDataCollector.getInstance();
-        initializeAll();
-    }
-    
-    private void initializeAll() {
+        leftSidePanel.expandedPaneProperty().addListener(new ChangeListener<TitledPane>() {
+            public void changed(ObservableValue<? extends TitledPane> ov, TitledPane oldValue, TitledPane newValue) {
+                if (newValue == electricityPane) {
+                    details.setText(dc.electricitySummary());
+                } else if (newValue == generatorPane) {
+                    details.setText(dc.generatorSummary());
+                } else if (newValue == acPane) {
+                    details.setText(dc.acSummary());
+                }
+            }
+        });
+        attachEndDateAction(btnSetEndDate, ElectricityStartDate, ElectricityEndDate);
+        intFilter(meterUnits, btnUpdateElectricity);
         initializeElectricity();
+        
+        attachEndDateAction(btnSetGenEndDate, GeneratorStartDate, GeneratorEndDate);
+        intFilter(fuelAmount, btnUpdateGenerator);
         initializeGenerator();
     }
     
     private void initializeElectricity() {
-        attachEndDateAction(btnSetEndDate, ElectricityStartDate, ElectricityEndDate);
-        ElectricityStartDate.setValue(dc.getLastDate());
+        ElectricityStartDate.setValue(dc.getLastDate("Electricity"));
         if (defaultToToday){
             btnSetEndDate.setText("One Month");
             ElectricityEndDate.setValue(LocalDate.now());
@@ -140,16 +166,13 @@ public class FXMLPowerUsageController extends GUIController implements Initializ
             btnSetEndDate.setText("Today");
             ElectricityEndDate.setValue(ElectricityStartDate.getValue().plusMonths(1).minusDays(1));
         }
-        intFilter(meterUnits, btnUpdateElectricity);
         btnUpdateElectricity.setDisable(true);
         meterUnits.clear();
         setElectricitySummary();
-    }
+    } // end of method initializeElectricity()
 
     private void initializeGenerator() {
-        attachEndDateAction(btnSetGenEndDate, GeneratorStartDate, GeneratorEndDate);
-        GeneratorStartDate.setValue(dc.getLastDate());
-        GeneratorStartDate.setValue(dc.getLastDate());
+        GeneratorStartDate.setValue(dc.getLastDate("Generator"));
         if (defaultToToday){
             btnSetGenEndDate.setText("One Month");
             GeneratorEndDate.setValue(LocalDate.now());
@@ -157,7 +180,6 @@ public class FXMLPowerUsageController extends GUIController implements Initializ
             btnSetGenEndDate.setText("Today");
             GeneratorEndDate.setValue(GeneratorStartDate.getValue().plusMonths(1).minusDays(1));
         }
-        intFilter(fuelAmount, btnUpdateGenerator);
         btnUpdateGenerator.setDisable(true);
         fuelAmount.clear();
     } // end of method initializeGenerator
