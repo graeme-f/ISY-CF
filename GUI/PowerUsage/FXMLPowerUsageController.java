@@ -41,13 +41,14 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.util.converter.IntegerStringConverter;
 import utility.ErrorMessage;
+import utility.GUIController;
 
 /**
  * FXML Controller class
  *
  * @author gfoster
  */
-public class FXMLPowerUsageController implements Initializable {
+public class FXMLPowerUsageController extends GUIController implements Initializable {
 
     @FXML private HBox ContainerBox;
 
@@ -56,6 +57,7 @@ public class FXMLPowerUsageController implements Initializable {
     @FXML private DatePicker ElectricityStartDate;
     @FXML private DatePicker ElectricityEndDate;
     @FXML private TextField meterUnits;
+    @FXML private Button btnSetEndDate;
     @FXML private Button btnUpdateElectricity;
 
     @FXML private VBox GeneratorBox;
@@ -65,8 +67,7 @@ public class FXMLPowerUsageController implements Initializable {
     @FXML private DatePicker GeneratorEndDate;
     @FXML private ChoiceBox fuelBox;
     @FXML private TextField fuelAmount;
-    @FXML private Button btnAddGenerator;
-    @FXML private Button btnDeleteGenerator;
+    @FXML private Button btnSetGenEndDate;
     @FXML private Button btnUpdateGenerator;
 
     @FXML private VBox ACBox;
@@ -81,10 +82,6 @@ public class FXMLPowerUsageController implements Initializable {
 
     @FXML private TextArea details;
 
-    @FXML private void addOneMonth(ActionEvent event){
-    	ElectricityEndDate.setValue(ElectricityStartDate.getValue().plusMonths(1).minusDays(1));
-    }
-    
     @FXML private void updateElectricity(ActionEvent event) {
         String start  = ElectricityStartDate.getValue().toString();
         String end    = ElectricityEndDate.getValue().toString();
@@ -130,39 +127,40 @@ public class FXMLPowerUsageController implements Initializable {
     
     private void initializeAll() {
         initializeElectricity();
-        initializeGenerators();
-        setAllDetails();
+        initializeGenerator();
     }
     
-    private void setAllDetails() {
-        setElectricityDetails();
-        setGeneratorDetails();
-    }
-
     private void initializeElectricity() {
-        btnUpdateElectricity.setDisable(false);
-        meterUnits.setTextFormatter(new TextFormatter<Integer>(new IntegerStringConverter(), 0, integerFilter));
-    }
-
-    private void setElectricityDetails() {
-        ArrayList<Integer> electricity = dc.getElectricityList();
+        attachEndDateAction(btnSetEndDate, ElectricityStartDate, ElectricityEndDate);
         ElectricityStartDate.setValue(dc.getLastDate());
-        ElectricityEndDate.setValue(LocalDate.now());
+        if (defaultToToday){
+            btnSetEndDate.setText("One Month");
+            ElectricityEndDate.setValue(LocalDate.now());
+        } else {
+            btnSetEndDate.setText("Today");
+            ElectricityEndDate.setValue(ElectricityStartDate.getValue().plusMonths(1).minusDays(1));
+        }
+        intFilter(meterUnits, btnUpdateElectricity);
+        btnUpdateElectricity.setDisable(true);
         meterUnits.clear();
         setElectricitySummary();
     }
 
-    private void initializeGenerators() {
-        btnUpdateGenerator.setDisable(false);
-        fuelAmount.setTextFormatter(new TextFormatter<Integer>(new IntegerStringConverter(), 0, integerFilter));
-    }
-    
-    private void setGeneratorDetails() {
-        ArrayList<Integer> generators = dc.getGeneratorList();
+    private void initializeGenerator() {
+        attachEndDateAction(btnSetGenEndDate, GeneratorStartDate, GeneratorEndDate);
         GeneratorStartDate.setValue(dc.getLastDate());
-        GeneratorEndDate.setValue(LocalDate.now());
+        GeneratorStartDate.setValue(dc.getLastDate());
+        if (defaultToToday){
+            btnSetGenEndDate.setText("One Month");
+            GeneratorEndDate.setValue(LocalDate.now());
+        } else {
+            btnSetGenEndDate.setText("Today");
+            GeneratorEndDate.setValue(GeneratorStartDate.getValue().plusMonths(1).minusDays(1));
+        }
+        intFilter(fuelAmount, btnUpdateGenerator);
+        btnUpdateGenerator.setDisable(true);
         fuelAmount.clear();
-    }
+    } // end of method initializeGenerator
     
     private void setElectricitySummary() {
     	String summary = dc.electricitySummary();

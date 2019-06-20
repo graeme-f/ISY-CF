@@ -58,7 +58,7 @@
                               <HBox prefHeight="100.0" prefWidth="200.0" GridPane.rowIndex="2">
                                  <children>
                                     <Label minWidth="50.0" text="End Date" translateY="5.0" />
-                                    <Button minWidth="80.0" mnemonicParsing="false" onAction="#addOneMonth" text="One Month" translateX="5.0" translateY="2.0" />
+                                    <Button fx:id="btnSetVehicleEndDate" minWidth="80.0" mnemonicParsing="false" text="One Month" translateX="5.0" translateY="2.0" />
                                  </children>
                               </HBox>
                               <Label prefHeight="27.0" prefWidth="79.0" text="*" textFill="#f50101" GridPane.columnIndex="1" GridPane.rowIndex="4">
