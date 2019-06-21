@@ -26,23 +26,18 @@ package PowerUsage;
 import java.net.URL;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.ResourceBundle;
-import java.util.Set;
-import java.util.function.UnaryOperator;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.util.converter.IntegerStringConverter;
 import utility.ErrorMessage;
 import utility.GUIController;
 
@@ -72,13 +67,13 @@ public class FXMLPowerUsageController extends GUIController implements Initializ
     @FXML private TextField GeneratorDescription;
     @FXML private DatePicker GeneratorStartDate;
     @FXML private DatePicker GeneratorEndDate;
-    @FXML private ChoiceBox fuelBox;
     @FXML private TextField fuelAmount;
     @FXML private Button btnSetGenEndDate;
     @FXML private Button btnUpdateGenerator;
 
     @FXML private GridPane ACBox;
     @FXML private Button btnUpdateAC;
+    private int AC_Count;
 
     @FXML private TextArea details;
 
@@ -111,7 +106,38 @@ public class FXMLPowerUsageController extends GUIController implements Initializ
         }
         initializeGenerator();
         details.setText(dc.generatorSummary());
-    }
+    } // end of method updateGenerator
+
+    @FXML private void updateACUnits(ActionEvent event) {
+    	Node[][] gridPaneNodes = new Node[3][AC_Count+1] ;
+    	for (Node child : ACBox.getChildren()) {
+    	    Integer column = GridPane.getColumnIndex(child);
+    	    Integer row = GridPane.getRowIndex(child);
+    	    if (column != null && row != null) {
+    	        gridPaneNodes[column][row] = child ;
+    	    }
+    	}
+    	
+    	String result = "";
+    	boolean noChange = true;
+    	for (int row = 1; row <= AC_Count; row++) {
+    	        String name = ((Label)gridPaneNodes[0][row]).getText() ;
+    	        int amount = Integer.parseInt(((TextField)gridPaneNodes[1][row]).getText());
+    	        int multiplier = Integer.parseInt(((TextField)gridPaneNodes[2][row]).getText());
+    	        if (dc.getACAmount(name) != amount) {
+    	        	noChange = false;
+    	        	result += dc.updateACAmount(name, amount);
+    	        }
+    	}
+    	if (noChange) return;
+    	
+        if (result.isEmpty()){
+            ErrorMessage.display("Unable to update the Air Conditioner details.");
+        } else {
+            ErrorMessage.display("Information", result, "Air Conditioner details updated");
+        }
+        details.setText(dc.acSummary());
+    } // end of method updateGenerator
 
     private PowerUsageDataCollector dc;
 
@@ -175,23 +201,34 @@ public class FXMLPowerUsageController extends GUIController implements Initializ
     
     private void initializeAC(){
         ArrayList<String> ACTypes = dc.getAcTypeList();
-        int row = 0;
+        AC_Count = 0;
         Label lbl = new Label();
         lbl.setText("Description");
-        ACBox.add(lbl, 0, row);
+        ACBox.add(lbl, 0, AC_Count);
         lbl = new Label();
         lbl.setText("Total Units");
-        ACBox.add(lbl, 1, row);
+        ACBox.add(lbl, 1, AC_Count);
+        lbl = new Label();
+        lbl.setText("Multiplier");
+        ACBox.add(lbl, 2, AC_Count);
+
         TextField txt;
         for (String name : ACTypes){
+        	AC_Count++;
+
             lbl = new Label();
             lbl.setText(name);
+            ACBox.add(lbl, 0, AC_Count);
+
             txt = new TextField();
             intFilter(txt);
-            txt.setText(Integer.toString(row));
-            row++;
-            ACBox.add(lbl, 0, row);
-            ACBox.add(txt, 1, row);
+            txt.setText(Integer.toString(dc.getACAmount(name)));
+            ACBox.add(txt, 1, AC_Count);
+
+            txt = new TextField();
+            intFilter(txt);
+            txt.setText(Integer.toString(dc.getACMultiplier(name)));
+            ACBox.add(txt, 2, AC_Count);
         }
     } // end of method initializeAC
     
