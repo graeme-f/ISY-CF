@@ -29,6 +29,7 @@ import java.io.IOException;
 import static java.lang.Thread.sleep;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.DecimalFormat;
 import java.util.Calendar;
 import java.util.Properties;
 
@@ -213,5 +214,23 @@ public abstract class DataCollector extends DatabaseConnector{
 			return msg.concat(padding);
 		}
 	} // end of method pad
+	
+	protected String lpad(String msg, int length) {
+		if (msg.length() >= length) {
+			return msg.substring(0,length);
+		} else {
+			String padding = "";
+			for (int i = msg.length(); i < length; i++) {
+				padding += " ";
+			}
+			return padding.concat(msg);
+		}
+	} // end of method lpad
+
+	protected String format(int value, String pattern) {
+		DecimalFormat myFormatter = new DecimalFormat(pattern);
+	    String formatted = myFormatter.format(value);
+	    return lpad(formatted, pattern.length());
+	} // end of method format
 	
 } // end of class DataCollector

@@ -52,9 +52,11 @@ public class PowerUsageDataCollector extends DataCollector {
             while (result.next()) {
             	totalUsage += result.getInt("Total");
             	generatorSummary += pad(getMonthName(result.getInt("Month")),10) + "\t";
-            	generatorSummary += result.getString("Total") + "\n";
+            	generatorSummary += format(result.getInt("Total"),"##,###") + "\n";
             }
-            generatorSummary += "Total usage\t"+totalUsage + "\n";
+            generatorSummary += "          \t======\n";
+            generatorSummary += "Total usage\t"+format(totalUsage,"##,###") + "\n";
+            generatorSummary += "          \t======\n";
         } catch (SQLException error) {
                 ErrorMessage.display(error.getMessage());
         }
@@ -62,10 +64,7 @@ public class PowerUsageDataCollector extends DataCollector {
     } // end of method generatorSummary
     
     private void getAllAcType() {
-        String query = "SELECT AC_Type_ID, Description, Number FROM AC_Type INNER JOIN"
-                + "( SELECT AC_Type_ID, MAX(Checked_Date) FROM AC_Type"
-                + "  GROUP BY AC_Type_ID) alias "
-                + "USING (AC_Type_ID)";
+        String query = "SELECT AC_Type_ID, Description FROM AC_Type";
         ACType acType;
         ResultSet rec = doQuery(query);
          try {
@@ -73,7 +72,7 @@ public class PowerUsageDataCollector extends DataCollector {
                 acType = new ACType();
                 acType.id = rec.getInt("AC_TYPE_ID");
                 acType.description = rec.getString("Description");
-                acType.number = rec.getInt("Number");
+                acType.number = getACAmount(acType.id);
                 acType.multiplier = getACMultiplier(acType.id);
                 acTypeDetails.put(acType.description, acType);
             }
@@ -82,12 +81,26 @@ public class PowerUsageDataCollector extends DataCollector {
         }
     } // end method getAllAcType
     
+    private int getACAmount(int id) {
+    	String query = "SELECT Amount FROM ac_amount "
+    			+ " WHERE AC_Type_ID = " + id
+    			+ " ORDER BY Checked_Date DESC LIMIT 1";
+        ResultSet rec = doQuery(query);
+        try {
+           while (rec.next()) {
+               return rec.getInt("Amount");
+           }
+        } catch (SQLException error) {
+            ErrorMessage.display(error.getMessage());
+        }
+        return 0;
+    } // end of method getACAmount
+      
     private int getACMultiplier(int id) {
     	String query = "SELECT Multiplier FROM ac_co2 "
     			+ " WHERE AC_Type_ID = " + id
     			+ " ORDER BY Start_Date DESC LIMIT 1";
         ResultSet rec = doQuery(query);
-        int multiplier = 100;
         try {
            while (rec.next()) {
                return rec.getInt("Multiplier");
@@ -95,8 +108,8 @@ public class PowerUsageDataCollector extends DataCollector {
         } catch (SQLException error) {
             ErrorMessage.display(error.getMessage());
         }
-           return multiplier;
-    } // end of method 
+        return 200;
+    } // end of method getACMultiplier
     
     public ArrayList<String> getAcTypeList(){
         ArrayList<String> acType = new ArrayList<>();
@@ -109,6 +122,10 @@ public class PowerUsageDataCollector extends DataCollector {
         Collections.sort(acType);
         return acType;
     } // end of method getAcTypeList
+
+    public int getAC_ID(String name) {
+    	return acTypeDetails.get(name).id;
+    } // end of method getACAmount
     
     public int getACAmount(String name) {
     	return acTypeDetails.get(name).number;
@@ -157,9 +174,11 @@ public class PowerUsageDataCollector extends DataCollector {
             while (result.next()) {
             	totalUsage += result.getInt("Total");
             	electricitySummary += pad(getMonthName(result.getInt("Month")),10) + "\t";
-            	electricitySummary += result.getString("Total") + "\n";
+            	electricitySummary += format(result.getInt("Total"),"##,###,###") + "\n";
             }
-            electricitySummary += "Total usage\t"+totalUsage + "\n";
+            electricitySummary += "          \t==========\n";
+            electricitySummary += "Total usage\t"+format(totalUsage,"##,###,###") + "\n";
+            electricitySummary += "          \t==========\n";
         } catch (SQLException error) {
                 ErrorMessage.display(error.getMessage());
         }
@@ -197,12 +216,19 @@ public class PowerUsageDataCollector extends DataCollector {
                 "\'" + endDate + "\', " + amount + ")");
     } // end of method insertGeneratorData
 
-    public String updateACAmount(String description, int number) {
-        return insertDatabase("INSERT into AC_Type (Description, Number, Checked_Date) VALUES(\'" 
-        					 + description + "\', " + number 
+    public String updateACAmount(int id, int number) {
+        return insertDatabase("INSERT into AC_Amount (AC_Type_ID, Amount, Checked_Date) VALUES(" 
+        					 + id + ", " + number 
         					 + ", \'" + LocalDate.now() + "\')");    	
     } // end of method updateACAmount
     
+    public String updateACMultiplier(int id, int number) {
+        return insertDatabase("INSERT into AC_CO2 (Start_Date, Multiplier, AC_Type_ID) VALUES(\'" 
+        					 + LocalDate.now() + "\', " + number 
+        					 + ", " + id + ")");    	
+    } // end of method updateACAmount
+    
+
     public String insertAcTypeData(String startDate, String endDate, String description, int number) {
         return insertDatabase("INSERT into AC_Type (Start_Date, End_Date, Description, Number) VALUES(\'" + startDate + "\', " +
                 "\'" + endDate + "\', \'" + description + "\', " + number + ")");

@@ -223,11 +223,20 @@ VALUES ('2018-01-01' , '2018-01-31' , 631.333),
 ##########################################################
 # AC_Type
 ##########################################################
-INSERT INTO AC_Type (AC_Type_ID, Description, Checked_Date, Number)
-VALUES (1 , 'Mitsubishi', '2018-01-01', 26),
-       (2 , 'Panasonic', '2018-01-01', 88),
-       (3 , 'York (Multi-system)', '2018-01-01', 90),
-       (4 , 'York (A/C Unit)', '2018-01-01', 26);
+INSERT INTO AC_Type (AC_Type_ID, Description)
+VALUES (1 , 'Mitsubishi'),
+       (2 , 'Panasonic'),
+       (3 , 'York (Multi-system)'),
+       (4 , 'York (A/C Unit)');
+
+##########################################################
+# AC_Amount
+##########################################################
+INSERT INTO AC_Amount (AC_Type_ID, Checked_Date, Amount)
+VALUES (1 , '2018-01-01', 26),
+       (2 , '2018-01-01', 88),
+       (3 , '2018-01-01', 90),
+       (4 , '2018-01-01', 26);
 
 ##########################################################
 # AC_CO2

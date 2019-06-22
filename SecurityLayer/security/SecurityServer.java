@@ -26,8 +26,6 @@ package security;
 
 import java.net.*; 
 import java.io.*; 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.DateFormat;
@@ -35,8 +33,6 @@ import java.text.SimpleDateFormat;
 import java.util.Properties;
 import java.util.Scanner;
 import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.xml.bind.DatatypeConverter;
 import utility.DatabaseConnector;
 import utility.Encrypt;
 import utility.LogFile;
@@ -192,8 +188,10 @@ class SecurityHandler extends Thread {
         while (scanner.hasNext()){
             String IP = scanner.next();
             String token = scanner.next();
-            if (IP.equals(IPAddr))
+            if (IP.equals(IPAddr)) {
+            	scanner.close();
                 return token;
+            }
         }
         scanner.close();
         return null;
