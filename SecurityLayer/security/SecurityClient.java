@@ -167,7 +167,7 @@ public class SecurityClient extends Thread {
         }
         
         while (scanner.hasNext()){
-           String token = scanner.next();
+           String token = scanner.nextLine();
            System.out.println(token);
            return token;
         }
@@ -181,7 +181,7 @@ public class SecurityClient extends Thread {
     
     public String insertDatabase(String sql){
         String response;
-        response = input.next();
+        response = input.nextLine();
         System.out.println("CLIENT:> " + response);
         output.println(KnownCommands.INSERT);
         System.out.println("CLIENT:> " + KnownCommands.INSERT);

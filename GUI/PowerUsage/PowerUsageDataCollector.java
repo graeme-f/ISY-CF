@@ -74,12 +74,29 @@ public class PowerUsageDataCollector extends DataCollector {
                 acType.id = rec.getInt("AC_TYPE_ID");
                 acType.description = rec.getString("Description");
                 acType.number = rec.getInt("Number");
+                acType.multiplier = getACMultiplier(acType.id);
                 acTypeDetails.put(acType.description, acType);
             }
         } catch (SQLException error) {
             ErrorMessage.display(error.getMessage());
         }
     } // end method getAllAcType
+    
+    private int getACMultiplier(int id) {
+    	String query = "SELECT Multiplier FROM ac_co2 "
+    			+ " WHERE AC_Type_ID = " + id
+    			+ " ORDER BY Start_Date DESC LIMIT 1";
+        ResultSet rec = doQuery(query);
+        int multiplier = 100;
+        try {
+           while (rec.next()) {
+               return rec.getInt("Multiplier");
+           }
+        } catch (SQLException error) {
+            ErrorMessage.display(error.getMessage());
+        }
+           return multiplier;
+    } // end of method 
     
     public ArrayList<String> getAcTypeList(){
         ArrayList<String> acType = new ArrayList<>();
@@ -89,8 +106,17 @@ public class PowerUsageDataCollector extends DataCollector {
         {
             acType.add(me.getKey());
         }
+        Collections.sort(acType);
         return acType;
     } // end of method getAcTypeList
+    
+    public int getACAmount(String name) {
+    	return acTypeDetails.get(name).number;
+    } // end of method getACAmount
+    
+    public int getACMultiplier(String name) {
+    	return acTypeDetails.get(name).multiplier;
+    } // end of method getACMultiplier
     
     public String acSummary(){
 //        String sql = "SELECT SUM(Amount) as Total, "
@@ -171,8 +197,14 @@ public class PowerUsageDataCollector extends DataCollector {
                 "\'" + endDate + "\', " + amount + ")");
     } // end of method insertGeneratorData
 
+    public String updateACAmount(String description, int number) {
+        return insertDatabase("INSERT into AC_Type (Description, Number, Checked_Date) VALUES(\'" 
+        					 + description + "\', " + number 
+        					 + ", \'" + LocalDate.now() + "\')");    	
+    } // end of method updateACAmount
+    
     public String insertAcTypeData(String startDate, String endDate, String description, int number) {
         return insertDatabase("INSERT into AC_Type (Start_Date, End_Date, Description, Number) VALUES(\'" + startDate + "\', " +
-                "\'" + endDate + "\', \'" + description + "\', " + number + "')");
+                "\'" + endDate + "\', \'" + description + "\', " + number + ")");
     } // end of method insertAcTypeData
 }

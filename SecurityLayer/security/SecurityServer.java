@@ -349,7 +349,7 @@ class SecurityHandler extends Thread {
                 } else {
                     logger.log(Level.INFO, "{0} records inserted.", rec);
                 }
-                out.print("Record inserted");
+                out.println("Record inserted. ");
                 dc.close();
                 return true;
             // UPDATE data already on the table

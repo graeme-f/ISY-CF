@@ -28,6 +28,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Set;
 
@@ -146,6 +147,7 @@ public class TransportationDataCollector extends DataCollector {
 	            cars.add(me.getKey());
 	        }
     	}
+    	Collections.sort(cars);
          return cars;
     } // end method getCarList()
     
@@ -156,6 +158,7 @@ public class TransportationDataCollector extends DataCollector {
         {
             fuels.add(me.getKey());
         }
+        Collections.sort(fuels);
         return fuels;
     } // end method getFuelList()
 
@@ -166,6 +169,7 @@ public class TransportationDataCollector extends DataCollector {
         {
             types.add(me.getKey());
         }
+        Collections.sort(types);
         return types;
     } // end method getCarTypeList() 
 
