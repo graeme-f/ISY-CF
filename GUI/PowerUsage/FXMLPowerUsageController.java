@@ -126,7 +126,11 @@ public class FXMLPowerUsageController extends GUIController implements Initializ
     	        int multiplier = Integer.parseInt(((TextField)gridPaneNodes[2][row]).getText());
     	        if (dc.getACAmount(name) != amount) {
     	        	noChange = false;
-    	        	result += dc.updateACAmount(name, amount);
+    	        	result += dc.updateACAmount(dc.getAC_ID(name), amount);
+    	        }
+    	        if (dc.getACMultiplier(name) != multiplier) {
+    	        	noChange = false;
+    	        	result += dc.updateACMultiplier(dc.getAC_ID(name), multiplier);
     	        }
     	}
     	if (noChange) return;

@@ -41,7 +41,6 @@ public class SecurityClient extends Thread {
     private Socket       socket    = null; 
     private Scanner      input     = null; 
     private PrintWriter  output    = null;
-    private Scanner      userEntry = null;
     
     private final String address;
     private final int    port;
@@ -66,8 +65,6 @@ public class SecurityClient extends Thread {
         { 
             socket = new Socket(address, port); 
             System.out.println("CLIENT:>Connected");
-            // takes input from terminal
-            userEntry = new Scanner(System.in);
             // sends output to the socket 
             input = new Scanner(socket.getInputStream());
             output = new PrintWriter(socket.getOutputStream(),true); 
@@ -149,6 +146,7 @@ public class SecurityClient extends Thread {
         
         while (scanner.hasNext()){
            String password = scanner.next();
+           scanner.close();
            return password;
         }
         scanner.close();
@@ -169,6 +167,7 @@ public class SecurityClient extends Thread {
         while (scanner.hasNext()){
            String token = scanner.nextLine();
            System.out.println(token);
+           scanner.close();
            return token;
         }
         scanner.close();
@@ -208,8 +207,7 @@ public class SecurityClient extends Thread {
     } // end of method writeToken()
     
     public static void main(String args[]) 
-    { 
-        // TODO IP address & port number needs to be stored in a config file
+    {
         try(FileInputStream f = new FileInputStream("db.properties")) {
             // load the properties file
             Properties prop = new Properties();

@@ -205,10 +205,12 @@ public class TransportationDataCollector extends DataCollector {
         try {
             while (result.next()) {
                 totalFuel += result.getInt("Total");
-                vehicleSummary += getMonthName(result.getInt("Month")) + "\t";
-                vehicleSummary += result.getString("Total") + "\n";
+                vehicleSummary += pad(getMonthName(result.getInt("Month")),10)  + "\t";
+                vehicleSummary += format(result.getInt("Total"),"##,###") + "\n";
             }
-            vehicleSummary += "Total fuel\t"+totalFuel + "\n";
+            vehicleSummary += "          \t======\n";
+            vehicleSummary += "Total fuel\t"+format(totalFuel,"##,###") + "\n";
+            vehicleSummary += "          \t======\n";
         } catch (SQLException error) {
                 ErrorMessage.display(error.getMessage());
         }
@@ -340,7 +342,7 @@ public class TransportationDataCollector extends DataCollector {
                 + " ORDER BY year, month, Description";
         ResultSet result = doQuery(sql);
         String tripSummary = "";
-        tripSummary += GroupName + "\n\n                  #Bus  Dist    Flight  Student Teacher\n";
+        tripSummary += GroupName + "\n\n                   #Bus  Dist       Flight  Student Teacher\n";
         int totalBus = 0;
         int totalFlight = 0;
         try {
@@ -349,13 +351,16 @@ public class TransportationDataCollector extends DataCollector {
                 totalFlight += result.getInt("flight_distance") *2 * (result.getInt("Number_of_students") + result.getInt("Number_of_Teachers"));
                 tripSummary += pad(getMonthName(result.getInt("Month")),3) + " ";
                 tripSummary += pad(result.getString("Description"),16) + " ";
-                tripSummary += result.getString("Number_of_buses") + "\t";
-                tripSummary += result.getString("bus_distance") + "\t";
-                tripSummary += result.getString("flight_distance") + "\t";
-                tripSummary += result.getString("Number_of_students") + "\t";
-                tripSummary += result.getString("Number_of_Teachers") + "\n";
+                tripSummary += format(result.getInt("Number_of_buses"),"##") + "\t";
+                tripSummary += format(result.getInt("bus_distance"),"#,###") + "\t";
+                tripSummary += format(result.getInt("flight_distance"),"##,###,###") + "\t";
+                tripSummary += format(result.getInt("Number_of_students"),"###") + "\t";
+                tripSummary += format(result.getInt("Number_of_Teachers"),"##") + "\n";
             }
-            tripSummary += "\nTotal bus distance\t"+totalBus + "\nTotal flight distance\t" + totalFlight + "\n";
+            tripSummary += "\n                     \t==========";
+            tripSummary += "\nTotal bus distance   \t"+format(totalBus,"##,###,###")
+                         + "\nTotal flight distance\t" + format(totalFlight,"##,###,###");
+            tripSummary += "\n                     \t==========";
         } catch (SQLException error) {
                 ErrorMessage.display(error.getMessage());
         }
