@@ -6,21 +6,23 @@
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.TitledPane?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Consumables.FXMLConsumablesController">
+<HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Consumables.FXMLConsumablesController">
    <children>
-      <Accordion prefHeight="400.0" prefWidth="295.0">
+      <Accordion fx:id="leftSidePanel" prefHeight="400.0" prefWidth="295.0">
         <panes>
-          <TitledPane animated="false" cache="true" style="-fx-background-color: #00526b #00526b;" text="Waste">
+          <TitledPane fx:id="wastePane" animated="false" cache="true" style="-fx-background-color: #00526b #00526b;" text="Waste">
             <content>
               <AnchorPane cache="true" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" style="-fx-background-color: #00526b;">
                      <children>
@@ -71,21 +73,18 @@
                   <Font name="Bodoni 72 Smallcaps Book" size="16.0" />
                </font>
           </TitledPane>
-          <TitledPane animated="false" style="-fx-background-color: #00FF7F#00FF7F;" text="Paper">
-            <content>
-              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" style="-fx-background-color: #00526b #00526b #00526b #00526b;">
+          <TitledPane fx:id="paperPane" animated="false" style="-fx-background-color: #00FF7F#00FF7F;" text="Paper">
+               <font>
+                  <Font name="Bodoni 72 Smallcaps Book" size="16.0" />
+               </font>
+               <content>
+                  <VBox style="-fx-background-color: #00526b #00526b #00526b #00526b;">
                      <children>
-                        <Button layoutX="122.0" layoutY="160.0" mnemonicParsing="false" onAction="#updatePaper" prefHeight="27.0" prefWidth="67.0" text="Add" textAlignment="CENTER">
-                           <font>
-                              <Font name="Bodoni 72 Smallcaps Book" size="18.0" />
-                           </font>
-                           <cursor>
-                              <Cursor fx:constant="DEFAULT" />
-                           </cursor></Button>
-                        <GridPane layoutX="47.0" layoutY="14.0">
+                        <GridPane>
                           <columnConstraints>
-                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                            <ColumnConstraints hgrow="SOMETIMES" maxWidth="91.0" minWidth="10.0" prefWidth="56.0" />
+                            <ColumnConstraints hgrow="SOMETIMES" maxWidth="84.0" minWidth="10.0" prefWidth="75.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" maxWidth="136.0" minWidth="10.0" prefWidth="136.0" />
                           </columnConstraints>
                           <rowConstraints>
                             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
@@ -94,43 +93,48 @@
                               <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                           </rowConstraints>
                            <children>
-                              <DatePicker fx:id="startDate" GridPane.columnIndex="1" />
-                              <DatePicker fx:id="endDate" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                              <TextField fx:id="A4" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                              <TextField fx:id="A3" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-                              <Label text="Start Date" textFill="WHITE" translateX="20.0" wrapText="true">
+                              <DatePicker fx:id="paperStartDate" GridPane.columnIndex="2" />
+                              <DatePicker fx:id="paperEndDate" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+                              <TextField fx:id="paperA4" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+                              <TextField fx:id="paperA3" GridPane.columnIndex="2" GridPane.rowIndex="3" />
+                              <Label text="Start Date" textFill="WHITE" wrapText="true" />
+                              <Label text="End Date" textFill="WHITE" wrapText="true" GridPane.rowIndex="1" />
+                              <Label text="A4" textFill="WHITE" wrapText="true" GridPane.rowIndex="2" />
+                              <Label text="A3" textFill="WHITE" GridPane.rowIndex="3" />
+                              <Button fx:id="btnPaperEndDate" mnemonicParsing="false" prefHeight="29.0" prefWidth="82.0" text="One Month" GridPane.columnIndex="1" GridPane.rowIndex="1">
                                  <font>
-                                    <Font name="Bodoni 72 Smallcaps Book" size="15.0" />
-                                 </font></Label>
-                              <Label text="End Date" textFill="WHITE" translateX="20.0" wrapText="true" GridPane.rowIndex="1">
-                                 <font>
-                                    <Font name="Bodoni 72 Smallcaps Book" size="15.0" />
-                                 </font></Label>
-                              <Label text="A4" textFill="WHITE" translateX="20.0" wrapText="true" GridPane.rowIndex="2">
-                                 <font>
-                                    <Font name="Bodoni 72 Smallcaps Book" size="15.0" />
-                                 </font></Label>
-                              <Label text="A3" textFill="WHITE" translateX="20.0" GridPane.rowIndex="3">
-                                 <font>
-                                    <Font name="Bodoni 72 Smallcaps Book" size="15.0" />
-                                 </font></Label>
+                                    <Font size="11.0" />
+                                 </font></Button>
                            </children>
                         </GridPane>
+                        <HBox prefHeight="32.0" prefWidth="267.0">
+                           <children>
+                              <Pane prefHeight="200.0" prefWidth="200.0" />
+                              <Button fx:id="btnUpdatePaper" mnemonicParsing="false" onAction="#updatePaper" prefHeight="18.0" prefWidth="83.0" text="Update" textAlignment="CENTER">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                                 <cursor>
+                                    <Cursor fx:constant="DEFAULT" />
+                                 </cursor>
+                              </Button>
+                           </children>
+                        </HBox>
                      </children>
-                  </AnchorPane>
-            </content>
+                  </VBox>
+               </content>
+          </TitledPane>
+          <TitledPane fx:id="yearBookPane" animated="false" text="Yearbook ">
                <font>
                   <Font name="Bodoni 72 Smallcaps Book" size="16.0" />
                </font>
-          </TitledPane>
-          <TitledPane animated="false" text="Yearbook ">
-            <content>
-              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" style="-fx-background-color: #00526b;">
+               <content>
+                  <VBox prefHeight="200.0" prefWidth="100.0" style="-fx-background-color: #00526b;">
                      <children>
-                        <GridPane layoutX="37.0" layoutY="33.0">
+                        <GridPane>
                           <columnConstraints>
-                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                            <ColumnConstraints hgrow="SOMETIMES" maxWidth="139.0" minWidth="10.0" prefWidth="129.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" maxWidth="151.0" minWidth="10.0" prefWidth="138.0" />
                           </columnConstraints>
                           <rowConstraints>
                             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
@@ -138,36 +142,27 @@
                             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                           </rowConstraints>
                            <children>
-                              <Label text="Start Date " textFill="WHITE">
-                                 <font>
-                                    <Font name="Bodoni 72 Smallcaps Book" size="15.0" />
-                                 </font>
-                              </Label>
-                              <DatePicker GridPane.columnIndex="1" />
-                              <Label text="Num. of Volume " textFill="WHITE" GridPane.rowIndex="1">
-                                 <font>
-                                    <Font name="Bodoni 72 Smallcaps Book" size="15.0" />
-                                 </font>
-                              </Label>
-                              <Label text="Num. of Page" textFill="WHITE" GridPane.rowIndex="2">
-                                 <font>
-                                    <Font name="Bodoni 72 Smallcaps Book" size="15.0" />
-                                 </font>
-                              </Label>
-                              <TextField GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                              <TextField GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                              <Label text="Date " textFill="WHITE" />
+                              <DatePicker fx:id="yearbookDate" GridPane.columnIndex="1" />
+                              <Label text="Pages" textFill="WHITE" GridPane.rowIndex="1" />
+                              <Label text="Copies" textFill="WHITE" GridPane.rowIndex="2" />
+                              <TextField fx:id="yearbookCopies" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                              <TextField fx:id="yearbookPages" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                            </children>
                         </GridPane>
-                        <Button layoutX="116.0" layoutY="158.0" mnemonicParsing="false" text="Add">
-                           <font>
-                              <Font name="Bodoni 72 Smallcaps Book" size="14.0" />
-                           </font>
-                        </Button>
-                     </children></AnchorPane>
-            </content>
-               <font>
-                  <Font name="Bodoni 72 Smallcaps Book" size="16.0" />
-               </font>
+                        <HBox prefHeight="100.0" prefWidth="200.0">
+                           <children>
+                              <Pane prefHeight="200.0" prefWidth="200.0" />
+                              <Button fx:id="btnUpdateYearbook" mnemonicParsing="false" onAction="#updateYearbook" text="Update">
+                                 <font>
+                                    <Font name="Bodoni 72 Smallcaps Book" size="14.0" />
+                                 </font>
+                              </Button>
+                           </children>
+                        </HBox>
+                     </children>
+                  </VBox>
+               </content>
           </TitledPane>
             <TitledPane animated="false" style="-fx-background-color: #00a19c;" text="Meat ">
               <content>
@@ -185,11 +180,11 @@
                <font>
                   <Font name="Bodoni 72 Smallcaps Book" size="16.0" />
                </font></Label>
-            <TextField prefHeight="372.0" prefWidth="304.0" style="-fx-background-color: D6F4FC;">
+            <TextArea fx:id="details" prefHeight="372.0" prefWidth="304.0" style="-fx-background-color: D6F4FC;">
                <font>
-                  <Font name="Bodoni 72 Oldstyle Book" size="13.0" />
+                  <Font name="Courier New" size="12.0" />
                </font>
-            </TextField>
+            </TextArea>
          </children>
       </VBox>
    </children>

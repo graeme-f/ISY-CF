@@ -163,12 +163,16 @@ public class GUIController {
     
     protected void attachEndDateAction(Button btn, DatePicker source, DatePicker destination){
         if (defaultToToday){
+        	btn.setText("One Month");
+        	destination.setValue(LocalDate.now());
             btn.setOnAction(new EventHandler<ActionEvent>() {
                 @Override public void handle(ActionEvent e) {
                     destination.setValue(source.getValue().plusMonths(1).minusDays(1));
                 }
             });
         } else {
+        	btn.setText("Today");
+        	destination.setValue(source.getValue().plusMonths(1).minusDays(1));
             btn.setOnAction(new EventHandler<ActionEvent>() {
                 @Override public void handle(ActionEvent e) {
                     destination.setValue(LocalDate.now());

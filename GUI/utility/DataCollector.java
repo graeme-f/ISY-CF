@@ -30,6 +30,7 @@ import static java.lang.Thread.sleep;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
+import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.Properties;
 
@@ -99,6 +100,22 @@ public abstract class DataCollector extends DatabaseConnector{
                 return "December  ";
         }
     } // end of getMonthName()
+    
+    public LocalDate getLastDate(String table) {
+        String query = "SELECT MAX(End_Date) AS last_Date FROM "
+                        + table 
+                        + " WHERE Start_Date " 
+                        + getBetweenSchoolYear();
+        ResultSet rec = doQuery(query);
+        try {
+            while (rec.next()) {        
+                return rec.getDate("last_Date").toLocalDate().plusDays(1);
+            }
+        } catch(SQLException error){
+            ErrorMessage.display(error.getMessage());
+        }
+        return null;
+    } // end of method getLastDate
     
     private void createSecurityConnection(){
         try(FileInputStream f = new FileInputStream("db.properties")) {

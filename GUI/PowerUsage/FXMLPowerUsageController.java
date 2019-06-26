@@ -53,7 +53,10 @@ public class FXMLPowerUsageController extends GUIController implements Initializ
     @FXML private TitledPane electricityPane;
     @FXML private TitledPane generatorPane;
     @FXML private TitledPane acPane;
-
+    @FXML private TextArea details;
+    
+    private PowerUsageDataCollector dc;
+    
     @FXML private VBox ElectricityBox;
     @FXML private ListView<Integer> ElectricityLists;
     @FXML private DatePicker ElectricityStartDate;
@@ -74,8 +77,6 @@ public class FXMLPowerUsageController extends GUIController implements Initializ
     @FXML private GridPane ACBox;
     @FXML private Button btnUpdateAC;
     private int AC_Count;
-
-    @FXML private TextArea details;
 
     @FXML private void updateElectricity(ActionEvent event) {
         String start  = ElectricityStartDate.getValue().toString();
@@ -143,17 +144,13 @@ public class FXMLPowerUsageController extends GUIController implements Initializ
         details.setText(dc.acSummary());
     } // end of method updateGenerator
 
-    private PowerUsageDataCollector dc;
-
-
     /**
      * Initializes the controller class.
      */
-
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        leftSidePanel.setExpandedPane(electricityPane);
         dc = PowerUsageDataCollector.getInstance();
+        leftSidePanel.setExpandedPane(electricityPane);
         leftSidePanel.expandedPaneProperty().addListener(new ChangeListener<TitledPane>() {
             public void changed(ObservableValue<? extends TitledPane> ov, TitledPane oldValue, TitledPane newValue) {
                 if (newValue == electricityPane) {
@@ -163,8 +160,9 @@ public class FXMLPowerUsageController extends GUIController implements Initializ
                 } else if (newValue == acPane) {
                     details.setText(dc.acSummary());
                 }
-            }
+            } // end of accordion listener
         });
+
         attachEndDateAction(btnSetEndDate, ElectricityStartDate, ElectricityEndDate);
         intFilter(meterUnits, btnUpdateElectricity);
         initializeElectricity();
@@ -174,7 +172,7 @@ public class FXMLPowerUsageController extends GUIController implements Initializ
         initializeGenerator();
         
         initializeAC();
-    }
+    } // end of method initialize
     
     private void initializeElectricity() {
         ElectricityStartDate.setValue(dc.getLastDate("Electricity"));
@@ -187,7 +185,7 @@ public class FXMLPowerUsageController extends GUIController implements Initializ
         }
         btnUpdateElectricity.setDisable(true);
         meterUnits.clear();
-        setElectricitySummary();
+        details.setText(dc.electricitySummary());
     } // end of method initializeElectricity()
 
     private void initializeGenerator() {
@@ -235,10 +233,5 @@ public class FXMLPowerUsageController extends GUIController implements Initializ
             ACBox.add(txt, 2, AC_Count);
         }
     } // end of method initializeAC
-    
-    private void setElectricitySummary() {
-    	String summary = dc.electricitySummary();
-        details.setText(summary);
-    }
-    
-}
+        
+} // end of class FXMLPowerUsageController

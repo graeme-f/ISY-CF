@@ -218,7 +218,7 @@ CREATE INDEX `fk_AC_Consumables_AC_coolant1_idx` ON `ISY-CF`.`AC_Consumables` (`
 DROP TABLE IF EXISTS `ISY-CF`.`Waste_Type` ;
 
 CREATE TABLE IF NOT EXISTS `ISY-CF`.`Waste_Type` (
-  `Waste_Type_ID` INT NOT NULL,
+  `Waste_Type_ID` INT NOT NULL AUTO_INCREMENT,
   `Description` VARCHAR(80) NOT NULL,
   `Capacity` INT NOT NULL,
   `Total` INT NOT NULL,
@@ -232,7 +232,7 @@ ENGINE = InnoDB;
 DROP TABLE IF EXISTS `ISY-CF`.`Waste` ;
 
 CREATE TABLE IF NOT EXISTS `ISY-CF`.`Waste` (
-  `Waste_ID` INT NOT NULL,
+  `Waste_ID` INT NOT NULL AUTO_INCREMENT,
   `Waste_Type_ID` INT NOT NULL,
   `Start_Date` DATE NOT NULL,
   `End_Date` DATE NOT NULL,
@@ -254,7 +254,7 @@ CREATE INDEX `fk_Waste_Waste_Type1_idx` ON `ISY-CF`.`Waste` (`Waste_Type_ID` ASC
 DROP TABLE IF EXISTS `ISY-CF`.`Paper` ;
 
 CREATE TABLE IF NOT EXISTS `ISY-CF`.`Paper` (
-  `Paper_ID` INT NOT NULL,
+  `Paper_ID` INT NOT NULL AUTO_INCREMENT,
   `Start_Date` DATE NOT NULL,
   `End_Date` DATE NOT NULL,
   `A4_Reams` INT NOT NULL,
@@ -303,18 +303,12 @@ CREATE INDEX `fk_Meat_Meat_Type1_idx` ON `ISY-CF`.`Meat` (`Meat_Type_ID` ASC);
 DROP TABLE IF EXISTS `ISY-CF`.`Year_Book` ;
 
 CREATE TABLE IF NOT EXISTS `ISY-CF`.`Year_Book` (
-  `YearBook_ID` INT NOT NULL,
+  `YearBook_ID` INT NOT NULL AUTO_INCREMENT,
   `Year` DATE NOT NULL,
-  `Paper_Paper_ID` INT NOT NULL,
-  PRIMARY KEY (`YearBook_ID`),
-  CONSTRAINT `fk_Year_Book_Paper1`
-    FOREIGN KEY (`Paper_Paper_ID`)
-    REFERENCES `ISY-CF`.`Paper` (`Paper_ID`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
+  `Pages` INT NOT NULL,
+  `Copies` INT NOT NULL,
+  PRIMARY KEY (`YearBook_ID`))
 ENGINE = InnoDB;
-
-CREATE INDEX `fk_Year_Book_Paper1_idx` ON `ISY-CF`.`Year_Book` (`Paper_Paper_ID` ASC);
 
 
 -- -----------------------------------------------------
