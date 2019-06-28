@@ -42,15 +42,6 @@ import utility.DataCollector;
 
 public class ConsumablesDataCollector extends DataCollector {
     
-    //Made this class static to be usable in the SQL
-      class Paper {
-        int id;
-        int A3reams;
-        int A4reams;
-        LocalDate Start_Date;
-        LocalDate End_Date;  
-    }//end of paper class
-  
     class Waste {
         int id;
         int amount;
@@ -64,7 +55,6 @@ public class ConsumablesDataCollector extends DataCollector {
         
     }
     private static ConsumablesDataCollector singleInstance = null;
-    HashMap <Integer, ConsumablesDataCollector.Paper> paperDetails;
     HashMap <Integer, ConsumablesDataCollector.Waste> wasteDetails;
     HashMap <Integer, WasteType> wasteTypeDetails;
     LocalDate lastDate = null;
@@ -79,75 +69,80 @@ public class ConsumablesDataCollector extends DataCollector {
     // Creator is private to make this a singleton class
     private ConsumablesDataCollector() {
         super();
-        getAllPaper();
+    
     } // end of constructor
     
-    private void getAllPaper() {
-        paperDetails = new HashMap(); 
-        // TODO vehicle list needs to come from the database
-         // our SQL SELECT query. 
-      String query = "SELECT * FROM Paper";
 
-       ResultSet rs = doQuery(query);
-      
-      try {
-      // iterate through the java resultset
+    public String paperSummary() {
+    	String sql = "SELECT SUM(A4_Reams) as A4, "
+    			   + "       SUM(A3_Reams) as A3, "
+    			   + "       MONTH(Start_Date) as Month, " 
+    			   + "       YEAR(Start_Date) as year "
+    			   + " FROM Paper "
+    			   + " WHERE Start_Date " + getBetweenSchoolYear()
+    			   + " GROUP BY year, month"
+    			   + " ORDER BY year, month";
+	    ResultSet result = doQuery(sql);
+	    String paperSummary = "";
+	    int totalA4 = 0;
+	    int totalA3 = 0;
+	    if (null == result) return paperSummary;
+	    try {
+	    	paperSummary = "Month     \t    A4\t    A3\n";
+	    	paperSummary += "=====     \t    ==\t    ==\n";
+	        while (result.next()) {
+	        	totalA4 += result.getInt("A4");
+	        	totalA3 += result.getInt("A3");
+	        	paperSummary += pad(getMonthName(result.getInt("Month")),10) + "\t";
+	        	paperSummary += format(result.getInt("A4"),"##,###") + "\t";
+	        	paperSummary += format(result.getInt("A3"),"##,###") + "\n";
+	        }
+	        paperSummary += "          \t======\t======\n";
+	        paperSummary += "Total usage\t"+format(totalA4,"##,###") + "\t";
+	        paperSummary += format(totalA3,"##,###") + "\n";
+	        paperSummary += "          \t======\t======\n";
+	    } catch (SQLException error) {
+	            ErrorMessage.display(error.getMessage());
+	    }
+	    return paperSummary;
+    } // end of method paperSummary
 
-      while (rs.next()) {
+    public String wasteSummary() {
+    	  return "Waste";
+      }
 
-          //Creates an instance of the paper class, to be usable in this static method.
+    public String yearBookSummary() {
+    	String sql = "SELECT SUM(Pages) as pages, "
+ 			   + "       SUM(Copies) as copies, "
+			   + "       YEAR(Year) as year "
+ 			   + " FROM Year_Book "
+ 			   + " WHERE Year " + getBetweenSchoolYear()
+ 			   + " GROUP BY YEAR(Year)";
+	    ResultSet result = doQuery(sql);
+	    String yearbookSummary = "";
+	    int totalA4 = 0;
+	    if (null == result) return yearbookSummary;
+	    try {
+	    	yearbookSummary =  "Year\t Pages\t Copies\n";
+	    	yearbookSummary += "====\t =====\t ======\n";
+	        while (result.next()) {
+	        	yearbookSummary += result.getInt("year") + "\t";
+	        	yearbookSummary += format(result.getInt("pages"),"##,###") + "\t";
+	        	yearbookSummary += format(result.getInt("copies"),"##,###") + "\n";
+	        	totalA4 += result.getInt("pages") * result.getInt("copies");
+	        }
+	        totalA4 /= 500;
+	        yearbookSummary += "\nTotal reams of A4: "+format(totalA4,"##,###") + "\n";
+	    } catch (SQLException error) {
+	            ErrorMessage.display(error.getMessage());
+	    }
+	    return yearbookSummary;
+      }
 
-          Paper paper = new Paper();
-        
-
-        //Find the tables with the same name located in the literal string and add them to paper's properties
-        paper.id = rs.getInt("Paper_ID");
-        Date startDate  = rs.getDate("Start_Date");
-        Date endDate = rs.getDate("End_Date");
-        int A3reams = rs.getInt("A3");
-        int A4reams = rs.getInt("A4");
-        
-        // Add that information into the hashmap
-
-        paperDetails.put(paper.id, paper); //paper.id is the key to HashMap
-        if (paper.End_Date == null || paper.End_Date.compareTo(lastDate) > 0){
-            lastDate = paper.End_Date;
-        }
-      }//end of while loop
-      
-      
-      
-      } //end of try statement
-   
-       catch (Exception e)
-    {
-      System.err.println("Returned SQL exception e");
-      System.err.println(e.getMessage());
-    }//end of catch statement
-        
-    }//end of getAllPaper method  
-
-    //gets the amount of A3 reams for a given order
-    public int getA3Reams(LocalDate startDate) {
-        return paperDetails.get(startDate).A3reams;
-    } // end of method getA3Reams
-
-    //gets the amount of A4 reams for a given order
-    public int getA4Reams(LocalDate startDate) {
-        return paperDetails.get(startDate).A4reams;
-    } // end of method getA4Reams
-    
-    //gets the end date of a given order
-    public LocalDate getEndDate(LocalDate startDate) {
-
-        return paperDetails.get(startDate).End_Date;
-    } // end of method getEndDate
-   
-    public String updatePaper(String startDate, String endDate, String A3reams, String A4reams){
-        String paperid = "1"; //TO DO get information from wasteType
-        String sql = " INSERT INTO " 
-                + "paper (Start_Date, End_Date, A4_reams, A3_reams) "
-                + "VALUES (,\""
+    public String updatePaper(String startDate, String endDate, String A4reams, String A3reams){
+        String sql = "INSERT INTO " 
+                + "Paper (Start_Date, End_Date, A4_Reams, A3_Reams) "
+                + "VALUES (\""
                 + startDate + "\", \""
                 + endDate + "\", "
                 + A4reams + ","
@@ -155,8 +150,18 @@ public class ConsumablesDataCollector extends DataCollector {
         return insertDatabase (sql);
     }
     
+    public String updateYearbook(String date, String pages, String copies) {
+        String sql = "INSERT INTO " 
+                + "Year_Book (Year, Pages, Copies) "
+                + "VALUES (\""
+                + date + "\", "
+                + pages + ","
+                + copies + ") ";
+        return insertDatabase (sql);	
+    } // end of method updateYearbook
+    
     private void getWaste(){
-        paperDetails = new HashMap(); 
+    	wasteDetails = new HashMap(); 
         // TODO vehicle list needs to come from the database
          // our SQL SELECT query. 
       String query = "SELECT * FROM Waste";

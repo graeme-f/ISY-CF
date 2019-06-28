@@ -16,10 +16,9 @@ public class PowerUsageDataCollector extends DataCollector {
         int number;
         int multiplier;
     }
+    private HashMap<String, ACType> acTypeDetails;
         
     private static PowerUsageDataCollector singleInstance = null;
-    private HashMap<String, ACType> acTypeDetails;
-    
     // Singleton
     public static PowerUsageDataCollector getInstance()
     {
@@ -184,27 +183,6 @@ public class PowerUsageDataCollector extends DataCollector {
         }
         return electricitySummary;
     } // end of method electricitySummary
-
-    public String getMonth(LocalDate date) {
-        return date.getMonth().toString();
-    } // end of method getMonth
-
-    public LocalDate getLastDate(String table) {
-        String query = "SELECT MAX(End_Date) AS last_Date FROM "
-                        + table 
-                        + " WHERE Start_Date " 
-                        + getBetweenSchoolYear();
-        ResultSet rec = doQuery(query);
-        try {
-            while (rec.next()) {        
-                return rec.getDate("last_Date").toLocalDate().plusDays(1);
-            }
-        } catch(SQLException error){
-            ErrorMessage.display(error.getMessage());
-        }
-        return null;
-    } // end of method getLastDate
-
 
     public String insertElectricityData(String startDate, String endDate, String meterUnits) {
         return insertDatabase("INSERT into Electricity (Start_Date, End_Date, Meter_Units) VALUES(\'" + startDate + "\', " +
