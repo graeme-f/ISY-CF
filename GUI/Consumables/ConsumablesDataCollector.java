@@ -24,29 +24,16 @@ package Consumables;
  * THE SOFTWARE.
  */
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.sql.Connection;
+
 import java.sql.Date;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.time.LocalDate;
 import java.util.HashMap;
-import java.util.Properties;
-import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.stage.Stage;
 
 //Unsure whether the data type should be localdate or date, will require testing
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Set;
 import utility.DataCollector;
-import utility.ErrorMessage;
 
 /**
  *
@@ -200,8 +187,7 @@ public class ConsumablesDataCollector extends DataCollector {
         wasteDetails.put(waste.id, waste); // waste.id is the key to HashMap
       }//end of while loop
      
-      } 
-   
+      }
        catch (Exception e)
     {
       System.err.println("Returned SQL exception e");
@@ -210,47 +196,40 @@ public class ConsumablesDataCollector extends DataCollector {
     }
     
     private void getWasteType(){
-        wasteTypeDetails = new HashMap(); 
-        // TODO vehicle list needs to come from the database
-         // our SQL SELECT query. 
-      String query = "SELECT * FROM Waste_Type";
+        wasteTypeDetails = new HashMap();
+        String query = "SELECT * FROM Waste_Type";
 
-       ResultSet rs = doQuery(query);
+        ResultSet rs = doQuery(query);
+        try {
+            // iterate through the java resultset
+            while (rs.next())
+            {
 
-      
-      try {
-      // iterate through the java resultset
-      while (rs.next())
-      {
+                //Creates an instance of the paper class, to be usable in this static method.
+                WasteType wasteType = new WasteType();
 
-          //Creates an instance of the paper class, to be usable in this static method.
-          WasteType wasteType = new WasteType();
-        
-         //Find the tables with the same name located in the literal string and add them to paper's properties
-        wasteType.id = rs.getInt("WasteType_ID"); 
-        String description = rs.getString("Description");
-        int capacity = rs.getInt("capacity");
+               //Find the tables with the same name located in the literal string and add them to paper's properties
+              wasteType.id = rs.getInt("WasteType_ID"); 
+              String description = rs.getString("Description");
+              int capacity = rs.getInt("capacity");
 
-        
-        // Add that information into the hashmap
-        wasteTypeDetails.put(wasteType.id, wasteType); 
-      }//end of while loop
-     
-      } 
-   
-       catch (Exception e)
-    {
-      System.err.println("Returned SQL exception e");
-      System.err.println(e.getMessage());
-    }//end of catch statement
-    }
+
+              // Add that information into the hashmap
+              wasteTypeDetails.put(wasteType.id, wasteType); 
+            }//end of while loop
+        }
+        catch (Exception e)
+        {
+          System.err.println("Returned SQL exception e");
+          System.err.println(e.getMessage());
+        }//end of catch statement
+    } // end of method getWasteType
     
     public ArrayList<String> getWasteTypeList(){
         ArrayList<String> wasteType = new ArrayList();
         Set <HashMap.Entry <Integer, WasteType>> st = wasteTypeDetails.entrySet();
         
         for (HashMap.Entry <Integer, WasteType> me:st){
-            
             wasteType.add(me.getValue().description);
         }
         return wasteType;
@@ -264,16 +243,7 @@ public class ConsumablesDataCollector extends DataCollector {
                 + startDate + "\", \""
                 + endDate + "\", "
                 + amount + ") ";
-        return insertDatabase (sql);
-        
+        return insertDatabase (sql);       
     }
 
-    
-        
-    
-    
-        
-    
-    
 }//end of ConsumablesDataCollector class
-

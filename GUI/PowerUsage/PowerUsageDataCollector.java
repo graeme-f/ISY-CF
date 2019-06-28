@@ -81,7 +81,7 @@ public class PowerUsageDataCollector extends DataCollector {
     } // end method getAllAcType
     
     private int getACAmount(int id) {
-    	String query = "SELECT Amount FROM ac_amount "
+    	String query = "SELECT Amount FROM AC_Amount "
     			+ " WHERE AC_Type_ID = " + id
     			+ " ORDER BY Checked_Date DESC LIMIT 1";
         ResultSet rec = doQuery(query);
@@ -96,7 +96,7 @@ public class PowerUsageDataCollector extends DataCollector {
     } // end of method getACAmount
       
     private int getACMultiplier(int id) {
-    	String query = "SELECT Multiplier FROM ac_co2 "
+    	String query = "SELECT Multiplier FROM AC_CO2 "
     			+ " WHERE AC_Type_ID = " + id
     			+ " ORDER BY Start_Date DESC LIMIT 1";
         ResultSet rec = doQuery(query);
