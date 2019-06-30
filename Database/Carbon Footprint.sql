@@ -237,6 +237,7 @@ CREATE TABLE IF NOT EXISTS `ISY-CF`.`Waste` (
   `Start_Date` DATE NOT NULL,
   `End_Date` DATE NOT NULL,
   `Amount` INT NOT NULL,
+  `Bin_Count` INT NOT NULL,
   PRIMARY KEY (`Waste_ID`),
   CONSTRAINT `fk_Waste_Waste_Type1`
     FOREIGN KEY (`Waste_Type_ID`)
