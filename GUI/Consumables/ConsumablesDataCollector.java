@@ -25,15 +25,18 @@ package Consumables;
  */
 
 
-import java.sql.Date;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.HashMap;
 
 //Unsure whether the data type should be localdate or date, will require testing
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Set;
+import java.util.TreeMap;
+
 import utility.DataCollector;
+import utility.ErrorMessage;
 
 /**
  *
@@ -43,20 +46,23 @@ import utility.DataCollector;
 public class ConsumablesDataCollector extends DataCollector {
     
     class Waste {
-        int id;
         int amount;
-        LocalDate Start_Date;
-        LocalDate End_Date;  
+        int count;
     }
     class WasteType {
         int id;
         String description;
+        int count;
         int capacity;
-        
     }
+    class WasteSummary {
+    	 HashMap <String, Waste> details;
+    }
+
     private static ConsumablesDataCollector singleInstance = null;
     HashMap <Integer, ConsumablesDataCollector.Waste> wasteDetails;
-    HashMap <Integer, WasteType> wasteTypeDetails;
+    HashMap <String, WasteType> wasteTypeDetails;
+    TreeMap <Integer, WasteSummary> wasteSummaryDetails;
     LocalDate lastDate = null;
     public static ConsumablesDataCollector getInstance() { 
 
@@ -69,7 +75,7 @@ public class ConsumablesDataCollector extends DataCollector {
     // Creator is private to make this a singleton class
     private ConsumablesDataCollector() {
         super();
-    
+	    getWasteType();
     } // end of constructor
     
 
@@ -108,8 +114,84 @@ public class ConsumablesDataCollector extends DataCollector {
     } // end of method paperSummary
 
     public String wasteSummary() {
-    	  return "Waste";
-      }
+    	String sql = "SELECT Description, "
+    			+ "      SUM(Amount) as amount, "
+    			+ "      MAX(Bin_Count) as count, "
+ 			   + "       MONTH(Start_Date) as Month, " 
+ 			   + "       YEAR(Start_Date) as Year "
+ 			   + " FROM Waste "
+ 			   + "    	inner join Waste_Type using (Waste_Type_ID)"
+ 			   + " WHERE Start_Date " + getBetweenSchoolYear()
+ 			   + " GROUP BY Description, Year, Month"
+ 			   + " ORDER BY Year, Month";
+	    ResultSet result = doQuery(sql);
+	    String wasteSummary = "";
+	    if (null == result) return wasteSummary;
+	    ArrayList<String> wtype = getWasteTypeList();
+	    wasteSummaryDetails = new TreeMap<>();
+	    try {
+	    	while (result.next()) {
+	    		int month = result.getInt("Month");
+	    		int year = result.getInt("Year");
+	    		int date = year * 100 + month;
+	    		String desc  = result.getString("Description");
+	    		int amount = result.getInt("amount");
+	    		int count = result.getInt("count");
+	    		if (wasteSummaryDetails.containsKey(date)) {
+		    		// Case when the waste object exists (for this date) so needs to be updated
+	    			Waste waste = wasteSummaryDetails.get(date).details.get(desc);
+	    			waste.amount += amount;
+	    			waste.count  = count;
+	    			//wasteSummaryDetails.get(month).amount.replace(desc, waste);
+	    		} else {
+	    			// Case when the waste object doesn't exist so need to be created
+	    			WasteSummary ws = new WasteSummary();
+	    			ws.details = new HashMap<>();
+	    			for (String type : wtype) {
+		    			Waste waste = new Waste();
+	    				if (type.equals(desc)) {
+	    	    			waste.amount = amount;
+	    	    			waste.count = count;
+	    				}
+    					ws.details.put(type,waste);
+	    			}
+	    			wasteSummaryDetails.put(date, ws);
+	    		}
+	    	}
+	    } catch (SQLException error) {
+            ErrorMessage.display(error.getMessage());
+            return wasteSummary;
+	    }
+	    HashMap <String, Integer> wasteTotals = new HashMap<>();
+    	wasteSummary =  "Month      ";
+    	for (String type : wtype) {
+    		wasteSummary +=  pad(type,5) + " Emptied ";
+    	}
+    	wasteSummary += "\n=====      ===== ======= ===== =======\n";
+        for (int date  :  wasteSummaryDetails.keySet()) {
+        	int month = date % 100;
+        	wasteSummary += pad(getMonthName(month),10) + " ";
+        	for (String type : wtype) {
+        		int count = wasteSummaryDetails.get(date).details.get(type).count;
+        		int amount = wasteSummaryDetails.get(date).details.get(type).amount;
+        		if (wasteTotals.containsKey(type)) {
+        			int total = wasteTotals.get(type);
+        			total += count * amount;
+        			wasteTotals.replace(type, total);
+        		} else {
+        			wasteTotals.put(type, count * amount);
+        		}
+        		wasteSummary += format(count,"#,###") + " ";
+        		wasteSummary += format(amount,"#,###") + "   ";
+        	}
+        	wasteSummary += "\n";
+        }
+    	wasteSummary += "\nTotal        ";
+    	for (String type : wtype) {
+        	wasteSummary += format(wasteTotals.get(type),"#,###") + "         ";
+    	}
+	    return wasteSummary;
+      } // end of method wasteSummary
 
     public String yearBookSummary() {
     	String sql = "SELECT SUM(Pages) as pages, "
@@ -148,8 +230,31 @@ public class ConsumablesDataCollector extends DataCollector {
                 + A4reams + ","
                 + A3reams + ") ";
         return insertDatabase (sql);
-    }
+    } // end of method updatePaper
     
+
+    public String updateWaste(String startDate, String endDate, 
+    						String largeTotal, String largeEmptied,
+    						String smallTotal, String smallEmptied){
+    	ArrayList<String> type = getWasteTypeList();
+        int smallID = getWasteTypeID(type.get(0));
+        int largeID = getWasteTypeID(type.get(1));
+        String sql = "INSERT INTO " 
+                + "Waste (Waste_Type_ID, Start_Date, End_Date, Bin_Count, Amount) "
+                + "VALUES ("
+                + largeID + ", \""
+                + startDate + "\", \""
+                + endDate + "\", "
+                + largeTotal + ", "
+                + largeEmptied + "),  ("
+                + smallID + ", \"" 
+                + startDate + "\", \"" 
+                + endDate + "\", "
+                + smallTotal + ", "
+                + smallEmptied + ")";
+        return insertDatabase (sql);
+    } // end of method updateWaste
+
     public String updateYearbook(String date, String pages, String copies) {
         String sql = "INSERT INTO " 
                 + "Year_Book (Year, Pages, Copies) "
@@ -160,43 +265,9 @@ public class ConsumablesDataCollector extends DataCollector {
         return insertDatabase (sql);	
     } // end of method updateYearbook
     
-    private void getWaste(){
-    	wasteDetails = new HashMap(); 
-        // TODO vehicle list needs to come from the database
-         // our SQL SELECT query. 
-      String query = "SELECT * FROM Waste";
-
-       ResultSet rs = doQuery(query);
-
-      
-      try {
-      // iterate through the java resultset
-      while (rs.next())
-      {
-
-          //Creates an instance of the paper class, to be usable in this static method.
-          Waste waste = new Waste();
-        
-         //Find the tables with the same name located in the literal string and add them to paper's properties
-        waste.id = rs.getInt("Waste_ID"); 
-        Date startDate  = rs.getDate("Start_Date");
-        Date endDate = rs.getDate("date_created");
-        int amount = rs.getInt("Amount");
-        
-        // Add that information into the hashmap
-        wasteDetails.put(waste.id, waste); // waste.id is the key to HashMap
-      }//end of while loop
-     
-      }
-       catch (Exception e)
-    {
-      System.err.println("Returned SQL exception e");
-      System.err.println(e.getMessage());
-    }//end of catch statement
-    }
     
     private void getWasteType(){
-        wasteTypeDetails = new HashMap();
+        wasteTypeDetails = new HashMap<>();
         String query = "SELECT * FROM Waste_Type";
 
         ResultSet rs = doQuery(query);
@@ -209,13 +280,13 @@ public class ConsumablesDataCollector extends DataCollector {
                 WasteType wasteType = new WasteType();
 
                //Find the tables with the same name located in the literal string and add them to paper's properties
-              wasteType.id = rs.getInt("WasteType_ID"); 
-              String description = rs.getString("Description");
-              int capacity = rs.getInt("capacity");
-
+              wasteType.id = rs.getInt("Waste_Type_ID"); 
+              wasteType.description = rs.getString("Description");
+              wasteType.count = rs.getInt("Total");
+              wasteType.capacity = rs.getInt("Capacity");
 
               // Add that information into the hashmap
-              wasteTypeDetails.put(wasteType.id, wasteType); 
+              wasteTypeDetails.put(wasteType.description, wasteType); 
             }//end of while loop
         }
         catch (Exception e)
@@ -226,24 +297,21 @@ public class ConsumablesDataCollector extends DataCollector {
     } // end of method getWasteType
     
     public ArrayList<String> getWasteTypeList(){
-        ArrayList<String> wasteType = new ArrayList();
-        Set <HashMap.Entry <Integer, WasteType>> st = wasteTypeDetails.entrySet();
+        ArrayList<String> wasteType = new ArrayList<>();
+        Set <HashMap.Entry <String, WasteType>> st = wasteTypeDetails.entrySet();
         
-        for (HashMap.Entry <Integer, WasteType> me:st){
+        for (HashMap.Entry <String, WasteType> me:st){
             wasteType.add(me.getValue().description);
         }
         return wasteType;
-    }
-    public String updateWaste(String wasteType, String startDate, String endDate, String amount){
-        String wasteTypeID = "1"; //TO DO get information from wasteType
-        String sql = " INSERT INTO " 
-                + "waste (Type, Start_Date, End_Date, Amount) "
-                + "VALUES ("
-                + wasteTypeID + ", \""
-                + startDate + "\", \""
-                + endDate + "\", "
-                + amount + ") ";
-        return insertDatabase (sql);       
-    }
+    } // end of method getWasteTypeList
+    
+    public int getWasteTypeID(String type) {
+    	return wasteTypeDetails.get(type).id;
+    } // end of method getWasteTypeID
 
+    public int getWasteTypeCount(String type) {
+    	return wasteTypeDetails.get(type).count;
+    } // end of method getWasteTypeID
+    
 }//end of ConsumablesDataCollector class

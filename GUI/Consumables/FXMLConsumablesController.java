@@ -24,8 +24,9 @@
 package Consumables;
 
 import java.net.URL;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
-import java.util.function.UnaryOperator;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -35,11 +36,10 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.control.TextFormatter;
 import javafx.scene.control.TitledPane;
-import javafx.util.converter.IntegerStringConverter;
 import utility.ErrorMessage;
 import utility.GUIController;
 
@@ -70,8 +70,14 @@ public class FXMLConsumablesController extends GUIController implements Initiali
 
     @FXML private DatePicker wasteStartDate;
     @FXML private DatePicker wasteEndDate;
-    @FXML private TextField  wasteAmount;
-    @FXML private TextField  wasteType;
+    @FXML private Label      wasteLarge;
+    @FXML private TextField  wasteLargeTotal;
+    @FXML private TextField  wasteLargeEmptied;
+    @FXML private Label      wasteSmall;
+    @FXML private TextField  wasteSmallTotal;
+    @FXML private TextField  wasteSmallEmptied;
+    @FXML private Button     btnWasteEndDate;
+    @FXML private Button     btnUpdateWaste;
     
     private ConsumablesDataCollector dc;
     
@@ -94,11 +100,22 @@ public class FXMLConsumablesController extends GUIController implements Initiali
     } // end of method updatePaper()
     
     @FXML private void updateWaste(ActionEvent event) {
-        String start  = wasteStartDate.getValue().toString();
-        String end    = wasteEndDate.getValue().toString();
-        String amount   = wasteAmount.getText();
-        String type = wasteType.getText();
-        dc.updateWaste(type,start,end,amount);
+        String start    = wasteStartDate.getValue().toString();
+        String end      = wasteEndDate.getValue().toString();
+        String lTotal   = wasteLargeTotal.getText();
+        String lEmptied = wasteLargeEmptied.getText();
+        String sTotal   = wasteSmallTotal.getText();
+        String sEmptied = wasteSmallEmptied.getText();
+        String result = dc.updateWaste(start, end, lTotal, lEmptied, sTotal, sEmptied);
+        // Display the result on the screen, this also delays the processing
+        // enough so that the electricity summary will be properly displayed.
+        if (null == result){
+            ErrorMessage.display("Unable to update the waste details.");
+        } else {
+            ErrorMessage.display("Information", result, "Waste details updated");
+            initializeWaste();
+            details.setText(dc.wasteSummary());
+        }
     } // end of method updateWaste()
 
     @FXML private void updateYearbook(ActionEvent event) {
@@ -144,6 +161,10 @@ public class FXMLConsumablesController extends GUIController implements Initiali
         intFilter(yearbookPages,true);
         intFilter(yearbookCopies,true);
         initializeYearbook();
+        
+        ArrayList<String> type = dc.getWasteTypeList();
+        wasteSmall.setText(type.get(0));
+        wasteLarge.setText(type.get(1));
         initializeWaste();
 
         details.setText(dc.paperSummary());
@@ -174,11 +195,33 @@ public class FXMLConsumablesController extends GUIController implements Initiali
     } // end of method validPaper
 
     private void initializeWaste() {
-//        StartDate.setValue(dc.getPaperStartDate());
-//        EndDate.setValue(LocalDate.now());
-//        Amount.setTextFormatter(new TextFormatter<>(new IntegerStringConverter(), 0, integerFilter));
+    	wasteStartDate.setValue(dc.getLastDate("Waste"));
+        attachEndDateAction(btnWasteEndDate, wasteStartDate, wasteEndDate);
+
+        ArrayList<String> type = dc.getWasteTypeList();
+        btnUpdateWaste.setDisable(true);
+        wasteLargeTotal.setText(Integer.toString(dc.getWasteTypeCount(type.get(1))));
+        wasteLargeEmptied.clear();
+        wasteSmallTotal.setText(Integer.toString(dc.getWasteTypeCount(type.get(0))));
+        wasteSmallEmptied.clear();
+
+        
+        wasteLargeEmptied.textProperty().addListener((observable, oldValue, newValue) -> {
+        	btnUpdateWaste.setDisable(!validWaste());
+        });
+        wasteSmallEmptied.textProperty().addListener((observable, oldValue, newValue) -> {
+        	btnUpdateWaste.setDisable(!validWaste());
+        });
     } // end of method initializeWaste()
-    
+
+    private boolean validWaste() {
+    	if (wasteLargeEmptied.getText().isEmpty() 
+    		&& wasteSmallEmptied.getText().isEmpty()
+    		) return false;
+    	return true;
+    } // end of method validWaste
+
+
     private void initializeYearbook() {
     	yearbookDate.setValue(LocalDate.now());
     	yearbookPages.clear();
