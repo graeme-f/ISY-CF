@@ -27,10 +27,13 @@ package utility;
 import java.io.FileInputStream;
 import java.io.IOException;
 import static java.lang.Thread.sleep;
+
+import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Properties;
 
@@ -65,7 +68,7 @@ public abstract class DataCollector extends DatabaseConnector{
     } // end of method getStartDate()
 
     protected String getEndDate(){
-        return "\"" + (schooYear+1) + "-06-30 %\"";
+        return "\"" + (schooYear+1) + "-06-30%\"";
     } // end of method getStartDate()
 
     protected String getBetweenSchoolYear(){
@@ -108,13 +111,21 @@ public abstract class DataCollector extends DatabaseConnector{
                         + getBetweenSchoolYear();
         ResultSet rec = doQuery(query);
         try {
-            while (rec.next()) {        
-                return rec.getDate("last_Date").toLocalDate().plusDays(1);
+            while (rec.next()) {
+            	Date lastDate = rec.getDate("last_Date");
+            	if (lastDate == null) {
+            		String str = schooYear + "-07-01";
+            	    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            	    return LocalDate.parse(str, formatter);
+            	}
+                return lastDate.toLocalDate().plusDays(1);
             }
         } catch(SQLException error){
             ErrorMessage.display(error.getMessage());
         }
-        return null;
+		String str = schooYear + "-07-01";
+	    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+	    return LocalDate.parse(str, formatter);
     } // end of method getLastDate
     
     private void createSecurityConnection(){
